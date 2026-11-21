@@ -4,6 +4,7 @@ export const navigation = [
   { label: "Journal", href: "/stories" },
   { label: "Lab", href: "/lab" },
   { label: "Atlas", href: "/atlas" },
+  { label: "Field notes", href: "/field-notes" },
 ] as const;
 
 export const sources = {
@@ -20,6 +21,12 @@ export const sources = {
   webb: { name: "NASA", title: "James Webb Space Telescope", url: "https://science.nasa.gov/mission/webb/" },
   lightSpeed: { name: "NIST", title: "Speed of light in vacuum", url: "https://physics.nist.gov/cgi-bin/cuu/Value?c" },
   hubble: { name: "NASA", title: "Hubble Deep Fields", url: "https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-deep-fields/" },
+  gistemp: { name: "NASA Goddard Institute for Space Studies", title: "GISS Surface Temperature Analysis (GISTEMP v4)", url: "https://data.giss.nasa.gov/gistemp/" },
+  seaLevel: { name: "NOAA Tides & Currents", title: "Sea level trends", url: "https://tidesandcurrents.noaa.gov/sltrends/" },
+  carbon: { name: "Global Carbon Project", title: "Global Carbon Budget", url: "https://globalcarbonbudget.org/" },
+  coasts: { name: "IPCC", title: "Climate Change 2022, Chapter 3: Oceans and Coastal Ecosystems and their Services", url: "https://www.ipcc.ch/report/ar6/wg2/chapter/chapter-3/" },
+  fossil: { name: "Smithsonian National Museum of Natural History", title: "Deep Time", url: "https://naturalhistory.si.edu/exhibits/david-h-koch-hall-fossils-deep-time" },
+  occurrence: { name: "Global Biodiversity Information Facility", title: "Occurrence data", url: "https://www.gbif.org/occurrence/search" },
   bathymetry: { name: "GEBCO", title: "Gridded bathymetry data", url: "https://www.gebco.net/data_and_products/gridded_bathymetry_data/" },
 } as const;
 
@@ -33,7 +40,7 @@ export const labs = [
 
 export const topics = [
   {
-    slug: "ocean-life", title: "Ocean & Life", theme: "ocean", image: "/images/ocean-column.webp",
+    slug: "ocean-life", title: "Ocean & Marine Life", theme: "ocean", image: "/images/ocean-column.webp",
     intro: "Sunlight illuminates a thin upper layer. Below it, animals navigate a world shaped by pressure, scarce food, and light of their own making.",
     background: "Oceanographers divide the water column by depth and by how much light penetrates it. These overlapping ways of describing the ocean help explain where organisms can photosynthesize, where they feed, and how far they migrate. The depth of useful sunlight changes with the clarity of the water, even when the named depth zones stay the same.",
     discoveries: "The discovery of hydrothermal vent ecosystems showed that some seafloor communities can begin with microbes using chemical energy. In open water, acoustic instruments revealed migrating layers of animals that can rise hundreds of metres after dusk.",
@@ -59,7 +66,7 @@ export const topics = [
     diagram: "strata", articles: ["the-memory-of-rock", "tectonic-plates-in-motion", "what-the-ice-keeps"], experiments: ["geologic-time", "plate-tectonics"], sources: ["rocks", "time", "plates"],
   },
   {
-    slug: "space-time", title: "Space & Time", theme: "space", image: "/images/starlight.webp",
+    slug: "space-time", title: "Space & Astronomy", theme: "space", image: "/images/starlight.webp",
     intro: "Astronomy begins with a delay. Every image of a distant object records light that left long before it arrived at the telescope.",
     background: "Astronomers combine wavelength, brightness, apparent motion, and distance estimates to determine what they see. Different instruments register different wavelengths. An infrared image and a visible-light image of the same object can show different physical processes.",
     discoveries: "Hubble’s deep fields revealed numerous galaxies in small patches of sky. Webb extends observations into the infrared, where it can detect some distant galaxies whose light was stretched to longer wavelengths by cosmic expansion.",
@@ -72,7 +79,7 @@ export const topics = [
     diagram: "light", articles: ["the-light-that-took-its-time"], experiments: ["geologic-time"], sources: ["lightSpeed", "hubble", "webb"],
   },
   {
-    slug: "systems-signals", title: "Systems & Signals", theme: "signals", image: "/images/glacier.webp",
+    slug: "systems-signals", title: "Physics & Systems", theme: "signals", image: "/images/glacier.webp",
     intro: "Much of science depends on reading traces. A band in ice or an echo in water can reveal a process that no observer saw directly.",
     background: "Signals are measured outputs, while proxies are indirect records used to infer another quantity. A proxy must be interpreted with context: the same observation can respond to several factors. Repeated observations, calibration, and independent methods help distinguish plausible explanations.",
     discoveries: "Polar ice traps samples of ancient air. Together with chemical and physical measurements of the ice, that evidence lets researchers compare greenhouse gases, temperature proxies, and events such as volcanic eruptions across long intervals.",
@@ -83,6 +90,45 @@ export const topics = [
     ],
     facts: ["The air in an ice-core bubble is generally younger than the ice around it.", "Independent records can help reveal errors or local effects in one measurement."],
     diagram: "ice", articles: ["what-the-ice-keeps", "a-night-shift-in-the-ocean"], experiments: ["ocean-depth", "geologic-time"], sources: ["ice", "iceData", "migration"],
+  },
+  {
+    slug: "climate-atmosphere", title: "Climate & Atmosphere", theme: "climate", image: "/images/ice-margin.webp",
+    intro: "A warmer planet changes the odds of familiar events. Temperature records connect those changes across decades and across the globe.",
+    background: "A temperature anomaly is the difference between an observation and a reference-period average. Scientists combine land and ocean observations, account for uneven coverage, and compare independent reconstructions. The reference period sets the zero point.",
+    discoveries: "NASA’s GISTEMP analysis links weather station observations and sea-surface temperatures into a long global record. Tide gauges record a complementary signal near shore, relative to the land beneath each instrument.",
+    concepts: [
+      { title: "Anomaly", text: "A departure from a reference climate average for the same place or period." },
+      { title: "Reference period", text: "The years whose average sets the zero of the plotted series." },
+      { title: "Relative sea level", text: "Sea surface height measured against the moving land beneath a tide gauge." },
+    ],
+    facts: ["GISTEMP uses 1951–1980 as its reference period.", "A global annual mean says little about the conditions on one beach or in one city."],
+    diagram: "ice", articles: ["reading-a-warmer-world", "what-the-ice-keeps"], experiments: ["ocean-depth"], sources: ["gistemp", "seaLevel", "iceData"],
+  },
+  {
+    slug: "evolution-biodiversity", title: "Evolution & Biodiversity", theme: "biodiversity", image: "/images/fossil.webp",
+    intro: "Fossils and living species each preserve a partial record of how life responds to changing environments.",
+    background: "Natural selection acts on heritable variation over generations. Fossils preserve some consequences of past change, while living distributions show where species are found today. The likelihood of seeing a specimen depends on preservation, access, and survey effort.",
+    discoveries: "The fossil record documents successive changes in life through geological time. Occurrence records gathered by museums, surveys, and observers give modern scientists another record to compare and interpret.",
+    concepts: [
+      { title: "Occurrence record", text: "Evidence that an organism was observed or collected at a place and time." },
+      { title: "Preservation bias", text: "Differences in the probability that organisms leave fossils in the environments where they lived." },
+      { title: "Evolutionary radiation", text: "Diversification of lineages from a common ancestry over geological time." },
+    ],
+    facts: ["Absence from a database can reflect incomplete sampling.", "Fossil sites preserve different communities and time intervals."],
+    diagram: "strata", articles: ["fossils-are-a-sample", "life-below-the-light"], experiments: ["geologic-time"], sources: ["fossil", "time", "occurrence"],
+  },
+  {
+    slug: "human-footprint", title: "Human Footprint", theme: "footprint", image: "/images/harbor.webp",
+    intro: "Human activity leaves traces in the atmosphere, on the shoreline, and across landscapes. Each trace is measured at a different scale.",
+    background: "Territorial carbon totals describe emissions assigned to a country. Nearby population estimates describe where some people live. Assessing coastal risk also requires elevation, protective infrastructure, hazard, and the ability of communities to respond.",
+    discoveries: "Long-running carbon budgets track changes in fossil and industrial emissions. Coastal observations connect those global pressures to local processes such as subsidence, erosion, and flooding.",
+    concepts: [
+      { title: "Territorial emissions", text: "Emissions assigned to the place where they were produced." },
+      { title: "Exposure", text: "The presence of people, infrastructure, or ecosystems in areas subject to a hazard." },
+      { title: "Subsidence", text: "Downward movement of the land that can increase relative sea level." },
+    ],
+    facts: ["Country totals cannot show individual exposure or neighbourhood risk.", "Natural Earth’s settlement figures are mixed-date estimates rather than census tracts."],
+    diagram: "plates", articles: ["the-maps-behind-coastal-risk", "reading-a-warmer-world"], experiments: ["plate-tectonics"], sources: ["carbon", "coasts", "seaLevel"],
   },
 ] as const;
 

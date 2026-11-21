@@ -35,6 +35,11 @@ export function EditorialMotion({ children }: { children: ReactNode }) {
               y: 10, opacity: 0.4, stagger: 0.12, duration: 0.58,
             }, 0.05);
             break;
+          case "sequence":
+            timeline.fromTo(element.querySelector(".sequence-image"), { clipPath: "inset(0 27% 10% 0)", scale: .96 }, {
+              clipPath: "inset(0% 0% 0% 0%)", scale: 1, duration: .95, clearProps: "clipPath,transform",
+            }).from(element.querySelector(".sequence-copy"), { y: 14, opacity: .62, duration: .54 }, .12);
+            break;
           case "discovery":
             timeline.fromTo(element.querySelector(".discovery-media"), {
               clipPath: "inset(5% 13% 26% 10%)", yPercent: 8, opacity: 0.4,

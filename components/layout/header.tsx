@@ -1,37 +1,55 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { navigation } from "@/lib/content/publication";
+import { navigation, topics } from "@/lib/content/publication";
 import type { SearchEntry } from "@/lib/content/search";
 import { SearchOverlay } from "@/components/search/search-panel";
+import { ReadingModeButton } from "@/components/publishing/reading-preferences";
 import { Brand } from "./brand";
+
+const references = [{ label: "Scientific glossary", href: "/glossary" }, { label: "Your reading desk", href: "/library" }, { label: "About the publication", href: "/about" }];
 
 export function Header({ entries }: { entries: SearchEntry[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  const current = (href: string) => pathname === href ? "page" : pathname.startsWith(href + "/") ? "location" : undefined;
 
-  return (
-    <header className="site-header" onKeyDown={(event) => {
-      if (event.key === "Escape" && open) {
-        setOpen(false);
-        document.getElementById("menu-toggle")?.focus();
-      }
-    }}>
-      <div className="shell header-inner">
-        <Brand />
-        <button id="menu-toggle" className="menu-toggle" type="button" aria-label={open ? "Close navigation" : "Open navigation"} aria-expanded={open} aria-controls="site-navigation" onClick={() => setOpen(!open)}>
-          {open ? <X size={24} /> : <Menu size={24} />}
-        </button>
-        <nav id="site-navigation" aria-label="Main navigation" className={open ? "site-navigation is-open" : "site-navigation"}>
-          {navigation.map(({ label, href }) => (
-            <Link key={href} href={href} aria-current={pathname === href ? "page" : pathname.startsWith(href + "/") ? "location" : undefined} onClick={() => setOpen(false)}>{label}</Link>
-          ))}
-        </nav>
+  return <header className="site-header edition-header" onKeyDown={(event) => {
+    if (event.key === "Escape" && open) {
+      close();
+      document.getElementById("menu-toggle")?.focus();
+    }
+  }}>
+    <div className="shell edition-header-row">
+      <Brand />
+      <nav className="edition-navigation" aria-label="Main navigation">{navigation.map(({ label, href }) => (
+        <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}</Link>
+      ))}</nav>
+      <div className="edition-header-actions">
         <SearchOverlay entries={entries} />
+        <button className="edition-menu-toggle" id="menu-toggle" type="button" aria-expanded={open} aria-controls="edition-menu"
+          aria-label={open ? "Close navigation" : "Open navigation"} onClick={() => setOpen(!open)}>
+          {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}<span>Index</span>
+        </button>
       </div>
-    </header>
-  );
+    </div>
+    <div id="edition-menu" className="edition-menu" hidden={!open}>
+      <div className="shell edition-menu-inner">
+        <nav aria-label="Publication index"><p className="mono section-label">The publication</p>
+          {navigation.map(({ label, href }) => <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+        </nav>
+        <nav aria-label="Disciplines"><p className="mono section-label">Disciplines</p>
+          {topics.map((topic) => <Link key={topic.slug} href={`/topics/${topic.slug}`} onClick={close}>{topic.title}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+        </nav>
+        <nav aria-label="Reading tools"><p className="mono section-label">Reading tools</p>
+          {references.map(({ label, href }) => <Link key={href} href={href} onClick={close}>{label}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+          <ReadingModeButton />
+        </nav>
+      </div>
+    </div>
+  </header>;
 }

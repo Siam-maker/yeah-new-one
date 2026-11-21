@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import type { SearchEntry } from "@/lib/content/search";
 
-const categories = ["All", "Article", "Topic", "Lab", "Glossary"];
+const categories = ["All", "Article", "Topic", "Lab", "Glossary", "Location", "Field note"];
 const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
 
 export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = false }: {
@@ -32,6 +32,8 @@ export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = 
         </select>
       </label>
     </div>
+    {!query && <div className="search-suggestions"><span>Try</span>{["trench", "ice", "coastal", "evolution"].map((suggestion) =>
+      <button type="button" key={suggestion} className="ghost-button" onClick={() => { setQuery(suggestion); setCategory("All"); }}>{suggestion}</button>)}</div>}
     <p className="mt-4 text-[var(--muted)]" role="status">{matches.length === 0 ? "No matching results. Try a broader term or change the content type." : `${matches.length} ${matches.length === 1 ? "result" : "results"}`}</p>
     {visible.length > 0 && <ul className="result-list">{visible.map((entry) => <li key={entry.href}>
       <p className="mono tile-meta">{entry.kind}</p><Link href={entry.href} onClick={onNavigate}>{entry.title}</Link><p>{entry.description}</p>

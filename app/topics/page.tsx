@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Masthead, SectionHeading, Tile, TopicIndex } from "@/components/editorial/ui";
+import { Masthead, TextLink } from "@/components/editorial/ui";
+import { DisciplineExplorer } from "@/components/editorial/edition-controls";
 import { topics } from "@/lib/content/publication";
 
-export const metadata: Metadata = { title: "Topics", description: "Four scientific fields from darkness in the ocean to astronomical time." };
+export const metadata: Metadata = { title: "Topics", description: "Seven scientific disciplines from ocean dynamics to the human footprint." };
 
 export default function TopicsPage() {
   return <div className="shell">
-    <Masthead title="Worlds to explore" category="Topics" description="Four paths through the publication. Each topic introduces the science, its evidence, and places to dig deeper." />
+    <Masthead title="Seven ways to look" category="Scientific disciplines" description="Choose a discipline. Every guide brings together the science, the evidence, an instrument you can use, and further reading." />
     <div className="layout-flow">
-      <section><SectionHeading title="The field guide" /><TopicIndex /></section>
-      <div className="editorial-tiles">{topics.slice(0, 3).map((topic) => <Tile key={topic.slug} title={topic.title} image={topic.image} href={`/topics/${topic.slug}`} meta="Topic guide" description={topic.intro} />)}</div>
+      <DisciplineExplorer items={topics.map(({ slug, title, image, theme, intro }) => ({ slug, title, image, theme, intro }))} />
+      <section><h2 className="subhead">Start with evidence</h2><p className="standfirst">Field notes trace the decisions behind a chart, map or observation.</p>
+        <div className="mt-4"><TextLink href="/field-notes">Browse the methods and observations</TextLink></div></section>
     </div>
   </div>;
 }

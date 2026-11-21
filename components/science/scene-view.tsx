@@ -6,7 +6,6 @@ import {
   BufferGeometry, Color, Float32BufferAttribute, Fog, MathUtils, Quaternion, SRGBColorSpace, TextureLoader, Vector3,
   type Group, type Texture, type WebGLRenderer,
 } from "three";
-import { locations } from "@/lib/content/atlas";
 import { zoneAt } from "@/lib/content/ocean";
 import type { Boundary, SceneSpec } from "./scene-types";
 
@@ -190,8 +189,11 @@ function Globe({ scene, active }: { scene: Extract<SceneSpec, { kind: "globe" }>
     return horizontal.premultiply(vertical);
   }, [scene.heading, scene.location.lat, scene.location.lon]);
 
-  useFrame((_, delta) => {
+  useFrame(({ camera }, delta) => {
     if (!globe.current) return;
+    const targetDistance = 7.4 / (1 + (scene.zoom - 1) * .35);
+    camera.position.z = active ? MathUtils.damp(camera.position.z, targetDistance, 6, Math.min(delta, .08)) : targetDistance;
+    if (active && Math.abs(camera.position.z - targetDistance) > .006) invalidate();
     if (!active || globe.current.quaternion.angleTo(target) < .008) globe.current.quaternion.copy(target);
     else {
       globe.current.quaternion.slerp(target, 1 - Math.exp(-5 * Math.min(delta, .08)));
@@ -204,10 +206,10 @@ function Globe({ scene, active }: { scene: Extract<SceneSpec, { kind: "globe" }>
     <group ref={globe}>
       <mesh><sphereGeometry args={[1.5, 64, 38]} /><meshStandardMaterial key={map ? "textured" : "plain"} map={map} color={map ? "#ffffff" : "#295476"} roughness={.85} /></mesh>
       {scene.showBoundaries && boundaries && <lineSegments geometry={boundaries}><lineBasicMaterial color="#ff996d" /></lineSegments>}
-      {locations.map((location) => (
+      {scene.points.map((location) => (
         <mesh key={location.id} position={geographicPoint(location.lon, location.lat, 1.548)} onClick={(event) => { event.stopPropagation(); scene.onSelect(location.id); }}>
           <sphereGeometry args={[location.id === scene.location.id ? .065 : .032, 10, 7]} />
-          <meshBasicMaterial color={location.id === scene.location.id ? "#ffad84" : "#dbeaf9"} />
+          <meshBasicMaterial color={location.id === scene.location.id ? "#f0ede5" : scene.markerColor} />
         </mesh>
       ))}
     </group>

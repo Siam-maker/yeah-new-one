@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Masthead, ReferenceList, StoryTiles, TextLink } from "@/components/editorial/ui";
 import { ScienceDiagram } from "@/components/editorial/diagram";
+import { RecordVisit } from "@/components/publishing/reading-preferences";
+import { DisciplineInstrument } from "@/components/science/discipline-instrument";
 import { topics, labs } from "@/lib/content/publication";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -21,7 +23,8 @@ export default async function TopicPage({ params }: Props) {
   if (!topic) notFound();
   const experiments: readonly string[] = topic.experiments;
 
-  return <div className="shell">
+  return <div className="shell topic-dispatch" data-discipline={topic.theme}>
+    <RecordVisit type="topics" title={topic.title} href={`/topics/${slug}`} />
     <div className="topic-hero">
       <Masthead title={topic.title} category="Topic guide" description={topic.intro}
         crumbs={[{ label: "Topics", href: "/topics" }, { label: topic.title }]} />
@@ -37,6 +40,7 @@ export default async function TopicPage({ params }: Props) {
         {topic.facts.map((fact) => <li key={fact}>{fact}</li>)}
       </ul><h2 className="subhead mt-8">Related experiments</h2><div className="link-list">{labs.filter((item) => experiments.includes(item.slug)).map((lab) =>
         <TextLink key={lab.slug} href={`/lab/${lab.slug}`}>{lab.title}</TextLink>)}</div></section></div>
+      <section><h2 className="subhead">Read the evidence</h2><DisciplineInstrument slug={slug} /></section>
       <section><h2 className="subhead">Further reading</h2><StoryTiles slugs={topic.articles} /></section>
       <section><h2 className="subhead">References</h2><ReferenceList keys={topic.sources} /></section>
     </div>

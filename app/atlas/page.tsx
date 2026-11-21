@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Masthead, ReferenceList, TextLink } from "@/components/editorial/ui";
 import { ScienceDiagram } from "@/components/editorial/diagram";
 import { Atlas } from "@/components/science/atlas";
+import { atlasLayers, type AtlasLayer } from "@/lib/content/atlas";
 import { eons } from "@/lib/content/geologic-time";
 
 export const metadata: Metadata = { title: "Scientific Atlas", description: "Explore a map and globe of ocean basins, trenches, and tectonic boundaries." };
@@ -34,11 +35,14 @@ function EonOverview() {
   </figure>;
 }
 
-export default function AtlasPage() {
+export default async function AtlasPage({ searchParams }: { searchParams: Promise<{ layer?: string; location?: string }> }) {
+  const query = await searchParams;
+  const layer = typeof query.layer === "string" && Object.hasOwn(atlasLayers, query.layer) ? query.layer as AtlasLayer : "ocean";
+  const location = typeof query.location === "string" ? query.location.slice(0, 96) : "";
   return <div className="shell">
-    <Masthead title="The scientific atlas" category="Earth / Ocean basins & tectonics" description="Trace the world’s ocean basins, geological regions, and plate boundaries. Search for a location or select it on the map." />
+    <Masthead title="Field atlas" category="Global observations" description="Compare seafloor terrain, geological regions, marine habitats, climate records, settlement estimates and territorial CO₂." />
     <div className="layout-flow">
-      <div className="grid gap-5"><Atlas /></div>
+      <div className="grid gap-5"><Atlas key={layer + location} initialLayer={layer} initialLocation={location} /></div>
       <section><h2 className="subhead">Beneath the map</h2><div className="two-panel"><ScienceDiagram kind="depth" /><EarthStructure /></div></section>
       <div className="two-panel"><section className="pane"><h2 className="subhead">Planetary scale</h2>
         <table className="atlas-table"><caption className="text-left mb-3">Approximate mean radii</caption>

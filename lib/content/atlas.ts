@@ -15,3 +15,38 @@ export const locations = [
 ] as const;
 
 export type AtlasLocation = (typeof locations)[number];
+
+export type AtlasLayer = "ocean" | "geology" | "biodiversity" | "climate" | "coastal" | "footprint";
+
+export const atlasLayers = {
+  ocean: { title: "Ocean depth", color: "#55dce8", source: "Natural Earth 1:10m bathymetry", note: "Generalized seafloor depth bands. The display omits local shoals and other details required for navigation.", href: "https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-bathymetry/" },
+  geology: { title: "Geology", color: "#d8b77f", source: "USGS and Peter Bird, PB2002 (2003)", note: "Selected geological regions and generalized tectonic boundaries. Some boundaries span broad areas and are shown here as lines.", href: "https://doi.org/10.1029/2001GC000252" },
+  biodiversity: { title: "Marine life", color: "#81e8c3", source: "NOAA, UNESCO and GBRMPA", note: "Selected habitat examples. Markers identify places to investigate. They cannot show species counts, abundance, or sampling effort.", href: "https://oceanservice.noaa.gov/facts/coralreef.html" },
+  climate: { title: "Climate", color: "#afa7ff", source: "NASA GISTEMP v4 via DataHub", note: "Annual global surface temperature anomalies, 1880–2025, relative to 1951–1980. Pins mark observational sites, while the chart describes the globe as a whole.", href: "https://data.giss.nasa.gov/gistemp/" },
+  coastal: { title: "Coastal settlements", color: "#ffd093", source: "Natural Earth 1:10m populated places", note: "Mixed-date POP_MAX estimates for selected coastal and delta cities. Marker size represents a settlement estimate. It cannot describe neighbourhood density or flood exposure.", href: "https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-populated-places/" },
+  footprint: { title: "CO₂ footprint", color: "#ff8c72", source: "Global Carbon Budget via Our World in Data", note: "Territorial fossil and industrial CO₂ in million tonnes. Points are placed at country label positions. The displayed years are 1990, 2000, 2010, 2020 and 2023.", href: "https://github.com/owid/co2-data" },
+} as const;
+
+export type AtlasPoint = {
+  id: string; name: string; category: string; lat: number; lon: number; region: string; detail: string;
+  value: string; magnitude?: number; href?: string;
+};
+
+export const habitatPoints: readonly AtlasPoint[] = [
+  { id: "great-barrier", name: "Great Barrier Reef", category: "Coral reef", lat: -18.3, lon: 147.7, region: "Coral Sea", detail: "A long complex of reef and non-reef habitats lies along Australia’s northeastern continental shelf.", value: "Tropical reef system", href: "https://www2.gbrmpa.gov.au/" },
+  { id: "monterey", name: "Monterey Canyon", category: "Submarine canyon", lat: 36.77, lon: -122.1, region: "California", detail: "The submarine canyon brings deep-water habitats close to shore and is a long-running site for ocean observations.", value: "Cold-water canyon habitat", href: "https://montereybay.noaa.gov/" },
+  { id: "galapagos", name: "Galápagos Marine Reserve", category: "Marine reserve", lat: -.6, lon: -90.55, region: "Eastern Pacific", detail: "Ocean currents and isolated islands shape a mix of tropical, subtropical and cooler-water marine communities.", value: "Island and open-water habitats", href: "https://whc.unesco.org/en/list/1/" },
+  { id: "flower-garden", name: "Flower Garden Banks", category: "Reef and bank habitats", lat: 27.9, lon: -93.6, region: "Gulf of Mexico", detail: "Offshore banks rise into sunlit water and support coral communities far from the coastline.", value: "Offshore coral habitats", href: "https://flowergarden.noaa.gov/" },
+];
+
+export const climatePoints: readonly AtlasPoint[] = [
+  { id: "mauna-loa", name: "Mauna Loa Observatory", category: "Atmospheric station", lat: 19.54, lon: -155.58, region: "Hawaiʻi", detail: "Long-running measurements track atmospheric carbon dioxide at this station. It is a separate record from the global temperature chart.", value: "Atmospheric CO₂ observations", href: "https://gml.noaa.gov/ccgg/trends/" },
+  { id: "cape-grim", name: "Cape Grim", category: "Atmospheric station", lat: -40.68, lon: 144.69, region: "Tasmania", detail: "The station samples air that has travelled across the Southern Ocean. Its observations help characterize background atmospheric composition.", value: "Southern Hemisphere baseline station", href: "https://www.csiro.au/en/research/natural-environment/atmosphere/cape-grim" },
+  { id: "boston-gauge", name: "Boston tide gauge", category: "Water-level station", lat: 42.35, lon: -71.05, region: "Massachusetts", detail: "The gauge measures sea level relative to the land beneath the station. Its local record is separate from the global temperature chart.", value: "NOAA station 8443970", href: "https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id=8443970" },
+];
+
+export function atlasLayerForLocation(id: string): AtlasLayer {
+  if (habitatPoints.some((point) => point.id === id)) return "biodiversity";
+  if (climatePoints.some((point) => point.id === id)) return "climate";
+  return locations.some((point) => point.id === id && (point.category === "Geological region" || point.category === "Fault")) ? "geology" : "ocean";
+}

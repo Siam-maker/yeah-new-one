@@ -84,7 +84,7 @@ function Cave({ rock, steering, active, fps }: {
 
   return (
     <>
-      <color attach="background" args={["#10183d"]} />
+      <color attach="background" args={["#091927"]} />
       <mesh geometry={geometry}>
         <shaderMaterial ref={caveMaterial} vertexShader={caveVertex} fragmentShader={caveFragment}
           uniforms={rockUniforms} side={DoubleSide} toneMapped={false} />

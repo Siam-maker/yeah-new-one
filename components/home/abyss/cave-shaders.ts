@@ -35,9 +35,9 @@ export const caveFragment = /* glsl */ `
     float spill = max(0.0, 1.0 - length(vec2(p.x - 1.5, p.y) * vec2(.22, .31)));
     vec3 pigment = mix(vec3(.005, .007, .010), vec3(.24, .25, .28), clamp(textureValue * 2.62 + bands * .10 + finer * .03, 0.0, 1.0));
     vec3 stone = pigment * (.18 + face * .95 + rim * .28);
-    stone += vec3(.004, .024, .135) * spill * (.48 + face * .46 + descent * .29) * (.95 + .05 * sin(time * .9));
+    stone += vec3(.004, .062, .092) * spill * (.48 + face * .46 + descent * .29) * (.95 + .05 * sin(time * .9));
     stone += vec3(.006, .011, .019) * rim;
-    gl_FragColor = vec4(mix(stone, vec3(.006, .011, .044), fog * .62), 1.0);
+    gl_FragColor = vec4(mix(stone, vec3(.005, .021, .033), fog * .62), 1.0);
     #include <colorspace_fragment>
   }
 `;
@@ -50,7 +50,7 @@ export const shaftFragment = /* glsl */ `
     float face = exp(-abs(p.x + p.y * .29 + sin(time * .38) * .08) * 9.0);
     float fade = smoothstep(0.0, .32, rockUv.y) * (1.0 - smoothstep(.48, 1.0, rockUv.y));
     float alpha = face * fade * .13;
-    gl_FragColor = vec4(.19, .36, .99, alpha);
+    gl_FragColor = vec4(.12, .72, .82, alpha);
   }
 `;
 
@@ -74,6 +74,6 @@ export const moteFragment = /* glsl */ `
   varying float brightness;
   void main() {
     float glow = 1.0 - smoothstep(.06, .49, length(gl_PointCoord - .5));
-    gl_FragColor = vec4(.40, .56, .98, glow * brightness * .63);
+    gl_FragColor = vec4(.35, .83, .91, glow * brightness * .63);
   }
 `;

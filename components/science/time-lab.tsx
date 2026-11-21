@@ -15,6 +15,9 @@ function levelAt(path: number[]) {
 export function TimeLab() {
   const [path, setPath] = useState<number[]>([]);
   const [index, setIndex] = useState(0);
+  const [coreLayer, setCoreLayer] = useState<number>();
+  const layerNames = ["Basement", "Buried sediment", "Lower bed", "Middle bed", "Upper bed", "Caprock"];
+  const visibleLayer = coreLayer ?? (index + path.length * 2) % 6;
   const entries = levelAt(path);
   const selected = entries[index];
   const title = path.length ? levelAt(path.slice(0, -1))[path[path.length - 1]].name : "All geological time";
@@ -47,11 +50,14 @@ export function TimeLab() {
       </div>
     </section>
     <div className="lab-layout">
-      <LiveScene scene={{ kind: "strata", layer: (index + path.length * 2) % 6 }} fallback={<ScienceDiagram kind="strata" />} />
+      <LiveScene scene={{ kind: "strata", layer: visibleLayer }} fallback={<ScienceDiagram kind="strata" />} />
       <section className="pane" aria-live="polite">
         <p className="mono section-label">{selected.from.toLocaleString("en-US")}–{selected.to} million years ago</p>
         <h2 className="subhead">{selected.name}</h2>
         <p className="standfirst">{selected.event}</p>
+        <label className="control-label mt-4" htmlFor="strata-layer">Inspect a layer · {layerNames[visibleLayer]}</label>
+        <input className="w-full accent-[var(--amber)]" id="strata-layer" type="range" min="0" max="5" value={visibleLayer}
+          aria-valuetext={layerNames[visibleLayer]} onChange={(event) => setCoreLayer(event.currentTarget.valueAsNumber)} />
         <p className="lab-key">Dates are approximate. The coloured strata illustrate how layers can be read. A real outcrop does not hold an evenly spaced record of this timeline.</p>
       </section>
     </div>

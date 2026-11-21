@@ -1,22 +1,35 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import { LabTiles, Masthead, SectionHeading, StoryTiles, TextLink, TopicIndex } from "@/components/editorial/ui";
+import { AtlasWindow, DisciplineExplorer, FeatureSequence } from "@/components/editorial/edition-controls";
+import { Masthead, SectionHeading, TextLink } from "@/components/editorial/ui";
+import { articles } from "@/lib/content/articles";
+import { topics } from "@/lib/content/publication";
 
-export const metadata: Metadata = { title: "Explore", description: "An editorial index to discoveries about dark oceans, deep time, and hidden signals." };
+export const metadata: Metadata = { title: "Explore", description: "Find a discovery by place, discipline, or the evidence behind it." };
+
+const startingPoints = [
+  { slug: "life-below-the-light", label: "Bioluminescence" },
+  { slug: "fossils-are-a-sample", label: "The fossil record" },
+  { slug: "the-maps-behind-coastal-risk", label: "Coastal risk" },
+];
 
 export default function ExplorePage() {
+  const chapters = startingPoints.flatMap(({ slug, label }) => {
+    const article = articles.find((item) => item.slug === slug);
+    return article ? [{ slug, label, title: article.title, deck: article.deck, image: article.image }] : [];
+  });
   return <div className="shell">
-    <Masthead title="Explore" category="Field guide / Issue 001" description="Start with a discovery, follow a question into the journal, or test it in the lab." />
+    <Masthead title="Find your starting point" category="Discovery index" description="Start with a place, an artefact, or a question. Every route leads back to the evidence." />
     <div className="layout-flow">
-      <section aria-label="Start with the ocean"><div className="feature-split">
-        <div className="feature-art"><Image src="/images/ocean-column.webp" alt="Illustration of a luminous jellyfish in dark water." fill sizes="(max-width: 760px) 90vw, 55vw" /></div>
-        <div className="feature-text"><p className="mono section-label">Field dispatch</p><h3>Beyond sunlight</h3>
-          <p className="editorial-text">Read how light, pressure, and marine life change as the water grows deeper.</p><TextLink href="/topics/ocean-life">Explore ocean life</TextLink>
-        </div>
-      </div></section>
-      <section><SectionHeading title="By field" href="/topics" linkLabel="Topic index" /><TopicIndex /></section>
-      <section><SectionHeading title="Follow a story" href="/stories" linkLabel="The journal" /><StoryTiles slugs={["life-below-the-light", "the-memory-of-rock", "what-the-ice-keeps"]} /></section>
-      <section><SectionHeading title="Try an experiment" href="/lab" linkLabel="All labs" /><LabTiles /></section>
+      <section><SectionHeading title="Three discoveries" href="/stories" linkLabel="Visit the journal" /><FeatureSequence chapters={chapters} /></section>
+      <section><SectionHeading title="By discipline" href="/topics" linkLabel="Topic index" />
+        <DisciplineExplorer items={topics.map(({ slug, title, image, theme, intro }) => ({ slug, title, image, theme, intro }))} /></section>
+      <section><SectionHeading title="By place" /><AtlasWindow /></section>
+      <div className="two-panel">
+        <section className="pane"><h2 className="subhead">Follow the method</h2><p className="editorial-text">Read the field notes for what a chart, fossil record, or map can establish.</p>
+          <div className="mt-4"><TextLink href="/field-notes">Browse the field notes</TextLink></div></section>
+        <section className="pane"><h2 className="subhead">Change a variable</h2><p className="editorial-text">Test the relationship between depth and pressure, inspect rock strata, or move the plates.</p>
+          <div className="mt-4"><TextLink href="/lab">Choose an experiment</TextLink></div></section>
+      </div>
     </div>
   </div>;
 }

@@ -3,10 +3,13 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { articles, articleSectionId, readingMinutes } from "@/lib/content/articles";
 import { labs, topics } from "@/lib/content/publication";
+import { RecordVisit, ReadingModeButton } from "@/components/publishing/reading-preferences";
+import { ZoomFigure } from "@/components/publishing/zoom-figure";
 import { ArticleControls, ReadableArticle } from "@/components/editorial/article-controls";
 import { Breadcrumbs, ReferenceList, StoryTiles, TextLink } from "@/components/editorial/ui";
 import { ScienceDiagram } from "@/components/editorial/diagram";
 import { OceanLab } from "@/components/science/ocean-lab";
+import { DisciplineInstrument } from "@/components/science/discipline-instrument";
 import { PlateLab } from "@/components/science/plate-lab";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -29,15 +32,15 @@ export default async function StoryPage({ params }: Props) {
     ...articles.filter((item) => item.topic !== article.topic)].slice(0, 3);
 
   return <div className="shell">
-    <ReadableArticle>
+    <ReadableArticle><RecordVisit type="stories" title={article.title} href={`/stories/${slug}`} />
       <header className="article-hero">
         <Breadcrumbs items={[{ label: "Journal", href: "/stories" }, { label: article.title }]} />
         <p className="mono section-label mt-5">{topic?.title} · {readingMinutes(article)} min read</p>
         <h1>{article.title}</h1><p className="standfirst">{article.deck}</p>
         <ArticleControls slug={slug} title={article.title} />
+        <div className="mt-3"><ReadingModeButton /></div>
       </header>
-      <figure><div className="article-image"><Image src={article.image} alt={article.imageDescription} fill preload sizes="92vw" /></div>
-        <figcaption className="article-caption">{article.imageDescription}</figcaption></figure>
+      <ZoomFigure source={article.image} caption={article.imageDescription} />
       <div className="article-grid layout-flow">
         <nav aria-label="Table of contents" className="article-toc"><h2>In this story</h2>
           {article.sections.map(({ title }, index) => <a href={`#${articleSectionId(index)}`} key={title}>{title}</a>)}
@@ -56,6 +59,7 @@ export default async function StoryPage({ params }: Props) {
           {experiment && <aside className="pane mt-6"><h2 className="subhead">In the lab</h2>
             <p>{experiment.description}</p><TextLink href={`/lab/${experiment.slug}`}>{experiment.title}</TextLink>
           </aside>}
+          {["reading-a-warmer-world", "fossils-are-a-sample", "the-maps-behind-coastal-risk"].includes(slug) && <div className="article-model mt-6"><DisciplineInstrument slug={article.topic} /></div>}
           {slug === "life-below-the-light" && <div className="article-model mt-6 grid gap-4"><OceanLab /></div>}
           {slug === "tectonic-plates-in-motion" && <div className="article-model mt-6"><PlateLab compact /></div>}
           <section id="sources"><h2>References</h2><ReferenceList keys={article.sources} /></section>

@@ -227,6 +227,90 @@ Use the Atlas to compare a clear spreading ridge with a boundary across a contin
 `),
     ],
   },
+  {
+    slug: "reading-a-warmer-world", title: "Reading a warmer world", topic: "climate-atmosphere",
+    image: "/images/ice-margin.webp", imageDescription: "Editorial illustration of an ice margin fractured where it meets dark water.",
+    deck: "Every global temperature number has a reference period, a method, and a geographic scale.",
+    diagram: "ice", sources: ["gistemp", "iceData", "seaLevel"],
+    sections: [
+      section("The zero line", `
+A plot of global temperature anomalies needs a starting agreement. NASA’s GISTEMP analysis uses 1951–1980 as its reference interval. An anomaly of one degree on that scale says the estimated global surface temperature was one degree warmer than the reference average. It does not assign the same absolute temperature to the Arctic Ocean and an equatorial forest. A graph with a different reference interval could put the very same year at a different distance from zero.
+
+Anomalies help combine observations made in places with very different climates. A coastal station and a mountain station might disagree about their absolute temperature, yet both can register a departure from their own usual conditions. Researchers estimate the departure and use a spatial method to combine it with changes elsewhere. They need to account for the geographic distribution of observations so a dense network in one place does not stand in for the whole planet.
+`),
+      section("How the record is assembled", `
+The analysis combines land station air temperature records with observations of ocean surface temperature. Instruments, locations, and observing practices have changed over time. Ships and buoys, for example, do not always measure water in the same way. A rigorous analysis documents how it treats those differences, how it estimates values for places without observations, and how the resulting uncertainty changes over time.
+
+Agreement among independent analyses is useful evidence. Groups can use overlapping observations and still make different decisions about coverage, adjustment, or the reference interval. A single data point might move slightly when more observations become available. The persistent pattern across methods and decades matters more than the rank of two years separated by a few hundredths of a degree.
+`),
+      section("What the global number cannot show", `
+A rise in the annual global mean does not tell you the weather at a location. It combines changes across very different environments. Some places warm faster than the global average and some seasons change faster than others. Local effects depend on factors such as ocean circulation, elevation, snow cover, or urban development. Local observations and regional models answer a different question.
+
+Coastal sea level provides a concrete example. A tide gauge measures the height of the water relative to the land under the instrument. If the ground sinks, that gauge can record faster relative sea-level rise than a nearby gauge on stable ground. To interpret the record, scientists compare long time series and look at what the land itself is doing. Local science begins with knowing the scale of the instrument and the scale of the question.
+`),
+      section("Use the series", `
+Move the Atlas timeline from a year early in the record to one near the end. Look at the direction and length of the whole series before interpreting individual peaks. Then move one year backward or forward. How large is that change relative to the larger movement? Write the reference period next to any value you carry away from the graph.
+
+A temperature record is one strand of evidence. Ice cores capture aspects of earlier climates. Instrumental ocean records describe how the upper ocean changes, and local gauges show how water height changes relative to shore. Together, measurements at different scales tell a more useful story than a composite graph treated as a forecast for every location.
+`),
+    ],
+  },
+  {
+    slug: "fossils-are-a-sample", title: "Fossils are a sample", topic: "evolution-biodiversity",
+    image: "/images/fossil.webp", imageDescription: "Editorial illustration of an ammonite fossil exposed in dark rock.",
+    deck: "The shape of the fossil record depends on which organisms lived, which survived burial, and where people have looked.",
+    diagram: "strata", experiment: "geologic-time", sources: ["fossil", "time", "occurrence"],
+    sections: [
+      section("The record begins with burial", `
+When an organism dies it usually leaves little that lasts for millions of years. Scavengers, microbes, water and weather disperse or destroy most material. Burial can protect some parts from these processes. A durable shell is more likely to remain recognizable than soft tissue, and certain deposits preserve details that would otherwise disappear. The evidence we excavate is filtered before anyone has a chance to collect it.
+
+Different deposits preserve different slices of a community. A muddy basin may capture creatures that lived on the bottom and material that drifted down from above. A coarse river deposit can carry bones or shells from far upstream. To understand whether organisms actually lived together, a field team first asks how the material arrived and how long it accumulated. Sediment, broken edges and orientation provide evidence alongside the specimens.
+`),
+      section("When more specimens mean more searching", `
+A collection can contain many species from a well-exposed cliff and few from beds that rarely reach the surface. That imbalance has several possible causes. It may reflect a difference in the former communities, a difference in preservation, or simply more sampling. Knowing how a collection was made gives researchers a way to investigate which explanation fits the evidence.
+
+Modern biodiversity maps face a related challenge. A dense cluster of observations could mark a suitable habitat, a popular park, or a heavily surveyed coastline. Some species are easier to observe because they are large, vocal or active during daylight. An occurrence record establishes evidence at a place and time. Richness, abundance and absence require additional reasoning about effort and detectability.
+`),
+      section("Independent records", `
+Researchers compare deposits from multiple places, use different kinds of fossils, and examine changes in the enclosing rock. A disappearance that occurs in several independent records can strengthen the case for a real biological event. If the missing organisms disappear exactly where deposition changes, the first question might be whether the new environment could preserve the same organisms at all.
+
+A boundary can sometimes be dated by an ash layer, while fossils provide a way to correlate geographically separated sequences. These methods complement each other. A fossil horizon does not arrive everywhere simultaneously, and a mineral age needs an interpretation of when that mineral formed. The geological time scale reflects work comparing many such lines of evidence.
+`),
+      section("Reading an incomplete archive", `
+The next time you look at a fossil display, compare the objects with the description of the rocks and the location. Are you looking at an ordinary sample of an environment, a remarkable preservation event, or a specimen collected because it was rare? Imagine which organisms you would expect to be missing. You are now asking questions that can guide a scientific investigation.
+
+The gaps are part of what makes the record useful. Once we identify how evidence was filtered, we can compare samples more carefully, estimate where uncertainty lies and look for observations that could overturn an explanation. That work makes a small specimen part of a much longer understanding of life on Earth.
+`),
+    ],
+  },
+  {
+    slug: "the-maps-behind-coastal-risk", title: "The maps behind coastal risk", topic: "human-footprint",
+    image: "/images/harbor.webp", imageDescription: "Editorial illustration of a port, coastal marsh, and tidal channels.",
+    deck: "A tide gauge, a city dot, and a country’s emissions tally answer three fundamentally different questions.",
+    diagram: "plates", sources: ["seaLevel", "coasts", "carbon"],
+    sections: [
+      section("Start at a tide gauge", `
+A tide gauge records water height relative to an instrument attached to land. The water rises and falls with tides, weather and ocean dynamics. Over longer intervals the land can also rise or sink. When scientists report a trend from a single gauge, they are describing a change relative to that site. Nearby locations can have different trends, especially where groundwater withdrawal, sediment compaction or tectonics affect the land.
+
+Measurements at a gauge help place local flooding in context. An unusually high water level might result from a storm coinciding with higher tides. Farther inland, the distribution of water can depend on the shape of the ground, drainage and structures that block or channel flows. A point measurement is a good starting constraint, but mapping impacts requires observations of the places water might reach.
+`),
+      section("Exposure depends on where people live", `
+One Atlas layer marks selected coastal and delta settlements. The figure beside each marker is a Natural Earth settlement estimate. It describes a mapped city, with its own date and extent. A large coastal city can contain neighbourhoods well above the water as well as low-lying districts, and many exposed communities are too small to appear in a global point dataset.
+
+To estimate exposure, analysts need a hazard area and a compatible population or asset dataset. A map of elevation can help identify low-lying land, but elevation alone cannot show the presence of defenses or where a wave or surge will be able to travel. Results also change with the resolution of the input maps. A coarse cell can contain both higher ground and a narrow channel. Local assessment needs data detailed enough to represent the features that matter.
+`),
+      section("Carbon has a different geography", `
+The Atlas also shows fossil and industrial carbon dioxide totals by territory. These numbers are useful for seeing how emissions have changed over time, but they are assigned to countries, not to the city nearest an Atlas marker. Consumption in one place can produce emissions in another. A comparison between national totals tells us something different from a comparison per person or a comparison of historical cumulative emissions.
+
+Two maps can therefore be important in the same discussion without being read on the same scale. Emissions help explain a pressure on the climate system. Population and hazard measurements help explain who may be in harm’s way. Infrastructure, financial resources and the ability to evacuate or adapt affect how that exposure translates into consequences. Combining the maps requires keeping their definitions visible.
+`),
+      section("Compare layers before conclusions", `
+Choose one settlement in the Atlas, then switch to the national emissions layer. Identify the units and dates before making a comparison. Ask which needed data are absent. A useful next step might be a regional flood map, a local elevation survey, or a tide gauge close to the site. Each can narrow the interpretation in a way the global display cannot.
+
+A good map makes geographical relationships easier to see and uncertainty easier to name. It lets a reader trace a number back to the process that produced it. In coastal science, that trace matters because decisions affect real places whose histories and protections cannot be reduced to the size of a dot.
+`),
+    ],
+  },
 ];
 
 export function readingMinutes(article: Article) {

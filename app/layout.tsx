@@ -9,10 +9,12 @@ import "@fontsource/ibm-plex-mono/latin-600.css";
 import { Header } from "@/components/layout/header";
 import { searchEntries } from "@/lib/content/search";
 import { Footer } from "@/components/layout/footer";
+import { ReadingModeSync } from "@/components/publishing/reading-preferences";
 import { SiteInteractions } from "@/components/motion/site-interactions";
 import "./globals.css";
 import "./publication.css";
 import "./science.css";
+import "./edition.css";
 
 export const metadata: Metadata = {
   title: { default: "Under the Surface — A field guide to the unseen", template: "%s — Under the Surface" },
@@ -24,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         <a href="#content" className="skip-link">Skip to content</a>
-        <SiteInteractions />
+        <SiteInteractions /><ReadingModeSync />
         <Header entries={searchEntries} />
         <main id="content" tabIndex={-1}>{children}</main>
         <Footer />
