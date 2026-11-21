@@ -95,3 +95,8 @@
 @media (max-width: 700px) {
   .ocean-particles span:nth-child(n + 11) { display: none; }
 }
+.ocean-environment[data-zone="hadal"] [data-habitat="hadal"] { opacity: 1; }
+.ocean-light[data-habitat="hadal"] {
+  background: radial-gradient(ellipse at 50% 105%, #3a465d66, #0a0f1d4d 68%);
+}
+.ocean-environment[data-zone="hadal"] .ocean-particles { --particle-color: #c1cce1; --particle-density: .48; --drift: 34px; }

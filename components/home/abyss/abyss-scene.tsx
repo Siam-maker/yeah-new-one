@@ -3,18 +3,19 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Component, useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import {
-  AdditiveBlending, MathUtils, SRGBColorSpace, TextureLoader, Vector2,
+  AdditiveBlending, DoubleSide, MathUtils, SRGBColorSpace, TextureLoader,
   type ShaderMaterial, type Texture, type WebGLRenderer,
 } from "three";
 import type { AbyssCamera } from "./abyss-stage";
-import { caveFragment, caveVertex, moteFragment, moteVertex } from "./cave-shaders";
+import { caveFragment, caveVertex, moteFragment, moteVertex, shaftFragment } from "./cave-shaders";
 
-const surfaces = [-0.96, -0.05, 0.84];
-const cameraDistance = 6;
-const motePositions = new Float32Array(Array.from({ length: 56 }, (_, index) => [
+import { buildCaveGeometry } from "./cave-geometry";
+
+const cameraDistance = 3.1;
+const motePositions = new Float32Array(Array.from({ length: 76 }, (_, index) => [
   Math.sin(index * 8.73) * 4.3 + 0.95,
   Math.cos(index * 5.31) * 2.8,
-  Math.sin(index * 3.74) * 1.55 + 1.5,
+  -1 - (index % 37) * .48,
 ]).flat());
 
 class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
@@ -30,21 +31,17 @@ function Cave({ rock, steering, active, fps }: {
   active: boolean;
   fps: number;
 }) {
-  const { invalidate, viewport, gl } = useThree();
-  const aspect = viewport.aspect || 1;
-  const uniforms = useMemo(() => {
-    const image = rock.image as HTMLImageElement;
-    const ratio = aspect / (image.naturalWidth / image.naturalHeight);
-    const crop = new Vector2(Math.min(1, ratio), Math.min(1, 1 / ratio));
-    return surfaces.map((_, layer) => ({
-      rock: { value: rock }, crop: { value: crop }, layer: { value: layer },
-      time: { value: 0 }, descent: { value: 0 },
-    }));
-  }, [aspect, rock]);
-  const surfaceMaterials = useRef<(ShaderMaterial | null)[]>([]);
+  const { invalidate, gl } = useThree();
+  const geometry = useMemo(() => buildCaveGeometry(), []);
+  const rockUniforms = useMemo(() => ({ rock: { value: rock }, time: { value: 0 }, descent: { value: 0 } }), [rock]);
+  const shaftUniforms = useMemo(() => ({ time: { value: 0 } }), []);
+  const caveMaterial = useRef<ShaderMaterial>(null);
+  const shaftMaterial = useRef<ShaderMaterial>(null);
   const moteMaterial = useRef<ShaderMaterial>(null);
   const elapsed = useRef(0);
   const motes = useMemo(() => ({ time: { value: 0 }, pixelRatio: { value: 1 } }), []);
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
 
   useEffect(() => {
     if (!active) return;
@@ -67,16 +64,16 @@ function Cave({ rock, steering, active, fps }: {
   useFrame(({ camera }, delta) => {
     const { x, y, descent } = steering.current;
     const step = Math.min(delta, 0.07);
-    camera.position.x = MathUtils.damp(camera.position.x, x * 0.30, 4, step);
-    camera.position.y = MathUtils.damp(camera.position.y, -y * 0.22 - descent * 0.17, 4, step);
-    camera.position.z = MathUtils.damp(camera.position.z, cameraDistance - descent * 0.34, 4, step);
+    camera.position.x = MathUtils.damp(camera.position.x, -0.62 + x * 0.56 + descent * 0.45, 4, step);
+    camera.position.y = MathUtils.damp(camera.position.y, -y * 0.33 - descent * 0.4, 4, step);
+    camera.position.z = MathUtils.damp(camera.position.z, cameraDistance - descent * 5.6, 4, step);
     if (active) elapsed.current += step;
 
-    for (const surface of surfaceMaterials.current) {
-      if (!surface) continue;
-      surface.uniforms.time.value = elapsed.current;
-      surface.uniforms.descent.value = descent;
+    if (caveMaterial.current) {
+      caveMaterial.current.uniforms.time.value = elapsed.current;
+      caveMaterial.current.uniforms.descent.value = descent;
     }
+    if (shaftMaterial.current) shaftMaterial.current.uniforms.time.value = elapsed.current;
 
     const particles = moteMaterial.current;
     if (particles) {
@@ -87,17 +84,17 @@ function Cave({ rock, steering, active, fps }: {
 
   return (
     <>
-      {surfaces.map((z, index) => {
-        const overscan = (cameraDistance - z) / cameraDistance * 1.13;
-        return (
-          <mesh key={z} position={[0, 0, z]} renderOrder={index}>
-            <planeGeometry args={[viewport.width * overscan, viewport.height * overscan]} />
-            <shaderMaterial ref={(material) => { surfaceMaterials.current[index] = material; }} vertexShader={caveVertex} fragmentShader={caveFragment} uniforms={uniforms[index]}
-              transparent={index > 0} depthWrite={index === 0} toneMapped={false} />
-          </mesh>
-        );
-      })}
-      <points renderOrder={surfaces.length}>
+      <color attach="background" args={["#10183d"]} />
+      <mesh geometry={geometry}>
+        <shaderMaterial ref={caveMaterial} vertexShader={caveVertex} fragmentShader={caveFragment}
+          uniforms={rockUniforms} side={DoubleSide} toneMapped={false} />
+      </mesh>
+      <mesh position={[1.65, .22, -7.5]} rotation={[0, .2, -.29]} renderOrder={2}>
+        <planeGeometry args={[7, 7]} />
+        <shaderMaterial ref={shaftMaterial} vertexShader={caveVertex} fragmentShader={shaftFragment}
+          uniforms={shaftUniforms} transparent depthWrite={false} blending={AdditiveBlending} toneMapped={false} />
+      </mesh>
+      <points renderOrder={3}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[motePositions, 3]} />
         </bufferGeometry>
@@ -151,7 +148,7 @@ export default function AbyssScene({ camera, active, source, dpr, fps }: {
   return (
     <SceneBoundary onFailure={stopScene}>
       <div className="abyss-canvas" data-ready={renderer ? "" : undefined} data-running={active ? "" : undefined}>
-        <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45, near: 0.1, far: 20 }} dpr={dpr}
+        <Canvas camera={{ position: [0, 0, cameraDistance], fov: 55, near: 0.1, far: 40 }} dpr={dpr}
           frameloop="demand"
           style={{ pointerEvents: "none" }}
           gl={{ antialias: false, powerPreference: "low-power", alpha: true }}

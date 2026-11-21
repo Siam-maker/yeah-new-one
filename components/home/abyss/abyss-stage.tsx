@@ -9,10 +9,7 @@ const cinematicDesktop = `${allowMotion} and (min-width: 1024px) and (hover: hov
 
 export type AbyssCamera = { x: number; y: number; descent: number };
 
-export function AbyssStage({ camera, poster }: {
-  camera: RefObject<AbyssCamera>;
-  poster: RefObject<HTMLImageElement | null>;
-}) {
+export function AbyssStage({ camera }: { camera: RefObject<AbyssCamera> }) {
   const stage = useRef<HTMLDivElement>(null);
   const [source, setSource] = useState<string>();
   const [dpr, setDpr] = useState(1);
@@ -26,7 +23,6 @@ export function AbyssStage({ camera, poster }: {
     const desktop = window.matchMedia(cinematicDesktop);
     let supported: boolean | undefined;
     let intersecting = false;
-    let textureSource: string | undefined;
 
     function sync() {
       if (!desktop.matches || !intersecting) {
@@ -54,8 +50,7 @@ export function AbyssStage({ camera, poster }: {
       }
 
       if (supported) {
-        textureSource ||= poster.current?.currentSrc || "/images/obsidian.webp";
-        setSource(textureSource);
+        setSource("/images/obsidian-surface.webp");
         setVisible(!document.hidden);
       }
     }
@@ -74,7 +69,7 @@ export function AbyssStage({ camera, poster }: {
       desktop.removeEventListener("change", sync);
       document.removeEventListener("visibilitychange", sync);
     };
-  }, [poster]);
+  }, []);
 
   useEffect(() => {
     if (!source || !stage.current) return;
@@ -90,7 +85,7 @@ export function AbyssStage({ camera, poster }: {
 
   return (
     <div ref={stage} className="abyss-stage">
-      {source && <AbyssScene camera={camera} active={visible} source={source} dpr={dpr} fps={software ? 18 : 30} />}
+      {source && <AbyssScene camera={camera} active={visible} source={source} dpr={dpr} fps={software ? 20 : 60} />}
     </div>
   );
 }

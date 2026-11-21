@@ -1,33 +1,19 @@
 # Under the Surface
 
-An independent digital knowledge magazine about hidden worlds. Phase 1 includes the homepage, an interactive ocean-depth lab, and previews for Explore, Topics, Stories, Lab, and About.
+A Next.js science publication with long-form stories, topic guides, three interactive labs, a globe and reference map, a glossary, and site-wide search.
 
-## Local development
+## Development
 
-Use Node.js 20.9 or newer and npm.
+Use Node.js 20.9 or newer.
 
 ```sh
 npm ci
 npm run dev
-```
-
-Next.js serves the app on port 3000 by default. Artwork and fonts are local assets. The visuals are editorial illustrations. The app requires no credentials or external services at runtime.
-
-## Checks
-
-```sh
 npm run lint
 npm run typecheck
 npm run build
-npm start
 ```
 
-The production server uses the output of the preceding build.
+Routes, metadata, and layouts live in `app/`. The publication’s content and source links are in `lib/content/`. Client-side models, illustration fallbacks, and lab controls are in `components/science/`, with the homepage cave in `components/home/abyss/`.
 
-## Structure
-
-- `app/` contains routes, metadata, and global styles.
-- `components/layout/` contains site navigation, footer, and the section preview.
-- `components/home/` contains the hero, editorial sections, and ocean-depth lab.
-- `lib/editorial.ts` contains the homepage editorial content and navigation.
-- `public/images/` contains the generated editorial artwork.
+The Atlas uses Natural Earth land polygons and Peter Bird’s PB2002 boundary model. The Atlas page links to the sources and globe texture. The starlight feature contains a contrast-stretched infrared observation with its FITS source and instrument credit. Images identified as editorial illustrations depict the subject without serving as observational evidence.

@@ -1,13 +1,15 @@
 "use client";
 
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { navigation } from "@/lib/editorial";
+import { navigation } from "@/lib/content/publication";
+import type { SearchEntry } from "@/lib/content/search";
+import { SearchOverlay } from "@/components/search/search-panel";
 import { Brand } from "./brand";
 
-export function Header() {
+export function Header({ entries }: { entries: SearchEntry[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -25,12 +27,10 @@ export function Header() {
         </button>
         <nav id="site-navigation" aria-label="Main navigation" className={open ? "site-navigation is-open" : "site-navigation"}>
           {navigation.map(({ label, href }) => (
-            <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} onClick={() => setOpen(false)}>{label}</Link>
+            <Link key={href} href={href} aria-current={pathname === href ? "page" : pathname.startsWith(href + "/") ? "location" : undefined} onClick={() => setOpen(false)}>{label}</Link>
           ))}
         </nav>
-        <Link href="/explore" className="header-action" data-pointer="magnetic">
-          <span className="button-content">Start exploring <ArrowUpRight size={15} aria-hidden="true" /></span>
-        </Link>
+        <SearchOverlay entries={entries} />
       </div>
     </header>
   );

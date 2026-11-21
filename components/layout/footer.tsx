@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { navigation } from "@/lib/editorial";
+import { navigation } from "@/lib/content/publication";
 import { Brand } from "./brand";
 
 export function Footer() {
@@ -17,7 +17,7 @@ export function Footer() {
         <div className="footer-bottom">
           <small>© {new Date().getFullYear()} Under the Surface</small>
           <nav aria-label="Footer navigation">
-            {navigation.map(({ label, href }) => <Link key={href} href={href}>{label}</Link>)}
+            {[...navigation, { label: "Glossary", href: "/glossary" }, { label: "Search", href: "/search" }, { label: "About", href: "/about" }].map(({ label, href }) => <Link key={href} href={href}>{label}</Link>)}
           </nav>
         </div>
       </div>

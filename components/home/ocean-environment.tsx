@@ -3,7 +3,7 @@
 import { useRef, type CSSProperties } from "react";
 import { useInView } from "motion/react";
 
-const habitats = ["sunlight", "twilight", "midnight", "abyssal"] as const;
+const habitats = ["sunlight", "twilight", "midnight", "abyssal", "hadal"] as const;
 const particles = Array.from({ length: 18 }, (_, index) => ({
   left: `${(index * 47 + 7) % 100}%`,
   top: `${(index * 31 + 17) % 100}%`,
