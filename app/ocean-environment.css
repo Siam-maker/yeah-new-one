@@ -1,0 +1,97 @@
+.ocean-environment { position: absolute; z-index: -2; inset: 0; overflow: hidden; pointer-events: none; }
+.ocean-light, .ocean-particles { position: absolute; inset: 0; }
+.ocean-light { opacity: 0; transition: opacity .7s ease; }
+.ocean-environment[data-zone="sunlight"] [data-habitat="sunlight"],
+.ocean-environment[data-zone="twilight"] [data-habitat="twilight"],
+.ocean-environment[data-zone="midnight"] [data-habitat="midnight"],
+.ocean-environment[data-zone="abyssal"] [data-habitat="abyssal"] { opacity: 1; }
+
+.ocean-light[data-habitat="sunlight"] {
+  background: radial-gradient(ellipse at 42% 0%, #49cbd34f, transparent 60%);
+}
+.ocean-light[data-habitat="sunlight"]::after,
+.ocean-light[data-habitat="twilight"]::after {
+  content: "";
+  position: absolute;
+  inset: -15% -20% 15%;
+  background: conic-gradient(from 145deg at 45% 0%, transparent 3deg, #b2f9ff36 13deg, transparent 25deg,
+    #7ad6f731 38deg, transparent 56deg, #80e4e92b 69deg, transparent 82deg);
+  mask-image: linear-gradient(#000, transparent 81%);
+  transform-origin: 45% 0;
+}
+.ocean-light[data-habitat="twilight"] {
+  background: radial-gradient(ellipse at 50% 0%, #a9a4ff44, transparent 62%);
+}
+.ocean-light[data-habitat="twilight"]::after { opacity: .46; }
+.ocean-light[data-habitat="midnight"] {
+  background: radial-gradient(ellipse at 22% 77%, #536bff35, transparent 38%),
+    radial-gradient(ellipse at 86% 35%, #926bff2e, transparent 33%);
+}
+.ocean-light[data-habitat="midnight"]::after {
+  content: "";
+  position: absolute;
+  inset: 18% 12%;
+  background: radial-gradient(circle at 12% 58%, #829cff95 1px, transparent 5px),
+    radial-gradient(circle at 81% 63%, #92afff95 1px, transparent 6px),
+    radial-gradient(circle at 91% 17%, #8f88ff90 1px, transparent 5px);
+}
+.ocean-light[data-habitat="abyssal"] {
+  background: linear-gradient(180deg, #07141c43 48%, #29404e56);
+}
+.ocean-light[data-habitat="abyssal"]::after {
+  content: "";
+  position: absolute;
+  inset: 66% -7% -13%;
+  background: radial-gradient(ellipse at 50% 110%, #53607370, transparent 67%),
+    repeating-linear-gradient(172deg, transparent 0 12px, #a0b7c517 13px, transparent 15px 27px);
+  transform: perspective(270px) rotateX(44deg);
+}
+
+.ocean-particles {
+  --particle-color: #b4f3ff;
+  --particle-density: .73;
+  --drift: -20px;
+  color: var(--particle-color);
+  opacity: var(--particle-density);
+  transition: opacity .55s ease, color .55s ease;
+}
+.ocean-environment[data-zone="twilight"] .ocean-particles { --particle-color: #9cabfc; --particle-density: .48; --drift: -9px; }
+.ocean-environment[data-zone="midnight"] .ocean-particles { --particle-color: #93afff; --particle-density: .40; --drift: 8px; }
+.ocean-environment[data-zone="abyssal"] .ocean-particles { --particle-color: #d7e4ec; --particle-density: .66; --drift: 26px; }
+.ocean-particles span {
+  position: absolute;
+  width: var(--drift-size);
+  height: var(--drift-size);
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .54;
+}
+.ocean-particles span:nth-child(3n) { opacity: .28; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ocean-environment[data-visible] .ocean-particles span {
+    animation: ocean-drift 7s var(--drift-delay) ease-in-out infinite alternate;
+  }
+  .ocean-environment[data-visible][data-zone="sunlight"] [data-habitat="sunlight"]::after,
+  .ocean-environment[data-visible][data-zone="twilight"] [data-habitat="twilight"]::after {
+    animation: ocean-rays 9s ease-in-out infinite alternate;
+  }
+  .ocean-environment[data-visible][data-zone="midnight"] [data-habitat="midnight"]::after {
+    animation: ocean-pulse 4.6s ease-in-out infinite alternate;
+  }
+  .ocean-environment[data-visible][data-zone="abyssal"] [data-habitat="abyssal"]::after {
+    animation: ocean-floor 12s ease-in-out infinite alternate;
+  }
+
+  @keyframes ocean-drift {
+    from { transform: translate3d(-7px, 0, 0); opacity: .24; }
+    to { transform: translate3d(11px, var(--drift), 0); opacity: .72; }
+  }
+  @keyframes ocean-rays { to { transform: rotate(7deg) translateX(3%); } }
+  @keyframes ocean-pulse { from { opacity: .2; } to { opacity: .9; } }
+  @keyframes ocean-floor { to { transform: perspective(270px) rotateX(44deg) translateX(3%); } }
+}
+
+@media (max-width: 700px) {
+  .ocean-particles span:nth-child(n + 11) { display: none; }
+}

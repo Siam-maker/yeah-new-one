@@ -28,7 +28,9 @@ export function Header() {
             <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} onClick={() => setOpen(false)}>{label}</Link>
           ))}
         </nav>
-        <Link href="/explore" className="header-action">Start exploring <ArrowUpRight size={15} aria-hidden="true" /></Link>
+        <Link href="/explore" className="header-action" data-pointer="magnetic">
+          <span className="button-content">Start exploring <ArrowUpRight size={15} aria-hidden="true" /></span>
+        </Link>
       </div>
     </header>
   );

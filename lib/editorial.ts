@@ -41,7 +41,7 @@ export const topics = [
 ] as const;
 
 export const stories = [
-  { title: "A night shift in the ocean", category: "Ocean & Life", synopsis: "After sunset, many ocean animals swim toward the surface to feed and return to deeper water before dawn." },
-  { title: "How a mountain comes apart", category: "Earth & Geology", synopsis: "Water, ice, and gravity break down mountains and carry their fragments into rivers and valleys." },
-  { title: "The light that took its time", category: "Space & Time", synopsis: "Because light travels at a finite speed, astronomers see distant objects as they appeared in the past." },
+  { title: "A night shift in the ocean", image: "/images/deep-sea.webp", category: "Ocean & Life", synopsis: "After sunset, many ocean animals swim toward the surface to feed and return to deeper water before dawn." },
+  { title: "How a mountain comes apart", image: "/images/glacier.webp", category: "Earth & Geology", synopsis: "Water, ice, and gravity break down mountains and carry their fragments into rivers and valleys." },
+  { title: "The light that took its time", image: "/images/starlight.webp", category: "Space & Time", synopsis: "Because light travels at a finite speed, astronomers see distant objects as they appeared in the past." },
 ] as const;

@@ -29,6 +29,7 @@ export function SiteInteractions() {
       frame = 0;
       clearActive();
       ring.removeAttribute("data-visible");
+      ring.removeAttribute("data-mode");
     }
 
     function move(event: PointerEvent) {
@@ -48,6 +49,7 @@ export function SiteInteractions() {
         if (target !== active) {
           clearActive();
           active = target;
+          ring.dataset.mode = target.dataset.pointer;
         }
 
         const bounds = target.getBoundingClientRect();

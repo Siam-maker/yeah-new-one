@@ -6,9 +6,12 @@ import gsap from "gsap";
 import { allowMotion, finePointer } from "@/components/motion/preferences";
 import { createScrollMotion } from "@/components/motion/scroll-motion";
 import Image from "next/image";
+import { AbyssStage, type AbyssCamera } from "./abyss/abyss-stage";
 
 export function Hero() {
   const hero = useRef<HTMLElement>(null);
+  const poster = useRef<HTMLImageElement>(null);
+  const camera = useRef<AbyssCamera>({ x: 0, y: 0, descent: 0 });
 
   useEffect(() => {
     const section = hero.current;
@@ -30,11 +33,57 @@ export function Hero() {
         }, 0.41);
     });
     media.add(`${allowMotion} and ${finePointer}`, () => {
-      gsap.to(".hero-art-image", {
-        yPercent: 4.5,
+      const frame = section.querySelector<HTMLElement>(".hero-art-frame");
+      if (!frame) return;
+
+      gsap.fromTo(".hero-threshold", { scaleX: 0 }, {
+        scaleX: 1,
         ease: "none",
-        scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: 0.35 },
+        scrollTrigger: { trigger: section, start: "top top", end: "bottom 28%", scrub: 0.35 },
       });
+
+      gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: 0.55 },
+      })
+        .to(camera.current, { descent: 1 }, 0)
+        .to(".hero-art-image", { yPercent: 5, scale: 1.035 }, 0)
+        .to(".hero-haze", { yPercent: -7 }, 0)
+        .to(".hero-title-mask", { yPercent: -11 }, 0);
+
+      // Counter the first stretch of scroll on the artwork inside the clipped hero.
+      const pinDistance = () => Math.round(section.clientHeight * 0.22);
+      gsap.to(frame, {
+        y: pinDistance,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => "+=" + pinDistance(),
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      const steer = (event: PointerEvent) => {
+        if (event.pointerType !== "mouse") return;
+        const bounds = section.getBoundingClientRect();
+        camera.current.x = gsap.utils.clamp(-1, 1, (event.clientX - bounds.left) / bounds.width * 2 - 1);
+        camera.current.y = gsap.utils.clamp(-1, 1, (event.clientY - bounds.top) / bounds.height * 2 - 1);
+      };
+
+      function center() {
+        camera.current.x = 0;
+        camera.current.y = 0;
+      }
+
+      section.addEventListener("pointermove", steer, { passive: true });
+      section.addEventListener("pointerleave", center);
+      return () => {
+        section.removeEventListener("pointermove", steer);
+        section.removeEventListener("pointerleave", center);
+        center();
+      };
     });
     return () => media.revert();
   }, []);
@@ -42,11 +91,15 @@ export function Hero() {
   return (
     <section ref={hero} className="hero" aria-labelledby="hero-title">
       <div aria-hidden="true" className="hero-art">
-        <div className="hero-art-image">
-          <Image src="/images/obsidian.webp" alt="" fill preload sizes="(max-width: 700px) 100vw, 78vw" />
+        <div className="hero-art-frame">
+          <div className="hero-art-image">
+            <Image ref={poster} src="/images/obsidian.webp" alt="" fill preload sizes="(max-width: 700px) 100vw, 78vw" />
+          </div>
+          <AbyssStage camera={camera} poster={poster} />
+          <div className="hero-haze" />
         </div>
-        <div className="hero-haze" />
       </div>
+      <div className="hero-threshold" aria-hidden="true" />
       <div className="shell hero-inner">
         <div className="hero-index mono"><span className="status-dot" /> The field journal <span className="index-rule" /> Issue 001</div>
         <div className="hero-content">

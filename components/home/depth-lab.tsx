@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Activity, ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useReducedMotionPreference } from "@/components/motion/preferences";
+import { OceanEnvironment } from "./ocean-environment";
 
 const layers = [
   {
@@ -11,7 +12,8 @@ const layers = [
     name: "Sunlight zone",
     note: "Sunlight supports photosynthesis here, feeding much of the ocean’s food web.",
     light: "Enough for photosynthesis",
-    water: "#242c59",
+    fact: "Photosynthetic plankton form the base of many marine food webs.",
+    water: "#164265",
     accent: "#a9b5ff",
   },
   {
@@ -19,7 +21,8 @@ const layers = [
     name: "Twilight zone",
     note: "Light fades quickly. Many animals here make light using chemical reactions.",
     light: "Faint sunlight",
-    water: "#17214c",
+    fact: "Some fish emit light from their undersides to blend in with the glow above.",
+    water: "#202d60",
     accent: "#93a3ff",
   },
   {
@@ -27,7 +30,8 @@ const layers = [
     name: "Midnight zone",
     note: "Sunlight is absent, but some animals emit flashes of their own.",
     light: "No sunlight",
-    water: "#141632",
+    fact: "At 1,000 metres, pressure is roughly 100 times atmospheric pressure at sea level.",
+    water: "#110f2e",
     accent: "#a49aff",
   },
   {
@@ -35,7 +39,8 @@ const layers = [
     name: "Abyssal zone",
     note: "In the deep, cold ocean, many animals feed on material that drifts down from above.",
     light: "No sunlight",
-    water: "#15131e",
+    fact: "Sinking scraps of organic material, called marine snow, carry food into these depths.",
+    water: "#091724",
     accent: "#ff8064",
   },
 ];
@@ -66,6 +71,13 @@ export function DepthLab() {
         <input id="ocean-layer" type="range" min={0} max={lastLayer} step={1} value={index}
           aria-valuetext={`${layer.name}, ${layer.depth}`}
           onChange={(event) => selectLayer(event.currentTarget.valueAsNumber)} />
+        <ol className="depth-profile mono" aria-hidden="true">
+          {layers.map(({ name }, point) => (
+            <li key={name} data-reached={point <= index ? "" : undefined} data-current={point === index ? "" : undefined}>
+              {name.replace(" zone", "")}
+            </li>
+          ))}
+        </ol>
         <div className="depth-buttons">
           <button type="button" aria-label="Shallower layer" aria-disabled={index === 0} onClick={() => selectLayer(-1, true)}><ArrowLeft size={17} /></button>
           <button type="button" aria-label="Deeper layer" aria-disabled={index === lastLayer} onClick={() => selectLayer(1, true)}><ArrowRight size={17} /></button>
@@ -73,12 +85,13 @@ export function DepthLab() {
       </div>
       <motion.div className="depth-visual" initial={false} animate={{ backgroundColor: layer.water }}
         transition={{ duration: reduced ? 0 : 0.65, ease }}>
+        <OceanEnvironment layer={index} />
         <motion.div className="depth-rings" aria-hidden="true" initial={false}
           animate={{ rotate: reduced ? -12 : -12 + index * 7, scale: reduced ? 1 : 1 - index * 0.07, color: layer.accent }}
           transition={{ duration: reduced ? 0 : 0.75, ease }}>
           {[0, 1, 2, 3, 4, 5].map((ring) => <i key={ring} style={{ inset: ring * 8 + "%" }} />)}
         </motion.div>
-        <p role="status" className="sr-only">{layer.name}, {layer.depth}. {layer.light}. {layer.note}</p>
+        <p role="status" className="sr-only">{layer.name}, {layer.depth}. {layer.light}. {layer.note} {layer.fact}</p>
         <div className="depth-readout">
           <motion.div key={layer.name}
             initial={reduced || direction === 0 ? false : { opacity: 0.5, y: direction * 10 }}
@@ -88,6 +101,7 @@ export function DepthLab() {
             <h3>{layer.name}</h3>
             <p className="depth-note">{layer.note}</p>
             <p className="mono depth-light">Light · {layer.light}</p>
+            <p className="depth-fact">{layer.fact}</p>
           </motion.div>
         </div>
       </motion.div>

@@ -8,7 +8,7 @@ const topicIcons = { earth: Globe2, waves: Waves, orbit: Orbit, signal: Radio };
 export function Discoveries() {
   return (
     <section id="discoveries" tabIndex={-1} className="editorial-section shell" aria-labelledby="discoveries-title">
-      <div className="section-heading" data-reveal="section">
+      <div className="section-heading" data-reveal="handoff">
         <div>
           <p className="section-label mono"><span className="status-dot" /> From the field</p>
           <h2 id="discoveries-title" className="section-title">FEATURED DISCOVERIES</h2>
@@ -49,10 +49,12 @@ export function Topics() {
           {topics.map(({ name, summary, icon }) => {
             const Icon = topicIcons[icon];
             return (
-              <article key={name} className="topic-card">
-                <Icon size={29} strokeWidth={1.4} aria-hidden="true" />
-                <h3>{name}</h3>
-                <p>{summary}</p>
+              <article key={name} className="topic-card" data-theme={icon} data-pointer="tilt">
+                <div className="topic-content">
+                  <Icon size={29} strokeWidth={1.4} aria-hidden="true" />
+                  <h3>{name}</h3>
+                  <p>{summary}</p>
+                </div>
               </article>
             );
           })}
@@ -73,15 +75,20 @@ export function Stories() {
         <Link href="/stories" className="editorial-link mono">Visit the journal <ArrowUpRight size={16} aria-hidden="true" /></Link>
       </div>
       <div className="story-list">
-        {stories.map(({ title, category, synopsis }) => (
-          <details key={title} className="story" data-reveal="section">
+        {stories.map(({ title, category, synopsis, image }) => (
+          <details key={title} className="story" data-reveal="story">
             <summary>
               <span className="story-meta mono">{category}</span>
               <h3>{title}</h3>
               <span className="story-time mono">Under 1 min read</span>
               <ArrowDown size={17} aria-hidden="true" />
             </summary>
-            <p>{synopsis}</p>
+            <div className="story-preview">
+              <p>{synopsis}</p>
+              <div className="story-image">
+                <Image src={image} alt="" fill sizes="(max-width: 700px) 80vw, 240px" />
+              </div>
+            </div>
           </details>
         ))}
       </div>
