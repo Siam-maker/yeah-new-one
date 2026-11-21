@@ -2,10 +2,10 @@
 @import "./ocean-environment.css";
 
 @theme {
-  --color-ink: #101114;
-  --color-paper: #f5f1e8;
-  --color-ember: #ff5b36;
-  --color-cobalt: #536bff;
+  --color-ink: #080b10;
+  --color-paper: #f0ede5;
+  --color-ember: #ff5938;
+  --color-cobalt: #827aff;
   --font-sans: "Space Grotesk Variable", sans-serif;
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
@@ -13,11 +13,24 @@
 
 :root {
   color-scheme: dark;
-  --muted: #aaa8a5;
-  --line: #ffffff24;
-  --panel: #18191e;
-  --shell: 1320px;
-  --gutter: clamp(20px, 5.55vw, 96px);
+  --ink: var(--color-ink);
+  --ivory: var(--color-paper);
+  --ember: var(--color-ember);
+  --violet: var(--color-cobalt);
+  --night: #0b1424;
+  --deep: #102a3a;
+  --cyan: #55dce8;
+  --amber: #c5a36a;
+  --muted: #bfc6cb;
+  --line: #d3e2e238;
+  --panel: #101824;
+  --shell: 1440px;
+  --gutter: clamp(21px, 5vw, 88px);
+  --serif: "Newsreader Variable", Georgia, serif;
+  --accent: var(--cyan);
+  --body-size: clamp(16px, 1.15vw, 18px);
+  --text-measure: 64ch;
+  --display-tracking: -.026em;
 }
 
 html { scroll-behavior: smooth; }
@@ -36,10 +49,12 @@ html { scroll-behavior: smooth; }
 
 body {
   @apply m-0 bg-ink font-sans text-paper antialiased;
+  font-size: var(--body-size);
+  line-height: 1.55;
 }
 
 ::selection { background: var(--color-ember); color: var(--color-ink); }
-:focus-visible { outline: 2px solid var(--color-ember); outline-offset: 5px; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 5px; }
 
 .shell { width: min(calc(100% - var(--gutter) * 2), var(--shell)); margin-inline: auto; }
 .mono { font: 400 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }

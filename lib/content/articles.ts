@@ -1,6 +1,6 @@
 import type { SourceKey } from "./publication";
 
-export type DiagramKind = "depth" | "migration" | "strata" | "ice" | "light" | "plates";
+export type DiagramKind = "depth" | "migration" | "strata" | "ice" | "light" | "plates" | "age" | "sea";
 type Article = {
   slug: string;
   title: string;
@@ -308,6 +308,52 @@ Two maps can therefore be important in the same discussion without being read on
 Choose one settlement in the Atlas, then switch to the national emissions layer. Identify the units and dates before making a comparison. Ask which needed data are absent. A useful next step might be a regional flood map, a local elevation survey, or a tide gauge close to the site. Each can narrow the interpretation in a way the global display cannot.
 
 A good map makes geographical relationships easier to see and uncertainty easier to name. It lets a reader trace a number back to the process that produced it. In coastal science, that trace matters because decisions affect real places whose histories and protections cannot be reduced to the size of a dot.
+`),
+    ],
+  },
+  {
+    slug: "reading-a-population-pyramid", title: "What an age structure remembers", topic: "human-footprint",
+    image: "/images/harbor.webp", imageDescription: "Editorial illustration of a built shoreline, with settlement gathered at the water’s edge.",
+    deck: "Bangladesh and Japan show how fertility, survival and migration leave different marks on the shape of a population.",
+    diagram: "age", experiment: "population-growth", sources: ["unPopulation", "urban"],
+    sections: [
+      section("Beyond the national total", `
+Two countries can have the same number of people and need very different things in the coming decades. A chart of age and sex counts shows why. In a population pyramid, children appear at the bottom and the oldest groups at the top. The width of a bar shows how many people occupy that band, or their share of everyone in the population. Using the same percentage axis makes countries of different sizes easier to compare.
+
+The UN World Population Prospects 2024 estimates give a clear example. In 2023, 28.2% of Bangladesh’s population was under 15, compared with 11.5% in Japan. People age 65 and older represented 6.4% and 29.7%, respectively. Both populations are older on these measures than in 1950. They reached different points along the way.
+`),
+      section("Follow a cohort through time", `
+A broad band for a given age group can reflect a period when many children were born. At a later snapshot, the surviving members of that group appear higher on the chart. The change in width can reflect deaths, migration or a change in the total population against which the share is measured. Birth history provides a starting point, and several mechanisms can produce similar shapes.
+
+The division by sex in the UN tables also carries information. Differences in survival and migration can shift the relative widths of bars. A pyramid can reveal an imbalance at a particular age. To understand how it arose, a demographer needs evidence such as age-specific mortality estimates and data on migration.
+`),
+      section("Where the projection starts", `
+Select 2050 in the Demographics explorer. Under the UN medium variant, the share age 65 and older reaches 13.8% in Bangladesh and 37.5% in Japan. Those values depend on assumptions about future fertility, mortality and migration. The population alive today constrains the near future, while the size of younger groups becomes more sensitive to assumptions about births over longer horizons.
+
+Start by finding the widest bars in both 2023 pyramids. Then move one snapshot forward and see which bars appear to travel upward. A single snapshot can suggest a question. The historical record and projections give separate ways to investigate it.
+`),
+    ],
+  },
+  {
+    slug: "two-records-of-a-changing-ocean", title: "Two records of a changing ocean", topic: "climate-atmosphere",
+    image: "/images/ice-margin.webp", imageDescription: "Editorial illustration of ice at the edge of open water.",
+    deck: "A global temperature series and a sea-level reconstruction describe different parts of the same changing system.",
+    diagram: "sea", experiment: "climate-change", sources: ["gistemp", "epaSea", "seaLevel"],
+    sections: [
+      section("The same year, two reference lines", `
+Choose 2013 in the climate records lab. The temperature reading is a global annual anomaly relative to 1951–1980. The reconstructed sea-level change is about 22.6 centimetres relative to 1880. Each number is a difference, and each has a separate reference period. Before comparing the curves, read the label on each vertical axis and ask how the record was built.
+
+NASA GISTEMP combines land surface air temperature measurements with sea surface temperature observations. The historical sea-level series uses tide gauge information to estimate a global change across a period when gauges were unevenly distributed. The error bounds on the sea-level reconstruction express uncertainty in that estimate.
+`),
+      section("An ocean that stores heat", `
+When seawater warms it generally expands. How much it expands depends on temperature, salinity and pressure. The global ocean also gains mass when land ice melts and the water reaches the sea. These processes affect global mean sea level at different rates, and their effects can accumulate across years.
+
+The two curves need no year-by-year match. Surface temperature can vary from one year to the next as heat moves between the ocean and atmosphere. Changes in where heat is stored matter to ocean expansion. To attribute the long-term rise, scientists use additional records such as ocean temperature profiles, ice mass measurements and satellite observations of sea surface height.
+`),
+      section("The height of water at a harbour", `
+A tide gauge records the height of water relative to land at a station. If the land subsides, water rises relative to that station more quickly. Currents, winds and weather also change coastal water levels. An individual record can illuminate local conditions even when its trend differs from the estimated global mean.
+
+Open the Atlas sea-level layer and compare the global reading with the Boston tide gauge link. Keep the station datum and global reference visible. Taken together, the records help explain why a global shift matters and why a particular shoreline requires local measurements.
 `),
     ],
   },

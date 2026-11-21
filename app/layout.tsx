@@ -15,6 +15,8 @@ import "./globals.css";
 import "./publication.css";
 import "./science.css";
 import "./edition.css";
+import "./universe.css";
+import "./population.css";
 
 export const metadata: Metadata = {
   title: { default: "Under the Surface — A field guide to the unseen", template: "%s — Under the Surface" },

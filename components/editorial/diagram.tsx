@@ -6,6 +6,8 @@ const diagrams = {
   strata: { title: "Reading a rock outcrop", caption: "An erosional surface separates tilted older beds from younger deposits. Events at the contact are inferred from the order of the layers." },
   ice: { title: "From snow to enclosed air", caption: "Air can move between firn grains before pores close deeper down. The surrounding ice is generally older than the enclosed gas." },
   light: { title: "Light carries an earlier moment", caption: "A light signal arrives after it was emitted. Distances and timings in this schematic are illustrative." },
+  age: { title: "Age groups in Bangladesh and Japan, 2023", caption: "Share of the population age 0–14 and 65+. UN World Population Prospects 2024 estimates, rounded to one decimal place." },
+  sea: { title: "Global and local sea level", caption: "A tide gauge compares water height with the surface of the land at one point. The same station can move as the land changes height." },
   plates: { title: "Three ways for plates to meet", caption: "Arrows indicate relative plate motion. Convergence can cause subduction, divergence opens a spreading ridge, and transform motion is lateral." },
 } as const;
 
@@ -57,6 +59,17 @@ function DiagramGraphic({ kind }: { kind: DiagramKind }) {
         <path d="M75 86 H408" stroke="#ff956d" strokeWidth="3" strokeDasharray="8 9" /><path d="m394 77 14 9-14 9" fill="none" stroke="#ff956d" strokeWidth="3" />
         <text x="52" y="132" textAnchor="middle">Emitter</text><text x="426" y="132" textAnchor="middle">Observer</text>
         <text x="240" y="52" textAnchor="middle">Light in transit</text><text x="240" y="181" textAnchor="middle">Arrival follows emission</text>
+      </>;
+    case "age":
+      return <>{[["Bangladesh · age 0–14",28.2],["Japan · age 0–14",11.5],["Bangladesh · age 65+",6.4],["Japan · age 65+",29.7]].map(([label,value], index) => <g key={label} transform={`translate(0 ${index * 45})`}>
+        <text x="14" y="28">{label}</text><rect x="215" y="13" height="18" width={Number(value)*7} fill={index%2 === 0 ? "#55dce8" : "#dbb479"} />
+        <text x={224+Number(value)*7} y="29">{value}%</text>
+      </g>)}</>;
+    case "sea":
+      return <>
+        <path d="M0 97H480V198H0Z" fill="#25516a" /><path d="M0 128H220L308 78H480V198H0Z" fill="#806149" />
+        <path d="M0 97H480" stroke="#99d3df" strokeDasharray="8 5" /><path d="M246 57V132M238 93H254M238 110H254M238 126H254" stroke="#f6e9cd" strokeWidth="3"/>
+        <text x="246" y="44" textAnchor="middle">Tide gauge</text><text x="18" y="81">Water surface</text><text x="392" y="129">Land</text>
       </>;
     case "plates":
       return <>

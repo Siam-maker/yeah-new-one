@@ -11,12 +11,13 @@ const maximum = 11000;
 
 export function OceanLab() {
   const [depth, setDepth] = useState<number>(zones[0].sample);
+  const [enable3D,setEnable3D] = useState(false);
   const zone = zoneAt(depth);
   const index = zones.indexOf(zone);
 
   return <>
     <div className="lab-layout">
-      <LiveScene scene={{ kind: "ocean", depth }} fallback={<div className="ocean-fallback" style={{ backgroundColor: zone.fog }}>
+      <LiveScene scene={{ kind: "ocean", depth }} explicit={enable3D} fallback={<div className="ocean-fallback" style={{ backgroundColor: zone.fog }}>
         <OceanEnvironment layer={index} />
         <div className="ocean-fallback-trench" />
         <span className="mono ocean-fallback-label">{zone.name} · {format.format(depth)} m</span>
@@ -41,6 +42,7 @@ export function OceanLab() {
     <div className="zone-choices" aria-label="Jump to a depth zone">
       {zones.map((item) => <button className="ghost-button" type="button" key={item.id} aria-pressed={zone.id === item.id} onClick={() => setDepth(item.sample)}>{item.name}</button>)}
     </div>
+    <div className="scene-opt-in"><button type="button" className="ghost-button" aria-pressed={enable3D} onClick={() => setEnable3D(!enable3D)}>Enable interactive 3D</button></div>
     <p className="lab-key">Zones are approximate. Pressure uses the rule of thumb of about 1 atmosphere at the surface plus 1 per 10 metres of seawater. The view depicts example habitats and organisms.</p>
   </>;
 }

@@ -27,6 +27,10 @@ export const sources = {
   coasts: { name: "IPCC", title: "Climate Change 2022, Chapter 3: Oceans and Coastal Ecosystems and their Services", url: "https://www.ipcc.ch/report/ar6/wg2/chapter/chapter-3/" },
   fossil: { name: "Smithsonian National Museum of Natural History", title: "Deep Time", url: "https://naturalhistory.si.edu/exhibits/david-h-koch-hall-fossils-deep-time" },
   occurrence: { name: "Global Biodiversity Information Facility", title: "Occurrence data", url: "https://www.gbif.org/occurrence/search" },
+  unPopulation: { name: "United Nations Population Division", title: "World Population Prospects 2024", url: "https://population.un.org/wpp/" },
+  urban: { name: "World Bank", title: "Urban population (% of total population)", url: "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS" },
+  epaSea: { name: "United States Environmental Protection Agency", title: "Climate change indicators: Sea level", url: "https://www.epa.gov/climate-indicators/climate-change-indicators-sea-level" },
+  usgsWaves: { name: "USGS", title: "The science of earthquakes", url: "https://www.usgs.gov/programs/earthquake-hazards/science-earthquakes" },
   bathymetry: { name: "GEBCO", title: "Gridded bathymetry data", url: "https://www.gebco.net/data_and_products/gridded_bathymetry_data/" },
 } as const;
 
@@ -36,6 +40,15 @@ export const labs = [
   { slug: "ocean-depth", title: "Ocean depth explorer", discipline: "Oceanography", image: "/images/ocean-column.webp", description: "Descend through five zones and see how pressure, light, and life change with depth." },
   { slug: "geologic-time", title: "Geological time machine", discipline: "Geology", image: "/images/strata-wall.webp", description: "Zoom from Earth’s earliest history into the eons, eras, and periods that follow." },
   { slug: "plate-tectonics", title: "Plate tectonics simulator", discipline: "Geophysics", image: "/images/canyon.webp", description: "Compare convergent, divergent, and transform boundaries in cross-section and 3D." },
+  { slug: "ocean-pressure", title: "Ocean pressure simulator", discipline: "Oceanography", image: "/images/deep-sea.webp", description: "Estimate absolute pressure from the weight of the seawater above you." },
+  { slug: "earthquake-waves", title: "Earthquake wave propagation", discipline: "Geophysics", image: "/images/rift.webp", description: "Compare the arrival times of P and S waves through a simplified crust." },
+  { slug: "climate-change", title: "Climate change records", discipline: "Climate science", image: "/images/ice-margin.webp", description: "Compare global temperature and reconstructed sea level over a shared time span." },
+  { slug: "global-temperature", title: "Global temperature explorer", discipline: "Climate science", image: "/images/glacier.webp", description: "Read more than a century of annual NASA temperature anomalies." },
+  { slug: "carbon-emissions", title: "Carbon emissions comparison", discipline: "Environmental science", image: "/images/harbor.webp", description: "Compare territorial fossil and industrial CO₂ totals for two countries." },
+  { slug: "population-growth", title: "Population growth simulator", discipline: "Demography", image: "/images/harbor.webp", description: "Test compound growth against the UN medium population projection." },
+  { slug: "biodiversity-distribution", title: "Marine biodiversity explorer", discipline: "Marine biology", image: "/images/ocean-column.webp", description: "Compare the geography and habitats of four documented marine sites." },
+  { slug: "light-travel-time", title: "Light travel time", discipline: "Astronomy", image: "/images/starlight.webp", description: "Calculate how far into the past you see as distance increases." },
+  { slug: "geological-cross-section", title: "Geological cross-section", discipline: "Geology", image: "/images/strata-wall.webp", description: "Investigate the clues recorded in six illustrated layers of rock." },
 ] as const;
 
 export const topics = [
@@ -102,7 +115,7 @@ export const topics = [
       { title: "Relative sea level", text: "Sea surface height measured against the moving land beneath a tide gauge." },
     ],
     facts: ["GISTEMP uses 1951–1980 as its reference period.", "A global annual mean says little about the conditions on one beach or in one city."],
-    diagram: "ice", articles: ["reading-a-warmer-world", "what-the-ice-keeps"], experiments: ["ocean-depth"], sources: ["gistemp", "seaLevel", "iceData"],
+    diagram: "ice", articles: ["reading-a-warmer-world", "two-records-of-a-changing-ocean", "what-the-ice-keeps"], experiments: ["climate-change", "global-temperature"], sources: ["gistemp", "seaLevel", "iceData"],
   },
   {
     slug: "evolution-biodiversity", title: "Evolution & Biodiversity", theme: "biodiversity", image: "/images/fossil.webp",
@@ -128,7 +141,7 @@ export const topics = [
       { title: "Subsidence", text: "Downward movement of the land that can increase relative sea level." },
     ],
     facts: ["Country totals cannot show individual exposure or neighbourhood risk.", "Natural Earth’s settlement figures are mixed-date estimates rather than census tracts."],
-    diagram: "plates", articles: ["the-maps-behind-coastal-risk", "reading-a-warmer-world"], experiments: ["plate-tectonics"], sources: ["carbon", "coasts", "seaLevel"],
+    diagram: "plates", articles: ["the-maps-behind-coastal-risk", "reading-a-population-pyramid", "reading-a-warmer-world"], experiments: ["population-growth", "carbon-emissions"], sources: ["carbon", "coasts", "seaLevel"],
   },
 ] as const;
 
@@ -152,6 +165,10 @@ export const glossary = [
   { term: "Subduction", topic: "Earth & Geology", definition: "The descent of a tectonic plate beneath another plate at a convergent boundary.", related: ["Transform boundary", "Hadal zone"], article: "tectonic-plates-in-motion" },
   { term: "Transform boundary", topic: "Earth & Geology", definition: "A boundary where two tectonic plates slide horizontally past each other.", related: ["Subduction"], article: "tectonic-plates-in-motion" },
   { term: "Unconformity", topic: "Earth & Geology", definition: "A surface separating younger material from older rock across a gap in the local record.", related: ["Stratigraphy"], article: "the-memory-of-rock" },
+  { term: "Population pyramid", topic: "Human geography", definition: "A back-to-back bar chart of population counts or shares by age and sex.", related: ["Median age", "Medium projection"], article: "reading-a-population-pyramid" },
+  { term: "Median age", topic: "Human geography", definition: "The age that divides a population into two groups of equal size.", related: ["Population pyramid"], article: "reading-a-population-pyramid" },
+  { term: "Medium projection", topic: "Human geography", definition: "The UN World Population Prospects central scenario based on assumptions about fertility, mortality and migration.", related: ["Population pyramid", "Median age"], article: "reading-a-population-pyramid" },
+  { term: "P wave", topic: "Earth science", definition: "A compressional seismic wave. In the same material it travels faster than a shear wave.", related: ["Subduction"], article: "tectonic-plates-in-motion" },
 ] as const;
 
 export function termId(term: string) {

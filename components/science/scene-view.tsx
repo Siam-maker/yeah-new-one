@@ -3,9 +3,11 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  BufferGeometry, Color, Float32BufferAttribute, Fog, MathUtils, Quaternion, SRGBColorSpace, TextureLoader, Vector3,
+  AdditiveBlending, BackSide, BufferGeometry, CanvasTexture, Color, DoubleSide, Float32BufferAttribute, Fog, MathUtils, Quaternion, SRGBColorSpace, TextureLoader, Vector3,
   type Group, type Texture, type WebGLRenderer,
 } from "three";
+import { Planetarium } from "./planetarium";
+import { strataBed, terrainSurface } from "./terrain";
 import { zoneAt } from "@/lib/content/ocean";
 import type { Boundary, SceneSpec } from "./scene-types";
 
@@ -25,6 +27,8 @@ function Ocean({ depth, active, quality }: { depth: number; active: boolean; qua
   const dust = useRef<Group>(null);
   const school = useRef<Group>(null);
   const { invalidate } = useThree();
+  const seabed = useMemo(() => terrainSurface(), []);
+  useEffect(() => () => seabed.dispose(), [seabed]);
   const fogTarget = useMemo(() => new Color(layer.fog), [layer.fog]);
 
   useEffect(() => {
@@ -51,6 +55,7 @@ function Ocean({ depth, active, quality }: { depth: number; active: boolean; qua
     <fog attach="fog" args={["#174b68", 5, 25]} />
     <ambientLight intensity={depth < 1000 ? 0.75 : 0.35} />
     <directionalLight position={[-4, 9, 0]} color={layer.color} intensity={depth < 1000 ? 4 : 1.8} />
+    {depth >= 1000 && <spotLight position={[3,3,6]} color="#9ac5d2" intensity={115} angle={.48} penumbra={.87} distance={24} />}
     <group ref={dust}>
       <points>
         <bufferGeometry><bufferAttribute attach="attributes-position" args={[particulates, 3]} /></bufferGeometry>
@@ -63,39 +68,41 @@ function Ocean({ depth, active, quality }: { depth: number; active: boolean; qua
         <meshBasicMaterial color="#67cced" transparent opacity={.055 - ray * .008} depthWrite={false} />
       </mesh>)}
     </group>}
-    <group position={[0, -3.8, -6]}>
-      {Array.from({ length: 23 }, (_, index) => <mesh key={index}
-        position={[Math.sin(index * 6.2) * (index % 8 + 2), Math.sin(index * 3.2) * 2 - .5, -index % 12 * 1.4]}
-        rotation={[index * .11, index * .17, index * .04]} scale={[1.7 + index % 3, .65 + index % 4 * .55, 1.6 + index % 2]}>
-        <icosahedronGeometry args={[1, 0]} /><meshStandardMaterial color={depth >= 6000 ? "#3b4853" : "#2c3a4c"} roughness={.94} flatShading />
-      </mesh>)}
-      <mesh position={[0, -1.5, -8]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[55, 46]} /><meshStandardMaterial color="#302e3a" roughness={1} />
-      </mesh>
-    </group>
-    <group ref={school}>
-      {Array.from({ length: depth < 200 ? 8 : depth > 4000 ? 3 : 5 }, (_, index) => (
-        <group key={index} position={[-4 + index * 1.42, (depth > 4000 ? -1.8 : 0) + Math.sin(index * 1.65) * 1.1, -3 - index % 4 * 1.7]}
+    <mesh geometry={seabed} position={[0, -.8 - Math.max(0, 4.0 - Math.log10(depth+1)), -4]}>
+      <meshStandardMaterial vertexColors roughness={.94} side={DoubleSide} />
+    </mesh>
+    {depth >= 4000 ? <group position={[0,-3.45,-7]}>
+      {[-1, 1].map((side) => <group key={side} position={[side*2.1,0,side*.65]} rotation={[0,side*.5,0]}>
+        <mesh scale={[1.05,.24,.33]}><sphereGeometry args={[1,20,12]} /><meshStandardMaterial color={side > 0 ? "#836656" : "#6c5368"} roughness={1} /></mesh>
+        {[-.56,-.28,0,.28,.56].map((offset) => <mesh key={offset} position={[offset,.17,.14]} scale={[.16,.11,.2]}>
+          <sphereGeometry args={[1,9,7]} /><meshStandardMaterial color="#917764" roughness={1} />
+        </mesh>)}
+      </group>)}
+    </group> : <group ref={school}>
+      {Array.from({ length: depth < 200 ? 8 : 5 }, (_, index) => (
+        <group key={index} position={[-4 + index * 1.42, Math.sin(index * 1.65) * 1.1, -3 - index % 4 * 1.7]}
           rotation={[0, index % 2 ? .34 : -.31, Math.sin(index) * .1]} scale={depth > 1000 ? .8 + index % 2 * .25 : .52}>
-          <mesh scale={[.92, depth > 4000 ? .18 : .34, .22]}>
-            <sphereGeometry args={[1, 12, 8]} /><meshStandardMaterial color={depth > 4000 ? "#344d53" : "#143047"} roughness={.8} />
+          <mesh scale={[.92, .34, .22]}>
+            <sphereGeometry args={[1, 12, 8]} /><meshStandardMaterial color="#143047" roughness={.8} />
           </mesh>
           <mesh position={[-1.05, 0, 0]} rotation={[0, 0, -Math.PI / 2]} scale={[.73, 1, .3]}>
             <coneGeometry args={[.39, .72, 6]} /><meshStandardMaterial color="#203f56" />
           </mesh>
-          {depth >= 200 && depth < 4000 && <mesh position={[.48, -.1, .20]}>
+          {depth >= 200 && <mesh position={[.48, -.1, .20]}>
             <sphereGeometry args={[.054, 7, 7]} /><meshBasicMaterial color="#98cfff" />
           </mesh>}
         </group>
       ))}
-    </group>
+    </group>}
   </>;
 }
 
-const rockPalette = ["#6c4045", "#824d3b", "#b77053", "#aa8260", "#d2a27a", "#657a78"];
+
 
 function Strata({ layer, active }: { layer: number; active: boolean }) {
   const layers = useRef<Group>(null);
+  const rocks = useMemo(() => Array.from({length:6}, (_, index) => strataBed(index)), []);
+  useEffect(() => () => rocks.forEach((rock) => rock.dispose()), [rocks]);
 
   useFrame(({ invalidate }, delta) => {
     const amount = active ? 1 - Math.exp(-6 * Math.min(delta, .07)) : 1;
@@ -108,9 +115,8 @@ function Strata({ layer, active }: { layer: number; active: boolean }) {
 
   return <group rotation={[-.12, -.51, 0]}>
     <ambientLight intensity={1.6} /><directionalLight position={[1, 5, 4]} intensity={3.5} />
-    <group ref={layers}>{rockPalette.map((color, index) => <mesh key={color} position={[0, (index - 2.5) * .39, 0]} rotation={[0, 0, index * .015 - .045]}>
-      <boxGeometry args={[4.5 + Math.sin(index * 2) * .34, .40, 2.25 + index * .07]} />
-      <meshStandardMaterial color={color} roughness={.86} />
+    <group ref={layers}>{rocks.map((rock,index) => <mesh key={index} geometry={rock}>
+      <meshStandardMaterial vertexColors roughness={.89} side={DoubleSide} />
     </mesh>)}</group>
   </group>;
 }
@@ -153,15 +159,16 @@ const north = new Vector3(0, 1, 0);
 function Globe({ scene, active }: { scene: Extract<SceneSpec, { kind: "globe" }>; active: boolean }) {
   const globe = useRef<Group>(null);
   const [map, setMap] = useState<Texture>();
+  const [countryPaths, setCountryPaths] = useState<Record<string, string>>();
   const [boundaries, setBoundaries] = useState<BufferGeometry>();
   const { invalidate } = useThree();
 
   useEffect(() => {
     let current = true;
-    const texture = new TextureLoader().load("/images/earth-map.webp", (image) => { if (current) setMap(image); });
+    const texture = new TextureLoader().load(scene.bathymetry ? "/data/bathymetry-globe.webp" : "/images/earth-map.webp", (image) => { if (current) setMap(image); });
     texture.colorSpace = SRGBColorSpace;
     return () => { current = false; texture.dispose(); };
-  }, []);
+  }, [scene.bathymetry]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -181,6 +188,39 @@ function Globe({ scene, active }: { scene: Extract<SceneSpec, { kind: "globe" }>
     return () => { controller.abort(); geometry?.dispose(); };
   }, []);
 
+  const hasCountryOverlay = Boolean(scene.countryColors);
+  useEffect(() => {
+    if (!hasCountryOverlay) return;
+    const controller = new AbortController();
+    fetch("/data/country-paths.json", { signal: controller.signal })
+      .then((response) => { if (!response.ok) throw new Error("Map unavailable"); return response.json() as Promise<Record<string, string>>; })
+      .then(setCountryPaths).catch(() => {});
+    return () => controller.abort();
+  }, [hasCountryOverlay]);
+
+  const countryTexture = useMemo(() => {
+    if (!countryPaths || !scene.countryColors) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1440;
+    canvas.height = 720;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.scale(4, 4);
+    for (const [id, color] of Object.entries(scene.countryColors)) {
+      if (!countryPaths[id]) continue;
+      const shape = new Path2D(countryPaths[id]);
+      context.fillStyle = color;
+      context.fill(shape, "evenodd");
+      context.strokeStyle = id === scene.location.id ? "#fff2cc" : "#52616a";
+      context.lineWidth = id === scene.location.id ? .8 : .35;
+      context.stroke(shape);
+    }
+    const texture = new CanvasTexture(canvas);
+    texture.colorSpace = SRGBColorSpace;
+    return texture;
+  }, [countryPaths, scene.countryColors, scene.location.id]);
+  useEffect(() => () => countryTexture?.dispose(), [countryTexture]);
+
   const target = useMemo(() => {
     const longitude = (scene.location.lon + scene.heading) * Math.PI / 180;
     const latitude = scene.location.lat * Math.PI / 180;
@@ -191,7 +231,7 @@ function Globe({ scene, active }: { scene: Extract<SceneSpec, { kind: "globe" }>
 
   useFrame(({ camera }, delta) => {
     if (!globe.current) return;
-    const targetDistance = 7.4 / (1 + (scene.zoom - 1) * .35);
+    const targetDistance = 6.35 / (1 + (scene.zoom - 1) * .35);
     camera.position.z = active ? MathUtils.damp(camera.position.z, targetDistance, 6, Math.min(delta, .08)) : targetDistance;
     if (active && Math.abs(camera.position.z - targetDistance) > .006) invalidate();
     if (!active || globe.current.quaternion.angleTo(target) < .008) globe.current.quaternion.copy(target);
@@ -205,6 +245,13 @@ function Globe({ scene, active }: { scene: Extract<SceneSpec, { kind: "globe" }>
     <ambientLight intensity={1.08} /><directionalLight position={[-4, 5, 5]} color="#e6f0ff" intensity={1.85} />
     <group ref={globe}>
       <mesh><sphereGeometry args={[1.5, 64, 38]} /><meshStandardMaterial key={map ? "textured" : "plain"} map={map} color={map ? "#ffffff" : "#295476"} roughness={.85} /></mesh>
+      {countryTexture && <mesh><sphereGeometry args={[1.507, 64, 38]} /><meshBasicMaterial map={countryTexture} alphaTest={.4} toneMapped={false} /></mesh>}
+      <mesh renderOrder={3}>
+        <sphereGeometry args={[1.555,48,32]} />
+        <shaderMaterial side={BackSide} blending={AdditiveBlending} transparent depthWrite={false}
+          vertexShader={`varying vec3 n; varying vec3 v; void main(){ vec4 p=modelViewMatrix*vec4(position,1.0); n=normalize(normalMatrix*normal); v=normalize(-p.xyz); gl_Position=projectionMatrix*p; }`}
+          fragmentShader={`varying vec3 n; varying vec3 v; void main(){ float rim=pow(1.0-abs(dot(normalize(n),normalize(v))),2.6); gl_FragColor=vec4(.24,.71,1.0,rim*.5); }`} />
+      </mesh>
       {scene.showBoundaries && boundaries && <lineSegments geometry={boundaries}><lineBasicMaterial color="#ff996d" /></lineSegments>}
       {scene.points.map((location) => (
         <mesh key={location.id} position={geographicPoint(location.lon, location.lat, 1.548)} onClick={(event) => { event.stopPropagation(); scene.onSelect(location.id); }}>
@@ -221,6 +268,7 @@ function Stage({ scene, quality, active }: { scene: SceneSpec; quality: number; 
     case "ocean": return <Ocean depth={scene.depth} active={active} quality={quality} />;
     case "strata": return <Strata layer={scene.layer} active={active} />;
     case "plates": return <Tectonic boundary={scene.boundary} progress={scene.progress} />;
+    case "cosmos": return <Planetarium model={scene} active={active} />;
     case "globe": return <Globe scene={scene} active={active} />;
   }
 }
@@ -241,7 +289,7 @@ export default function SceneView({ scene, quality, active, onReady, onFailure }
   return <VisualBoundary onFailure={onFailure}>
     <Canvas frameloop="demand" dpr={quality} camera={{ position: [0, ocean ? 1.2 : .05, ocean ? 8.6 : 7.4], near: .1, far: 90, fov: ocean ? 52 : 43 }}
       gl={{ antialias: false, powerPreference: "low-power", alpha: true }} onCreated={({ gl, scene: root }) => {
-        if (!ocean) root.background = new Color("#161c27");
+        if (!ocean && scene.kind !== "cosmos") root.background = new Color("#161c27");
         setRenderer(gl);
         onReady();
       }}>

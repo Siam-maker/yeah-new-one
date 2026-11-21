@@ -1,0 +1,51 @@
+.population-page { --accent:#aee4d1; }
+.population-intro { padding-block:clamp(37px,6vw,95px) 30px; border-bottom:1px solid var(--line); }
+.population-title-grid { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(210px,.65fr); gap:22px; align-items:end; margin-top:clamp(26px,4vw,56px); }
+.population-title-grid h1 { font:800 clamp(55px,8.5vw,126px)/.84 var(--font-display); letter-spacing:var(--display-tracking); }
+.population-title-grid h1 em { font:italic 450 .54em/.95 var(--serif); color:#aee4d1; }
+.population-title-grid > p { color:var(--muted); max-width:40ch; }
+.population-dashboard { display:grid; gap:17px; margin-top:clamp(17px,3vw,40px); min-width:0; }
+.population-tools { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr)); gap:10px; }
+.population-tools label { display:grid; gap:7px; min-width:0; font-weight:600; }
+.population-tools select { min-width:0; }
+.population-status { display:flex; gap:11px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+.population-status > .mono { color:var(--accent); }
+.population-top { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(245px,.8fr); gap:14px; }
+.population-map-shell, .country-ledger, .chart-panel { min-width:0; background:#101b29; border:1px solid var(--line); }
+.population-map-shell { align-self:start; }
+.population-map-header { padding:11px 14px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.population-map-header .mono { color:var(--accent); }
+.population-map { position:relative; }
+.population-map svg { width:100%; height:auto; display:block; }
+.population-country { cursor:pointer; }
+.population-country:hover { stroke:#fff1ce; stroke-width:.85; }
+.map-state { position:absolute; inset:0; display:grid; place-content:center; background:#0d172ce0; text-align:center; padding:12px; }
+.population-legend, .chart-keys { display:flex; flex-wrap:wrap; gap:7px 12px; align-items:center; font-size:14px; }
+.population-legend { padding:12px 14px; }
+.population-legend span, .chart-keys span { display:flex; align-items:center; gap:6px; }
+.population-legend i, .chart-keys i { width:14px; height:8px; display:inline-block; flex:none; }
+.population-map-shell figcaption, .chart-panel figcaption { color:var(--muted); font-size:14px; }
+.population-map-shell figcaption { padding:0 14px 12px; }
+.country-ledger,.chart-panel { padding:clamp(12px,2.4vw,30px); }
+.country-ledger h2,.chart-panel h2 { font:800 clamp(37px,5vw,63px)/.94 var(--font-display); letter-spacing:-.02em; margin-bottom:14px; }
+.country-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 13px; }
+.country-metrics div { border-top:1px solid var(--line); padding-top:5px; }
+.country-metrics dt { font-size:13px; color:var(--muted); }
+.country-metrics dd { font-weight:650; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.urban-split { height:6px; background:#aa8558; margin-top:15px; }
+.urban-split span { display:block; height:100%; background:#55b9b7; }
+.settlement-list { margin:10px 0; }
+.settlement-list li { display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px solid var(--line); }
+.population-chart-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:14px; }
+.stat-chart { display:block; width:100%; height:auto; margin-top:10px; }
+.stat-chart text { font:12px var(--font-mono); fill:var(--muted); }
+.stat-chart .chart-grid { stroke:var(--line); stroke-width:1; }
+.pyramid .stat-chart { max-width:400px; margin:10px auto 0; }
+.pyramid .stat-chart text { font-size:9px; }
+.population-ranking button { text-align:left; min-height:36px; }
+.population-ranking button:hover,.population-ranking button[aria-pressed="true"] { color:var(--accent); text-decoration:underline; }
+.population-method { padding-block:clamp(37px,6vw,90px); }
+.population-method > p,.population-note { color:var(--muted); max-width:var(--text-measure); margin-bottom:10px; }
+@media(max-width:850px) {
+ .population-title-grid,.population-top { grid-template-columns:minmax(0,1fr); }
+}

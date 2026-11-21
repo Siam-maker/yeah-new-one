@@ -21,4 +21,10 @@ export const fieldNotes: readonly Note[] = [
     observations: ["Natural Earth’s settlement figures put selected coastal cities in context. They do not show which residents live within a flood zone.", "A tide gauge measures relative sea level at one site. Land movement can contribute to that trend along with changes in water level."],
     link: "/atlas?layer=coastal", linkTitle: "Compare coastal settlements", refs: ["coasts", "seaLevel"],
   },
+  {
+    id: "counting-urban", discipline: "Demography", title: "A city changes at the boundary", image: "/images/harbor.webp",
+    summary: "The share of people classified as urban depends on where they live and how a country defines an urban area.",
+    observations: ["Urban definitions can use administrative boundaries, population thresholds, settlement density, or a combination.", "Compare urban shares alongside their source definitions. An increase can reflect migration, births and deaths, or a reclassification of settlements."],
+    link: "/demographics?indicator=urban", linkTitle: "Explore national urban shares", refs: ["unPopulation", "urban"],
+  },
 ];

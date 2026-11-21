@@ -24,6 +24,8 @@ export const caveFragment = /* glsl */ `
     vec3 lightDirection = normalize(vec3(1.3 + .2 * sin(time * .55), -.35, -7.4) - p);
     vec3 viewDirection = normalize(cameraPosition - p);
     float face = abs(dot(inward, lightDirection));
+    float laminatedShadow = smoothstep(-.85, .35, sin(p.y * 12.0 + p.z * 3.2 + sin(p.x * 4.0)));
+    float oblique = pow(max(0.0, dot(inward, normalize(vec3(-.5, .7, .22)))), 2.0);
     float rim = pow(1.0 - abs(dot(inward, viewDirection)), 2.6);
     vec2 grain = vec2(rockUv.x * 4.7 + .04 * sin(p.z * 2.5), rockUv.y * 5.3 + rockUv.x * .2);
     vec3 detail = texture2D(rock, fract(grain)).rgb;
@@ -34,9 +36,10 @@ export const caveFragment = /* glsl */ `
     float fog = smoothstep(5.0, 30.0, distanceIn);
     float spill = max(0.0, 1.0 - length(vec2(p.x - 1.5, p.y) * vec2(.22, .31)));
     vec3 pigment = mix(vec3(.005, .007, .010), vec3(.24, .25, .28), clamp(textureValue * 2.62 + bands * .10 + finer * .03, 0.0, 1.0));
-    vec3 stone = pigment * (.18 + face * .95 + rim * .28);
+    vec3 stone = pigment * (.12 + face * .75 + rim * .22) * (.58 + laminatedShadow * .42);
     stone += vec3(.004, .062, .092) * spill * (.48 + face * .46 + descent * .29) * (.95 + .05 * sin(time * .9));
-    stone += vec3(.006, .011, .019) * rim;
+    stone += vec3(.15, .079, .036) * oblique * (1.0 - fog) * (.40 + bands * .60);
+    stone += vec3(.007, .014, .019) * rim;
     gl_FragColor = vec4(mix(stone, vec3(.005, .021, .033), fog * .62), 1.0);
     #include <colorspace_fragment>
   }

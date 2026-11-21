@@ -1,21 +1,8 @@
-:root {
-  --ink: #101114;
-  --ivory: #f7f1e6;
-  --muted: #c2c1bc;
-  --ember: #ff704f;
-  --line: #f7f1e638;
-  --panel: #1a1b21;
-  --shell: 1440px;
-  --gutter: clamp(21px, 5vw, 88px);
-  --serif: "Newsreader Variable", Georgia, serif;
-}
-body { color: var(--ivory); font-size: 17px; line-height: 1.55; }
 a, button { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; }
 img { color: var(--muted); }
 h1, h2, h3, p { overflow-wrap: break-word; }
 input, select { color: inherit; }
-:focus-visible { outline: 2px solid var(--ember); outline-offset: 5px; }
 .mono { font-size: 13px; letter-spacing: .065em; font-weight: 500; line-height: 1.45; }
 .editorial-text { font: 400 clamp(18px, 1.5vw, 21px)/1.55 var(--serif); color: var(--muted); }
 .section-label { color: var(--ember); margin-bottom: 12px; }

@@ -16,11 +16,13 @@ export const locations = [
 
 export type AtlasLocation = (typeof locations)[number];
 
-export type AtlasLayer = "ocean" | "geology" | "biodiversity" | "climate" | "coastal" | "footprint";
+export type AtlasLayer = "ocean" | "geology" | "biodiversity" | "climate" | "coastal" | "footprint" | "tectonics" | "environment";
 
 export const atlasLayers = {
   ocean: { title: "Ocean depth", color: "#55dce8", source: "Natural Earth 1:10m bathymetry", note: "Generalized seafloor depth bands. The display omits local shoals and other details required for navigation.", href: "https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-bathymetry/" },
   geology: { title: "Geology", color: "#d8b77f", source: "USGS and Peter Bird, PB2002 (2003)", note: "Selected geological regions and generalized tectonic boundaries. Some boundaries span broad areas and are shown here as lines.", href: "https://doi.org/10.1029/2001GC000252" },
+  tectonics: { title: "Plate tectonics", color: "#ffc297", source: "Peter Bird, PB2002 (2003)", note: "Digitized global plate boundaries from the 2003 PB2002 model. Select a location to compare fault and margin types.", href: "https://doi.org/10.1029/2001GC000252" },
+  environment: { title: "Sea level change", color: "#99baff", source: "CSIRO historical reconstruction via EPA", note: "Global mean sea-level change relative to 1880, shown in centimetres. The selectable Boston gauge measures local relative sea level and has its own record.", href: "https://www.epa.gov/climate-indicators/climate-change-indicators-sea-level" },
   biodiversity: { title: "Marine life", color: "#81e8c3", source: "NOAA, UNESCO and GBRMPA", note: "Selected habitat examples. Markers identify places to investigate. They cannot show species counts, abundance, or sampling effort.", href: "https://oceanservice.noaa.gov/facts/coralreef.html" },
   climate: { title: "Climate", color: "#afa7ff", source: "NASA GISTEMP v4 via DataHub", note: "Annual global surface temperature anomalies, 1880–2025, relative to 1951–1980. Pins mark observational sites, while the chart describes the globe as a whole.", href: "https://data.giss.nasa.gov/gistemp/" },
   coastal: { title: "Coastal settlements", color: "#ffd093", source: "Natural Earth 1:10m populated places", note: "Mixed-date POP_MAX estimates for selected coastal and delta cities. Marker size represents a settlement estimate. It cannot describe neighbourhood density or flood exposure.", href: "https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-populated-places/" },

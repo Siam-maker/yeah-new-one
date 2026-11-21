@@ -28,7 +28,7 @@ export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = 
       </label>
       <label><span className="control-label">Content type</span>
         <select className="control-field" value={category} onChange={(event) => { setCategory(event.target.value); setLimit(compact ? 5 : 8); }}>
-          {categories.map((item) => <option key={item} value={item}>{item === "All" ? "All content" : item === "Glossary" ? "Glossary" : item + "s"}</option>)}
+          {(compact ? categories : [...categories, "Country"]).map((item) => <option key={item} value={item}>{item === "All" ? "All content" : item === "Glossary" ? "Glossary" : item === "Country" ? "Countries" : item + "s"}</option>)}
         </select>
       </label>
     </div>

@@ -16,7 +16,7 @@ const highlights = [
   { slug: "reading-a-warmer-world", label: "Climate & atmosphere" },
 ];
 
-const latest = ["reading-a-warmer-world", "fossils-are-a-sample", "the-maps-behind-coastal-risk"];
+const latest = ["reading-a-population-pyramid", "two-records-of-a-changing-ocean", "fossils-are-a-sample"];
 
 export function HomeIssue() {
   const chapters = highlights.flatMap(({ slug, label }) => {
@@ -28,11 +28,19 @@ export function HomeIssue() {
     <section className="edition-manifesto" id="introduction" tabIndex={-1}>
       <div className="shell manifesto-layout">
         <div className="chapter-tag mono"><b>01</b> Introduction</div>
-        <div data-reveal="handoff"><h2>There’s more beneath<br /> <em>what we see.</em></h2>
+        <div data-reveal="handoff"><h2>Read the world<br /> <em>in cross-section.</em></h2>
           <p>Light in the deep ocean. Air trapped in ancient ice. Continents that move a few centimetres a year. Follow the evidence into the parts of our world that rarely come into view.</p>
         </div>
       </div>
     </section>
+
+    <div className="evidence-strip">
+      <div className="shell evidence-strip-grid">
+        <Link href="/lab/ocean-depth"><span>11,000 m</span><small>Depth explorer range</small><ArrowUpRight size={18} aria-hidden="true" /></Link>
+        <Link href="/atlas?layer=climate&year=1880"><span>1880</span><small>First year in the temperature record</small><ArrowUpRight size={18} aria-hidden="true" /></Link>
+        <Link href="/demographics?year=1950"><span>1950</span><small>Start of the UN population series</small><ArrowUpRight size={18} aria-hidden="true" /></Link>
+      </div>
+    </div>
 
     <section className="shell edition-section" id="discoveries" tabIndex={-1}>
       <div className="edition-section-head" data-reveal="handoff">
@@ -59,6 +67,7 @@ export function HomeIssue() {
           <p>Read the same planet through different evidence, from seafloor topography to climate observations.</p>
         </div>
         <AtlasWindow />
+        <div className="mt-5"><TextLink href="/demographics">Explore population and age structure</TextLink></div>
       </div>
     </section>
 
@@ -86,6 +95,7 @@ export function HomeIssue() {
           <div className="chapter-tag mono"><b>06</b> Interactive laboratory</div><h2>Feel the weight<br /> of the ocean.</h2>
           <p>Change the depth and compare the pressure. Each layer puts a different weight of seawater above you.</p>
           <TextLink href="/lab/ocean-depth">Enter the underwater lab</TextLink>
+          <div className="world-quicklinks"><TextLink href="/lab/geological-cross-section">Read the rock</TextLink><TextLink href="/lab/observatory">Enter the observatory</TextLink></div>
         </div>
         <PressureInstrument />
       </div>
@@ -108,7 +118,7 @@ export function HomeIssue() {
     </section>
 
     <section className="edition-finale">
-      <div className="finale-image"><Image src="/images/ocean-column.webp" alt="" fill sizes="100vw" /></div>
+      <div className="finale-image"><Image src="/images/observatory.webp" alt="" fill sizes="100vw" /></div>
       <div className="shell finale-content" data-reveal="handoff">
         <div className="chapter-tag mono"><b>08</b> Continue exploring</div>
         <h2>Keep looking.</h2>

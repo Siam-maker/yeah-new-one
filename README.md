@@ -1,6 +1,6 @@
 # Under the Surface
 
-A Next.js science publication with long-form stories, topic guides, three interactive labs, a globe and reference map, a glossary, and site-wide search.
+A Next.js science publication with long-form stories, topic guides, twelve interactive labs, a solar-system observatory, a map and globe with eleven data layers, a country-level demographics explorer, a glossary, and site-wide search.
 
 ## Development
 
@@ -18,6 +18,6 @@ Routes, metadata, and layouts live in `app/`. The publication’s content and so
 
 The Atlas uses Natural Earth land polygons and Peter Bird’s PB2002 boundary model. The Atlas page links to the sources and globe texture. The starlight feature contains a contrast-stretched infrared observation with its FITS source and instrument credit. Images identified as editorial illustrations depict the subject without serving as observational evidence.
 
-The Atlas sources and regeneration steps are in [public/data/README.md](public/data/README.md). The data generator uses Python with Pillow.
+See the [Atlas data notes](public/data/README.md) and the [demographics and sea-level data notes](public/data/DEMOGRAPHICS.md) for sources, coverage, and regeneration.
 
 To enable subscriptions, set `NEWSLETTER_ENDPOINT` to a trusted HTTPS provider adapter when building and running the site. The adapter receives a JSON POST with an `email` field and must return a successful HTTP response only when it accepts the subscription request. Set `NEWSLETTER_TOKEN` if the adapter expects bearer authentication. Apply the provider’s consent and abuse controls at the adapter. With no configured endpoint, the interface shows a closed state.

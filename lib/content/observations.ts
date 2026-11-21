@@ -1,5 +1,9 @@
+import seaLevelRaw from "@/public/data/sea-level.json";
 import raw from "@/public/data/atlas-observations.json";
 import { climatePoints, habitatPoints, locations, type AtlasLayer, type AtlasPoint } from "./atlas";
+
+export const seaLevel = seaLevelRaw as [number, number, number, number][];
+export const seaLevelTrend = seaLevel.map(([year, value]): [number, number] => [year, value]);
 
 export const temperature = raw.temperature as [number, number][];
 export const emissionsYears = [1990, 2000, 2010, 2020, 2023];
@@ -28,6 +32,8 @@ export function atlasPoints(layer: AtlasLayer, year: number): readonly AtlasPoin
       detail: "Emissions are attributed to the territory where they were produced, excluding land-use change. The marker is a map label position.",
       magnitude: value, value: `${number.format(value)} Mt CO₂ in ${year}` }];
   });
+  if (layer === "environment") return climatePoints.filter(({ id }) => id === "boston-gauge").map((point) => ({ ...point, detail: "This station measures sea level relative to the land beneath it. The adjacent CSIRO series estimates global mean sea-level change." }));
+  if (layer === "tectonics") return locations.filter((point) => ["Fault", "Ridge", "Trench"].includes(point.category));
   if (layer === "climate") return climatePoints;
   if (layer === "biodiversity") return habitatPoints;
   if (layer === "geology") return locations.filter((point) => point.category !== "Ocean basin");

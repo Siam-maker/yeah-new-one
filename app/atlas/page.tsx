@@ -3,6 +3,7 @@ import { Masthead, ReferenceList, TextLink } from "@/components/editorial/ui";
 import { ScienceDiagram } from "@/components/editorial/diagram";
 import { Atlas } from "@/components/science/atlas";
 import { atlasLayers, type AtlasLayer } from "@/lib/content/atlas";
+import { type PopulationIndicator } from "@/lib/content/demographics";
 import { eons } from "@/lib/content/geologic-time";
 
 export const metadata: Metadata = { title: "Scientific Atlas", description: "Explore a map and globe of ocean basins, trenches, and tectonic boundaries." };
@@ -35,14 +36,22 @@ function EonOverview() {
   </figure>;
 }
 
-export default async function AtlasPage({ searchParams }: { searchParams: Promise<{ layer?: string; location?: string }> }) {
+export default async function AtlasPage({ searchParams }: { searchParams: Promise<{ layer?: string; location?: string; zoom?: string; view?: string; year?: string; heading?: string; plates?: string; bathy?: string }> }) {
   const query = await searchParams;
   const layer = typeof query.layer === "string" && Object.hasOwn(atlasLayers, query.layer) ? query.layer as AtlasLayer : "ocean";
   const location = typeof query.location === "string" ? query.location.slice(0, 96) : "";
+  const indicator = typeof query.layer === "string" && ["population", "density", "urban"].includes(query.layer) ? query.layer as PopulationIndicator : undefined;
+  const zoom = typeof query.zoom === "string" ? Number(query.zoom) : 1;
+  const year = typeof query.year === "string" && /^\d{4}$/.test(query.year) ? Number(query.year) : undefined;
+  const heading = typeof query.heading === "string" ? Number(query.heading) : 0;
+  const toggle = (value?: string) => value === "1" ? true : value === "0" ? false : undefined;
+  const view = query.view === "globe" ? "globe" : "map";
   return <div className="shell">
-    <Masthead title="Field atlas" category="Global observations" description="Compare seafloor terrain, geological regions, marine habitats, climate records, settlement estimates and territorial CO₂." />
+    <Masthead title="Field atlas" category="Global observations" description="Read one planet through eleven layers, from the ocean floor and tectonic plates to climate records and the distribution of people." />
     <div className="layout-flow">
-      <div className="grid gap-5"><Atlas key={layer + location} initialLayer={layer} initialLocation={location} /></div>
+      <div className="atlas-entry"><p>Choose a layer, search a place, and carry your selection between map and globe.</p><TextLink href="/demographics">Open the Demographics observatory</TextLink></div>
+      <Atlas key={JSON.stringify(query)} initialLayer={layer} initialLocation={location} initialIndicator={indicator} initialView={view}
+        initialZoom={Number.isFinite(zoom) ? Math.max(1,Math.min(3,zoom)) : 1} initialYear={year} initialHeading={Number.isFinite(heading) ? heading % 360 : 0} initialBoundaries={toggle(query.plates)} initialBathymetry={toggle(query.bathy)} />
       <section><h2 className="subhead">Beneath the map</h2><div className="two-panel"><ScienceDiagram kind="depth" /><EarthStructure /></div></section>
       <div className="two-panel"><section className="pane"><h2 className="subhead">Planetary scale</h2>
         <table className="atlas-table"><caption className="text-left mb-3">Approximate mean radii</caption>

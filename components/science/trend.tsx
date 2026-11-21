@@ -14,15 +14,18 @@ export function TrendGraphic({ values, year, label, color = "#55dce8" }: {
   const top = Math.max(.01, ...values.map((point) => point[1]));
   const start = values[0][0];
   const end = values[values.length - 1][0];
-  const x = (time: number) => 12 + (time - start) / Math.max(1, end - start) * 336;
-  const y = (value: number) => 105 - (value - bottom) / (top - bottom) * 86;
+  const x = (time: number) => 46 + (time - start) / Math.max(1, end - start) * 302;
+  const y = (value: number) => 104 - (value - bottom) / (top - bottom) * 82;
   const path = values.map(([time, value]) => `${x(time)},${y(value)}`).join(" ");
-  return <svg className="data-trend" viewBox="0 0 360 132" role="img" aria-label={label}>
-    <path d={`M12 ${y(0)}H348`} stroke="currentColor" strokeOpacity=".38" strokeDasharray="4 4" />
+  const readings = new Intl.NumberFormat("en", { maximumFractionDigits:2, notation:top > 1000 ? "compact" : "standard" });
+  const ticks = bottom < 0 ? [bottom,0,top/2,top] : [0,top/2,top];
+  return <svg className="data-trend" viewBox="0 0 360 132" role="img" aria-label={`${label}. ${selected[0]}: ${selected[1]}.`}>
+    {ticks.map((value)=><g key={value}><path d={`M46 ${y(value)}H348`} stroke="currentColor" strokeOpacity=".38" strokeDasharray="4 4" />
+      <text x="40" y={y(value)+3} textAnchor="end" fontSize="10" fill="currentColor">{readings.format(value)}</text></g>)}
     <polyline points={path} fill="none" stroke={color} strokeWidth="2" />
     <path d={`M${x(selected[0])} 14V108`} stroke={color} strokeOpacity=".55" />
-    <circle cx={x(selected[0])} cy={y(selected[1])} r="4" fill={color} />
-    <g fill="currentColor" fontSize="12"><text x="12" y="128">{start}</text><text x="348" y="128" textAnchor="end">{end}</text></g>
+    <circle cx={x(selected[0])} cy={y(selected[1])} r="4" fill={color}><title>{`${selected[0]} · ${selected[1]}`}</title></circle>
+    <g fill="currentColor" fontSize="12"><text x="46" y="128">{start}</text><text x="348" y="128" textAnchor="end">{end}</text></g>
   </svg>;
 }
 

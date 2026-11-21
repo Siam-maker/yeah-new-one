@@ -10,7 +10,7 @@ import { SearchOverlay } from "@/components/search/search-panel";
 import { ReadingModeButton } from "@/components/publishing/reading-preferences";
 import { Brand } from "./brand";
 
-const references = [{ label: "Scientific glossary", href: "/glossary" }, { label: "Your reading desk", href: "/library" }, { label: "About the publication", href: "/about" }];
+const references = [{ label: "Demographics observatory", href: "/demographics" }, { label: "Scientific glossary", href: "/glossary" }, { label: "Your reading desk", href: "/library" }, { label: "About the publication", href: "/about" }];
 
 export function Header({ entries }: { entries: SearchEntry[] }) {
   const pathname = usePathname();

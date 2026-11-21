@@ -1,8 +1,8 @@
 import { BufferGeometry, Float32BufferAttribute } from "three";
 
 export function buildCaveGeometry() {
-  const radial = 112;
-  const rings = 102;
+  const radial = 128;
+  const rings = 112;
   const positions: number[] = [];
   const uvs: number[] = [];
   const indices: number[] = [];
@@ -20,7 +20,9 @@ export function buildCaveGeometry() {
       const folds = Math.sin(theta * 3 + t * 7) * .24 + Math.cos(theta * 7 - t * 11) * .13;
       const strata = Math.pow(Math.max(0, Math.sin(diagonal + Math.sin(t * 23) * 1.6)), 2) * .24;
       const chips = Math.sin(theta * 17 + t * 94) * Math.sin(theta * 23 - t * 67) * .09;
-      const wall = radius * (1 + folds + strata + chips);
+      const fissure = Math.pow(Math.max(0, Math.cos(theta * 2 + t * 16)), 12) * .14;
+      const terrace = Math.pow(Math.max(0, Math.cos(t * 92 + theta * 4 + Math.sin(theta * 6))), 6) * .076;
+      const wall = radius * (1 + folds + strata + chips - fissure + terrace);
       positions.push(centerX + Math.cos(theta) * wall * 1.16, centerY + Math.sin(theta) * wall * .83, z);
       uvs.push(edge / radial, t);
       if (row === rings || edge === radial) continue;
