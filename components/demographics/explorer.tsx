@@ -46,6 +46,7 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
   const [year, setYear] = useState(initialYear);
   const [indicator, setIndicator] = useState(initialIndicator);
   const [region, setRegion] = useState("");
+  const [countryQuery,setCountryQuery] = useState("");
   const [message, setMessage] = useState("");
   const [share, setShare] = useState("");
   if (error) return <div className="pane"><p>The population snapshot could not be loaded.</p><button className="ghost-button mt-3" onClick={retry} type="button">Retry loading</button></div>;
@@ -58,6 +59,10 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
   const second = countries.find((country) => compare === country.id);
   const comparison = second && second.id !== country.id ? [country, second] : [country];
   const record = country.records[currentYear];
+  const secondRecord = comparison[1]?.records[currentYear];
+  const normalized = countryQuery.trim().toLowerCase();
+  const countryMatches = normalized ? countries.filter((item)=>item.name.toLowerCase().includes(normalized) || item.id.toLowerCase() === normalized).slice(0,8) : [];
+  const yearIndex = data.years.indexOf(currentYear);
   const maximum = Math.max(2, Math.ceil(Math.max(...comparison.flatMap((item) => {
     const entry = item.records[currentYear];
     return entry ? entry.ages.flat().map((value) => value/entry.population*100) : [0];
@@ -90,6 +95,20 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
       <label>Compare with<select className="control-field" value={second?.id===country.id ? "" : second?.id ?? ""} onChange={(event)=>setCompare(event.target.value)}>
         <option value="">Choose a country</option>{countries.filter((item)=>item.id!==country.id).map((item)=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
     </div>
+    <div className="population-time">
+      <label>Move through time <strong>{currentYear}</strong><input type="range" min="0" max={data.years.length-1} value={yearIndex}
+        aria-valuetext={`${currentYear} ${currentYear > 2023 ? "projected" : "historical estimate"}`}
+        onChange={(event)=>setYear(data.years[event.currentTarget.valueAsNumber])} /></label>
+      <div className="population-time-labels mono"><span>{data.years[0]} · Estimates</span><span>{data.years.at(-1)} · Projections</span></div>
+    </div>
+    {!profile && <div className="population-country-search">
+      <label>Find a country by name or code<input className="control-field" type="search" value={countryQuery} onChange={(event)=>setCountryQuery(event.target.value)} placeholder="Try Japan or BGD" /></label>
+      {normalized && <div className="pill-row" aria-label="Country matches">
+        {countryMatches.length ? countryMatches.map((item)=><button className="ghost-button" type="button" key={item.id} onClick={()=>{
+          setRegion("");setSelected(item.id);setCountryQuery("");
+        }}>{item.name} <span className="mono">{item.id}</span></button>) : <p role="status">No matching countries.</p>}
+      </div>}
+    </div>}
     <div className="population-status">
       <p className="mono">{currentYear > 2023 ? "Medium projection · UN WPP 2024" : "Historical estimates · UN WPP 2024"}</p>
       <button className="ghost-button" type="button" onClick={() => void copyLink()}><Link2 size={17} aria-hidden="true" /> Copy exploration link</button>
@@ -107,6 +126,16 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
       <p className="population-note">United Nations world total for {currentYear} · {integer.format(data.world[currentYear-1950])} people.</p>
       <Link className="editorial-link" href={`/demographics/${country.id.toLowerCase()}?year=${currentYear}`}>Open {country.name} profile <ArrowUpRight size={18} aria-hidden="true" /></Link>
     </div>}
+    {record && secondRecord && <section className="chart-panel comparison-summary">
+      <p className="mono section-label">{currentYear} · Same-year snapshot</p><h2>Country comparison</h2>
+      <table className="atlas-table">
+        <thead><tr><th scope="col">Indicator</th><th scope="col">{country.name}</th><th scope="col">{comparison[1].name}</th></tr></thead>
+        <tbody>{(Object.keys(populationIndicators) as PopulationIndicator[]).map((key)=>{
+          const metric = populationIndicators[key];
+          return <tr key={key}><th scope="row">{metric.name}</th><td><Format value={record[key]} unit={metric.unit}/></td><td><Format value={secondRecord[key]} unit={metric.unit}/></td></tr>;
+        })}</tbody>
+      </table>
+    </section>}
     <div className="population-chart-grid">
       {comparison.flatMap((item) => {
         const entry = item.records[currentYear];

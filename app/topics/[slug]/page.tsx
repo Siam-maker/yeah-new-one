@@ -5,7 +5,7 @@ import { Masthead, ReferenceList, StoryTiles, TextLink } from "@/components/edit
 import { ScienceDiagram } from "@/components/editorial/diagram";
 import { RecordVisit } from "@/components/publishing/reading-preferences";
 import { DisciplineInstrument } from "@/components/science/discipline-instrument";
-import { topics, labs } from "@/lib/content/publication";
+import { topics, labs, termId } from "@/lib/content/publication";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -35,14 +35,14 @@ export default async function TopicPage({ params }: Props) {
         <h2 className="subhead mt-8">What changed our view</h2><p className="editorial-text">{topic.discoveries}</p></section>
         <ScienceDiagram kind={topic.diagram} /></div>
       <div className="two-panel"><section className="pane"><h2 className="subhead">Key concepts</h2><dl className="concept-list">
-        {topic.concepts.map(({ title, text }) => <div key={title}><dt>{title}</dt><dd>{text}</dd></div>)}
+        {topic.concepts.map(({ title, text }) => <div key={title} id={`concept-${termId(title)}`}><dt>{title}</dt><dd>{text}</dd></div>)}
       </dl></section><section className="pane"><h2 className="subhead">Facts to keep</h2><ul className="list-disc space-y-3 pl-5">
         {topic.facts.map((fact) => <li key={fact}>{fact}</li>)}
       </ul><h2 className="subhead mt-8">Related experiments</h2><div className="link-list">{labs.filter((item) => experiments.includes(item.slug)).map((lab) =>
         <TextLink key={lab.slug} href={`/lab/${lab.slug}`}>{lab.title}</TextLink>)}</div></section></div>
       <section><h2 className="subhead">Read the evidence</h2><DisciplineInstrument slug={slug} /></section>
       <section><h2 className="subhead">Further reading</h2><StoryTiles slugs={topic.articles} /></section>
-      <section><h2 className="subhead">References</h2><ReferenceList keys={topic.sources} /></section>
+      <section className="topic-reference"><h2 className="subhead">References</h2><ReferenceList keys={topic.sources} /><div className="mt-5"><TextLink href={`/connections?node=topic-${slug}`}>Explore this discipline’s connections</TextLink></div></section>
     </div>
   </div>;
 }

@@ -11,7 +11,7 @@ export default function TopicsPage() {
     <div className="layout-flow">
       <DisciplineExplorer items={topics.map(({ slug, title, image, theme, intro }) => ({ slug, title, image, theme, intro }))} />
       <section><h2 className="subhead">Start with evidence</h2><p className="standfirst">Field notes trace the decisions behind a chart, map or observation.</p>
-        <div className="mt-4"><TextLink href="/field-notes">Browse the methods and observations</TextLink></div></section>
+        <div className="pill-row mt-4"><TextLink href="/field-notes">Browse the methods and observations</TextLink><TextLink href="/connections">Map the connections</TextLink></div></section>
     </div>
   </div>;
 }

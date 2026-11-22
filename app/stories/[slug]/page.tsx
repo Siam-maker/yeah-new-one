@@ -5,7 +5,7 @@ import { articles, articleSectionId, readingMinutes } from "@/lib/content/articl
 import { labs, topics } from "@/lib/content/publication";
 import { RecordVisit, ReadingModeButton } from "@/components/publishing/reading-preferences";
 import { ZoomFigure } from "@/components/publishing/zoom-figure";
-import { ArticleControls, ReadableArticle } from "@/components/editorial/article-controls";
+import { ArticleContents, ArticleControls, ReadableArticle } from "@/components/editorial/article-controls";
 import { Breadcrumbs, ReferenceList, StoryTiles, TextLink } from "@/components/editorial/ui";
 import { ScienceDiagram } from "@/components/editorial/diagram";
 import { OceanLab } from "@/components/science/ocean-lab";
@@ -42,10 +42,7 @@ export default async function StoryPage({ params }: Props) {
       </header>
       <ZoomFigure source={article.image} caption={article.imageDescription} />
       <div className="article-grid layout-flow">
-        <nav aria-label="Table of contents" className="article-toc"><h2>In this story</h2>
-          {article.sections.map(({ title }, index) => <a href={`#${articleSectionId(index)}`} key={title}>{title}</a>)}
-          <a href="#sources">References</a>
-        </nav>
+        <ArticleContents sections={[...article.sections.map(({ title }, index)=>({ id:articleSectionId(index),title })),{ id:"sources",title:"References" }]} />
         <div className="article-body">
           {article.sections.map(({ title, paragraphs }, index) => <section key={title} id={articleSectionId(index)}>
             <h2>{title}</h2>
@@ -62,7 +59,7 @@ export default async function StoryPage({ params }: Props) {
           {["reading-a-warmer-world", "fossils-are-a-sample", "the-maps-behind-coastal-risk"].includes(slug) && <div className="article-model mt-6"><DisciplineInstrument slug={article.topic} /></div>}
           {slug === "life-below-the-light" && <div className="article-model mt-6 grid gap-4"><OceanLab /></div>}
           {slug === "tectonic-plates-in-motion" && <div className="article-model mt-6"><PlateLab compact /></div>}
-          <section id="sources"><h2>References</h2><ReferenceList keys={article.sources} /></section>
+          <section id="sources"><h2>References</h2><ReferenceList keys={article.sources} /><div className="mt-5"><TextLink href={`/connections?node=story-${slug}`}>Follow this story’s citations on the graph</TextLink></div></section>
         </div>
       </div>
     </ReadableArticle>

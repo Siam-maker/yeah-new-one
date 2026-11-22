@@ -2,13 +2,16 @@ import directory from "@/public/data/country-directory.json";
 import { atlasLayers, type AtlasLayer } from "./atlas";
 import { atlasPoints } from "./observations";
 import { fieldNotes } from "./field-notes";
+import { journeys } from "./journeys";
 import { articles } from "./articles";
 import { glossary, labs, termId, topics } from "./publication";
 
-export type SearchKind = "Article" | "Topic" | "Lab" | "Glossary" | "Location" | "Field note" | "Country";
+export type SearchKind = "Article" | "Topic" | "Lab" | "Glossary" | "Location" | "Field note" | "Country" | "Journey" | "Tool";
 export type SearchEntry = { title: string; href: string; description: string; kind: SearchKind; keywords: string };
 
 export const searchEntries: SearchEntry[] = [
+  { title:"Knowledge graph", href:"/connections", description:"Trace connections between disciplines, stories, glossary concepts, experiments, and the sources they cite.", kind:"Tool", keywords:"connections network graph research citations" },
+  ...journeys.map((journey):SearchEntry => ({ title:journey.title,href:`/journeys?route=${journey.id}`,description:journey.introduction,kind:"Journey",keywords:"journeys expeditions guided " + journey.stops.map(({kind,title})=>`${kind} ${title}`).join(" ") })),
   { title:"Demographics observatory", href:"/demographics", description:"Compare country populations, age pyramids, density and urban shares.", kind:"Topic", keywords:"population demography UN projections urbanization" },
   { title:"Cosmic observatory", href:"/lab/observatory", description:"Investigate planetary orbits and the travel time of sunlight.", kind:"Lab", keywords:"space planet solar system" },
   ...articles.map((item): SearchEntry => ({

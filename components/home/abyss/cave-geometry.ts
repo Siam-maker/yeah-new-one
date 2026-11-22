@@ -22,7 +22,10 @@ export function buildCaveGeometry() {
       const chips = Math.sin(theta * 17 + t * 94) * Math.sin(theta * 23 - t * 67) * .09;
       const fissure = Math.pow(Math.max(0, Math.cos(theta * 2 + t * 16)), 12) * .14;
       const terrace = Math.pow(Math.max(0, Math.cos(t * 92 + theta * 4 + Math.sin(theta * 6))), 6) * .076;
-      const wall = radius * (1 + folds + strata + chips - fissure + terrace);
+      const floor = Math.pow(Math.max(0, -Math.sin(theta)), 7);
+      const talus = floor * (.09 * Math.sin(t*26 + theta*5) + .065 * Math.cos(t*58 - theta*7.1));
+      const ledge = .064 * Math.pow(Math.max(0, Math.cos(theta*5.4 + t*66)), 5) * Math.sin(Math.PI*t);
+      const wall = radius * (1 + folds + strata + chips - fissure + terrace + talus + ledge);
       positions.push(centerX + Math.cos(theta) * wall * 1.16, centerY + Math.sin(theta) * wall * .83, z);
       uvs.push(edge / radial, t);
       if (row === rings || edge === radial) continue;

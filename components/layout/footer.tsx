@@ -17,7 +17,7 @@ export function Footer() {
         <div className="footer-bottom">
           <small>© {new Date().getFullYear()} Under the Surface</small>
           <nav aria-label="Footer navigation">
-            {[...navigation, { label: "Demographics", href: "/demographics" }, { label: "Glossary", href: "/glossary" }, { label: "Search", href: "/search" }, { label: "Reading desk", href: "/library" }, { label: "About", href: "/about" }].map(({ label, href }) => <Link key={href} href={href}>{label}</Link>)}
+            {[...navigation, { label: "Journeys", href: "/journeys" }, { label: "Connections", href: "/connections" }, { label: "Demographics", href: "/demographics" }, { label: "Glossary", href: "/glossary" }, { label: "Search", href: "/search" }, { label: "Reading desk", href: "/library" }, { label: "About", href: "/about" }].map(({ label, href }) => <Link key={href} href={href}>{label}</Link>)}
           </nav>
         </div>
       </div>

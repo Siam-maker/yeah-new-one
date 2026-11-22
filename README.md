@@ -21,3 +21,7 @@ The Atlas uses Natural Earth land polygons and Peter Bird’s PB2002 boundary mo
 See the [Atlas data notes](public/data/README.md) and the [demographics and sea-level data notes](public/data/DEMOGRAPHICS.md) for sources, coverage, and regeneration.
 
 To enable subscriptions, set `NEWSLETTER_ENDPOINT` to a trusted HTTPS provider adapter when building and running the site. The adapter receives a JSON POST with an `email` field and must return a successful HTTP response only when it accepts the subscription request. Set `NEWSLETTER_TOKEN` if the adapter expects bearer authentication. Apply the provider’s consent and abuse controls at the adapter. With no configured endpoint, the interface shows a closed state.
+
+The Journeys routes assemble expeditions from the publication’s stories, topics, Atlas locations and labs. Stops are marked on the current browser. The Connections graph derives edges from topic guides, citation lists, glossary links, and companion readings. Its node index and connection lists provide an alternative to the visual graph.
+
+Scientific 3D scenes load near the viewport and share device profiles, demand rendering, and context-loss recovery through illustrated fallbacks. The Earth cutaway uses approximate depth boundaries. Its crust thickness is exaggerated. The observatory uses compressed circular orbits and illustrative surface textures.

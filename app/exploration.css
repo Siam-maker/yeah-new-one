@@ -1,0 +1,53 @@
+.journey-console,.knowledge-console {display:grid;gap:clamp(16px,2vw,28px);}
+.journey-selector {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.journey-selector button {justify-content:flex-start;text-align:left;}
+.journey-selector .mono {color:var(--accent);margin-right:4px;}
+.journey-display {position:relative;isolation:isolate;min-height:clamp(315px,40vw,565px);display:flex;align-items:flex-end;overflow:hidden;border:1px solid var(--line);background:var(--panel);}
+.journey-display img {object-fit:cover;z-index:-2;}
+.journey-display::after {position:absolute;inset:0;content:"";z-index:-1;background:linear-gradient(0deg,#090e14 4%,#090e14ce 38%,#090e1430 80%);}
+.journey-display > div {padding:clamp(20px,5vw,68px);max-width:67rem;}
+.journey-display h2 {font-size:clamp(42px,6.6vw,98px);margin:14px 0 12px;}
+.journey-display p:last-child {max-width:48ch;color:#e9e7e2;}
+.journey-details {display:grid;grid-template-columns:minmax(0,.65fr) minmax(0,1.35fr);gap:clamp(20px,5vw,65px);}
+.journey-progress progress {width:100%;height:8px;accent-color:var(--accent);margin:12px 0;}
+.journey-progress ol {list-style:none;margin:0;padding:0;}
+.journey-progress button {display:flex;width:100%;justify-content:flex-start;text-align:left;border-width:1px 0 0;min-height:44px;}
+.journey-progress button[aria-current] {color:var(--accent);background:var(--panel);}
+.journey-station {background:var(--panel);padding:clamp(17px,3.5vw,42px);display:grid;gap:14px;align-content:start;}
+.journey-station h3 {margin-top:9px;}
+.journey-station .editorial-link {justify-self:start;}
+.journey-station :disabled {opacity:.58;}
+.knowledge-console > .discovery-filters {grid-template-columns:minmax(150px,360px) minmax(130px,230px);}
+.knowledge-layout {display:grid;grid-template-columns:minmax(0,1.57fr) minmax(240px,.7fr);gap:12px;}
+.knowledge-figure {margin:0;min-width:0;align-self:start;border:1px solid var(--line);background:var(--panel);}
+.knowledge-toolbar {display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:11px 13px;border-bottom:1px solid var(--line);}
+.knowledge-toolbar button {padding:5px;min-width:38px;min-height:38px;}
+.knowledge-toolbar output {padding-inline:8px;}
+.knowledge-map {width:100%;height:auto;display:block;touch-action:none;cursor:grab;background:radial-gradient(ellipse at 50% 45%,#1a2939,transparent 75%);}
+.knowledge-map:active {cursor:grabbing;}
+.knowledge-map [data-node] {cursor:pointer;}
+.knowledge-map [data-node]:hover circle:nth-of-type(2) {stroke:#fff7e5;stroke-width:3;}
+.knowledge-map text {fill:#f0e9db;font:13px var(--font-sans);paint-order:stroke;stroke:#101824;stroke-width:4px;stroke-linejoin:round;}
+.graph-gridline {fill:none;stroke:#9db7c76b;stroke-width:1;stroke-dasharray:2 9;}
+.knowledge-legend {display:flex;flex-wrap:wrap;gap:6px 16px;padding:12px 15px;border-top:1px solid var(--line);font-size:.85rem;}
+.knowledge-legend span {display:flex;align-items:center;gap:7px;}
+.knowledge-legend i {width:8px;height:8px;border-radius:50%;display:inline-block;}
+.knowledge-reading {padding:clamp(16px,3vw,34px);border:1px solid var(--line);background:var(--surface-raised);}
+.knowledge-reading > .mono,.node-index > .mono {color:var(--cyan);}
+.knowledge-reading h2 {font-size:clamp(32px,4vw,56px);margin:10px 0 8px;overflow-wrap:anywhere;}
+.knowledge-reading .editorial-link {margin-top:12px;}
+.knowledge-reading ul,.node-index ul {list-style:none;padding:0;margin:8px 0 0;}
+.knowledge-reading li {border-top:1px solid var(--line);}
+.knowledge-reading li button {display:block;text-align:left;width:100%;padding:7px 0;}
+.knowledge-reading li span {display:block;color:var(--muted);font-size:.8rem;}
+.knowledge-reading li button:hover,.node-index button:hover {color:var(--cyan);}
+.node-index {border-top:1px solid var(--line);padding-top:24px;}
+.node-index ul {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,215px),1fr));gap:6px;}
+.node-index li button {width:100%;height:100%;align-items:flex-start;flex-direction:column;text-align:left;}
+.node-index li .mono {color:var(--amber);}
+@media(max-width:835px) {
+  .journey-selector,.journey-details,.knowledge-layout {grid-template-columns:minmax(0,1fr);}
+  .knowledge-console > .discovery-filters {grid-template-columns:minmax(0,1fr) minmax(0,.8fr);}
+}
+
+@media(pointer:coarse) {.knowledge-map {touch-action:pan-y;}}

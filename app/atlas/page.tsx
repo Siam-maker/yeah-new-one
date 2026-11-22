@@ -1,28 +1,13 @@
 import type { Metadata } from "next";
 import { Masthead, ReferenceList, TextLink } from "@/components/editorial/ui";
 import { ScienceDiagram } from "@/components/editorial/diagram";
+import { EarthInterior } from "@/components/science/earth-interior";
 import { Atlas } from "@/components/science/atlas";
 import { atlasLayers, type AtlasLayer } from "@/lib/content/atlas";
 import { type PopulationIndicator } from "@/lib/content/demographics";
 import { eons } from "@/lib/content/geologic-time";
 
 export const metadata: Metadata = { title: "Scientific Atlas", description: "Explore a map and globe of ocean basins, trenches, and tectonic boundaries." };
-
-function EarthStructure() {
-  return <figure className="science-figure">
-    <svg viewBox="0 0 450 230" role="img" aria-label="Simplified cross-section of Earth showing crust, mantle, outer core, inner core">
-      <circle cx="117" cy="115" r="100" fill="#c48760" stroke="#ebcfab" strokeWidth="4" />
-      <circle cx="117" cy="115" r="55" fill="#a84a38" />
-      <circle cx="117" cy="115" r="19" fill="#ffb17b" />
-      <g fill="#f7f1e6" fontSize="18" fontFamily="var(--font-sans)">
-        <text x="245" y="49">Crust · varies in thickness</text><text x="245" y="96">Mantle</text>
-        <text x="245" y="143">Liquid outer core</text><text x="245" y="190">Solid inner core</text>
-      </g>
-      <path d="M183 42 H236 M187 89 H236 M164 136 H236 M126 129L182 184H236" fill="none" stroke="#eee1cb" strokeWidth="1.2" />
-    </svg>
-    <figcaption>Earth’s interior, shown schematically. The crust is exaggerated for visibility.</figcaption>
-  </figure>;
-}
 
 function EonOverview() {
   const colors = ["#785651", "#a16154", "#8a785f", "#597e89"];
@@ -52,7 +37,8 @@ export default async function AtlasPage({ searchParams }: { searchParams: Promis
       <div className="atlas-entry"><p>Choose a layer, search a place, and carry your selection between map and globe.</p><TextLink href="/demographics">Open the Demographics observatory</TextLink></div>
       <Atlas key={JSON.stringify(query)} initialLayer={layer} initialLocation={location} initialIndicator={indicator} initialView={view}
         initialZoom={Number.isFinite(zoom) ? Math.max(1,Math.min(3,zoom)) : 1} initialYear={year} initialHeading={Number.isFinite(heading) ? heading % 360 : 0} initialBoundaries={toggle(query.plates)} initialBathymetry={toggle(query.bathy)} />
-      <section><h2 className="subhead">Beneath the map</h2><div className="two-panel"><ScienceDiagram kind="depth" /><EarthStructure /></div></section>
+      <section id="earth-interior"><h2 className="subhead">Beneath the map</h2><EarthInterior /></section>
+      <section><h2 className="subhead">The water above it</h2><ScienceDiagram kind="depth" /></section>
       <div className="two-panel"><section className="pane"><h2 className="subhead">Planetary scale</h2>
         <table className="atlas-table"><caption className="text-left mb-3">Approximate mean radii</caption>
           <thead><tr><th>Planet</th><th>Radius</th></tr></thead><tbody>

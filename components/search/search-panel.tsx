@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import type { SearchEntry } from "@/lib/content/search";
 
-const categories = ["All", "Article", "Topic", "Lab", "Glossary", "Location", "Field note"];
+const categories = ["All", "Article", "Topic", "Lab", "Glossary", "Location", "Field note", "Journey", "Tool"];
 const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
 
 export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = false }: {

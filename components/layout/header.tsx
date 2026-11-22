@@ -10,7 +10,9 @@ import { SearchOverlay } from "@/components/search/search-panel";
 import { ReadingModeButton } from "@/components/publishing/reading-preferences";
 import { Brand } from "./brand";
 
-const references = [{ label: "Demographics observatory", href: "/demographics" }, { label: "Scientific glossary", href: "/glossary" }, { label: "Your reading desk", href: "/library" }, { label: "About the publication", href: "/about" }];
+const journeys = { label: "Journeys", href: "/journeys" };
+const primary = navigation.map((link) => link.href === "/field-notes" ? journeys : link);
+const references = [{ label: "Knowledge graph", href: "/connections" }, { label: "Demographics observatory", href: "/demographics" }, { label: "Scientific glossary", href: "/glossary" }, { label: "Your reading desk", href: "/library" }, { label: "About the publication", href: "/about" }];
 
 export function Header({ entries }: { entries: SearchEntry[] }) {
   const pathname = usePathname();
@@ -26,7 +28,7 @@ export function Header({ entries }: { entries: SearchEntry[] }) {
   }}>
     <div className="shell edition-header-row">
       <Brand />
-      <nav className="edition-navigation" aria-label="Main navigation">{navigation.map(({ label, href }) => (
+      <nav className="edition-navigation" aria-label="Main navigation">{primary.map(({ label, href }) => (
         <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}</Link>
       ))}</nav>
       <div className="edition-header-actions">
@@ -40,13 +42,13 @@ export function Header({ entries }: { entries: SearchEntry[] }) {
     <div id="edition-menu" className="edition-menu" hidden={!open}>
       <div className="shell edition-menu-inner">
         <nav aria-label="Publication index"><p className="mono section-label">The publication</p>
-          {navigation.map(({ label, href }) => <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+          {[...navigation, journeys].map(({ label, href }) => <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
         </nav>
         <nav aria-label="Disciplines"><p className="mono section-label">Disciplines</p>
           {topics.map((topic) => <Link key={topic.slug} href={`/topics/${topic.slug}`} onClick={close}>{topic.title}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
         </nav>
         <nav aria-label="Reading tools"><p className="mono section-label">Reading tools</p>
-          {references.map(({ label, href }) => <Link key={href} href={href} onClick={close}>{label}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+          {references.map(({ label, href }) => <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
           <ReadingModeButton />
         </nav>
       </div>

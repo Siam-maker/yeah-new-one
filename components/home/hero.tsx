@@ -113,7 +113,7 @@ export function Hero() {
           <div className="hero-rail mono"><span>Geology</span><span>Oceanography</span><span>Astronomy</span></div>
           <h1 id="hero-title" className="hero-title">
             <span className="hero-title-mask hero-title-minor"><span className="hero-title-line"><span className="hero-word">The hidden</span></span></span>{" "}
-            <span className="hero-title-mask"><span className="hero-title-line"><span className="hero-word">STRUCTURE<span className="title-dot">.</span></span></span></span>
+            <span className="hero-title-mask"><span className="hero-title-line"><span className="hero-word">Structure<span className="title-dot">.</span></span></span></span>
           </h1>
           <div className="hero-brief">
             <p className="hero-description">Follow the forces that shape oceans, rock and distant worlds.</p>

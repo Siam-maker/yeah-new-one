@@ -1,16 +1,17 @@
 import { BufferGeometry, Color, Float32BufferAttribute } from "three";
 
-export function terrainSurface() {
+export function terrainSurface(zone: string) {
   const geometry = new BufferGeometry();
   const p: number[] = [], c: number[] = [], faces: number[] = [];
   const columns=65, rows=47;
-  const ridge = new Color("#5a6467"), basin = new Color("#172832");
+  const ridge = new Color(zone === "sunlight" ? "#829484" : zone === "hadal" ? "#535061" : "#4d5f65");
+  const basin = new Color(zone === "hadal" ? "#202437" : "#172832");
   for(let row=0;row<rows;row++) for(let col=0;col<columns;col++) {
     const x = col/(columns-1)*40-20, z = -(row/(rows-1)*40)-.6;
     const trench = Math.exp(-((x+Math.sin(z*.24)*2.7)**2)*.065);
     const rough = Math.sin(x*1.57 + z*.22)*Math.cos(z*.71-x*.19)*.62 + Math.sin(x*.51-z*.62)*.83;
     const ledge = Math.pow(Math.max(0, Math.sin(-z*.35+x*.17)),3)*1.45;
-    const y = -3.2 + rough + ledge - trench*2.2;
+    const y = -2.2 + rough*(zone === "abyssal" ? .27 : .92) + ledge*(zone === "abyssal" ? .17 : .91) - trench*(zone === "hadal" ? 5.4 : zone === "abyssal" ? .15 : 1.1);
     p.push(x,y,z);
     c.push(...basin.clone().lerp(ridge,Math.max(0,Math.min(1,(y+6)/5))).toArray());
     if(row<rows-1&&col<columns-1){

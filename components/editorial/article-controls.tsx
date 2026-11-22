@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useState, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { Bookmark, Link2, Share2 } from "lucide-react";
 import { motion, useScroll } from "motion/react";
 
@@ -58,4 +58,29 @@ export function ReadableArticle({ children }: { children: ReactNode }) {
   const target = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target, offset: ["start start", "end end"] });
   return <article ref={target} className="reading-surface"><motion.div className="article-progress" aria-hidden="true" style={{ scaleX: scrollYProgress }} />{children}</article>;
+}
+
+export function ArticleContents({ sections }: { sections: { id:string; title:string }[] }) {
+  const [current,setCurrent] = useState("");
+  useEffect(() => {
+    let frame = 0;
+    function update() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const active = sections.findLast(({ id }) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= 144);
+        setCurrent(active?.id ?? "");
+      });
+    }
+    update();
+    window.addEventListener("scroll",update,{ passive:true });
+    window.addEventListener("resize",update);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll",update);
+      window.removeEventListener("resize",update);
+    };
+  },[sections]);
+  return <nav aria-label="Table of contents" className="article-toc"><h2>In this story</h2>
+    {sections.map(({ id,title })=><a href={`#${id}`} key={id} aria-current={current===id ? "location" : undefined}>{title}</a>)}
+  </nav>;
 }

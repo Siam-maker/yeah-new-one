@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import "@fontsource/barlow-condensed/latin-700.css";
-import "@fontsource/barlow-condensed/latin-800.css";
 import "@fontsource-variable/newsreader";
 import "@fontsource-variable/space-grotesk";
 import "@fontsource/ibm-plex-mono/latin-400.css";
@@ -17,6 +15,7 @@ import "./science.css";
 import "./edition.css";
 import "./universe.css";
 import "./population.css";
+import "./exploration.css";
 
 export const metadata: Metadata = {
   title: { default: "Under the Surface — A field guide to the unseen", template: "%s — Under the Surface" },

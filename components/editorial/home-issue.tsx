@@ -45,7 +45,7 @@ export function HomeIssue() {
     <section className="shell edition-section" id="discoveries" tabIndex={-1}>
       <div className="edition-section-head" data-reveal="handoff">
         <div><div className="chapter-tag mono"><b>02</b> Discoveries</div><h2>Into the unseen.</h2></div>
-        <TextLink href="/explore">Explore the index</TextLink>
+        <div className="pill-row"><TextLink href="/explore">Explore the index</TextLink><TextLink href="/journeys">Take a guided journey</TextLink></div>
       </div>
       <FeatureSequence chapters={chapters} />
     </section>

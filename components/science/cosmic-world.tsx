@@ -6,10 +6,10 @@ import { displayOrbit, planets, lightMinutesPerAu } from "@/lib/content/cosmos";
 import { LiveScene } from "./live-scene";
 import { decimal, integer } from "@/lib/content/demographics";
 
-function OrbitalDiagram({ selected, years }: { selected: string; years: number }) {
+function OrbitalDiagram({ selected, years, zoom }: { selected: string; years: number; zoom:number }) {
   return <div className="orbit-diagram">
     <Image src="/images/observatory.webp" fill sizes="100vw" alt="" />
-    <svg viewBox="0 0 540 320" aria-label="Schematic solar system">
+    <svg viewBox={`${270-270/zoom} ${160-160/zoom} ${540/zoom} ${320/zoom}`} role="img" aria-label="Schematic solar system">
       <circle cx="270" cy="164" r="13" fill="#ffda92" />
       {planets.map((planet,index) => {
         const orbit = displayOrbit(planet.au) * 41;
@@ -29,19 +29,32 @@ function OrbitalDiagram({ selected, years }: { selected: string; years: number }
 export function CosmicWorld() {
   const [selected,setSelected] = useState<string>("earth");
   const [years,setYears] = useState(0);
+  const [view, setView] = useState<"orbits" | "planet">("orbits");
+  const [zoom, setZoom] = useState(1);
   const [enable3D,setEnable3D] = useState(false);
   const planet = planets.find((body)=>body.id===selected) ?? planets[2];
   return <div className="world-experiment cosmic-experiment">
     <div className="cosmic-stage">
-      <LiveScene scene={{ kind:"cosmos", selected:planet.id, years, onSelect:setSelected }} explicit={enable3D}
-        fallback={<OrbitalDiagram selected={planet.id} years={years} />} />
-      <span className="world-stage-label mono">Planets · schematic orbital display</span>
+      <LiveScene scene={{ kind:"cosmos", selected:planet.id, years, view, zoom, onSelect:setSelected }} explicit={enable3D}
+        fallback={view === "orbits" ? <OrbitalDiagram selected={planet.id} years={years} zoom={zoom} /> : <div className="orbit-diagram planet-fallback">
+          <Image src="/images/observatory.webp" fill sizes="100vw" alt="" />
+          <svg viewBox="0 0 540 320" role="img" aria-label={`${planet.name} illustration`}>
+            {planet.id === "saturn" && <ellipse cx="270" cy="160" rx={86*zoom} ry={26*zoom} fill="none" stroke="#d5bb94" strokeWidth={9*zoom} transform="rotate(-22 270 160)" />}
+            <circle cx="270" cy="160" r={55*zoom} fill={planet.color} />
+          </svg>
+        </div>} />
+      <span className="world-stage-label mono">{view === "orbits" ? "Planets · schematic orbital display" : `${planet.name} · illustrative surface`}</span>
     </div>
     <div className="lab-layout">
       <section className="pane lab-controls">
         <p className="mono section-label">Object navigation</p>
         <div className="pill-row">{planets.map((body)=><button key={body.id} type="button" className="ghost-button" aria-pressed={planet.id===body.id}
           onClick={()=>setSelected(body.id)}>{body.name}</button>)}</div>
+        <div className="pill-row" aria-label="Observatory view">
+          <button className="ghost-button" type="button" aria-pressed={view === "orbits"} onClick={() => setView("orbits")}>Orbital view</button>
+          <button className="ghost-button" type="button" aria-pressed={view === "planet"} onClick={() => setView("planet")}>Inspect planet</button>
+        </div>
+        <label>Camera zoom <span>{zoom.toFixed(2)}×</span><input type="range" min=".8" max="1.55" step=".05" value={zoom} aria-valuetext={`${zoom.toFixed(2)} times`} onChange={(event) => setZoom(event.currentTarget.valueAsNumber)} /></label>
         <label htmlFor="orbital-year">Elapsed time <strong>{years.toFixed(1)} Earth years</strong></label>
         <input id="orbital-year" type="range" min="0" max="35" step=".1" value={years} onChange={(event)=>setYears(event.currentTarget.valueAsNumber)} />
         <button className="ghost-button scene-opt-in" type="button" aria-pressed={enable3D} onClick={() => setEnable3D(!enable3D)}>Enable interactive 3D</button>
@@ -56,6 +69,11 @@ export function CosmicWorld() {
           <div><dt>Approximate diameter</dt><dd>{integer.format(planet.diameter)} km</dd></div>
           <div><dt>Sunlight travel time</dt><dd>{decimal.format(planet.au*lightMinutesPerAu)} min</dd></div>
         </dl>
+        <div className="planet-comparison">
+          <p>Diameter relative to Earth <strong>{decimal.format(planet.diameter / planets[2].diameter)}×</strong></p>
+          <div aria-hidden="true"><span style={{ width:`${planet.diameter/139820*100}%`,background:planet.color }} /><span style={{ width:`${planets[2].diameter/139820*100}%` }} /></div>
+          <p className="mono">{planet.name} / Earth</p>
+        </div>
       </section>
     </div>
   </div>;

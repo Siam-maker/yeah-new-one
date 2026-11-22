@@ -17,11 +17,14 @@ export function OceanLab() {
 
   return <>
     <div className="lab-layout">
-      <LiveScene scene={{ kind: "ocean", depth }} explicit={enable3D} fallback={<div className="ocean-fallback" style={{ backgroundColor: zone.fog }}>
-        <OceanEnvironment layer={index} />
-        <div className="ocean-fallback-trench" />
-        <span className="mono ocean-fallback-label">{zone.name} · {format.format(depth)} m</span>
-      </div>} />
+      <div className="ocean-exhibit">
+        <LiveScene scene={{ kind: "ocean", depth }} explicit={enable3D} fallback={<div className="ocean-fallback" style={{ backgroundColor: zone.fog }}>
+          <OceanEnvironment layer={index} />
+          <div className="ocean-fallback-trench" />
+          <span className="mono ocean-fallback-label">{zone.name} · {format.format(depth)} m</span>
+        </div>} />
+        {depth >= 1000 && <span className="ocean-light-key mono">Artificial light for viewing</span>}
+      </div>
       <section className="pane lab-controls" aria-labelledby="ocean-controls">
         <div><p className="mono section-label">Water column</p><h2 id="ocean-controls" className="subhead">{zone.name}</h2></div>
         <label htmlFor="ocean-depth-range" className="control-label">Descent depth</label>

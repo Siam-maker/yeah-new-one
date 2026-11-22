@@ -48,3 +48,22 @@
 .scene-frame[data-mode="3d"] .scene-fallback { visibility:hidden; }
 .atlas-drag { cursor:grab; }
 .atlas-drag:active { cursor:grabbing; }
+
+.scene-runtime-note {position:absolute;z-index:2;inset:auto 12px 12px;padding:7px 10px;background:var(--panel);color:var(--ivory);border:1px solid var(--line);font-size:.82rem;}
+
+.interior-exhibit {display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.interior-exhibit .scene-frame {min-height:355px;border:0;}
+.interior-exhibit .pane {border:0;}
+.interior-depth {font-family:var(--font-mono);color:var(--amber);margin:0 0 .7rem;}
+@media(max-width:760px) {.interior-exhibit {grid-template-columns:minmax(0,1fr);}.interior-exhibit .scene-frame {min-height:262px;}}
+
+.planet-comparison {margin-top:20px;padding-top:12px;border-top:1px solid var(--line);}
+.planet-comparison > div {display:grid;gap:5px;margin:9px 0;}
+.planet-comparison span {display:block;height:5px;min-width:2px;background:#f6e7cf;}
+
+.atlas-console {border-top:1px solid var(--line);padding-top:14px;}
+.atlas-toolbar {padding:10px 0;border-block:1px solid var(--line);}
+.atlas-reading {border-left:2px solid #b4aa8b55;padding-left:14px;}
+
+.ocean-exhibit {position:relative;min-width:0;display:grid;}
+.ocean-light-key {position:absolute;z-index:2;inset:12px auto auto 12px;padding:5px 8px;background:#080b10bf;color:var(--ivory);pointer-events:none;}
