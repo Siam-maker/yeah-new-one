@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check } from "lucide-react";
@@ -51,7 +51,7 @@ export function JourneyConsole({ journeys, initial }: { journeys:Journey[]; init
         onClick={() => { setCurrent(item.id);setPosition(null); }}><span className="mono">0{index+1}</span>{item.title}</button>)}
     </nav>
     <article className="journey-display">
-      <Image src={journey.image} alt="" fill sizes="(max-width:760px) 94vw, 86vw" />
+      <ExhibitImage src={journey.image} alt="" fill sizes="(max-width:760px) 94vw, 86vw" />
       <div><p className="mono section-label">Guided expedition</p><h2 className="subhead">{journey.title}</h2><p>{journey.introduction}</p></div>
     </article>
     <div className="journey-details">

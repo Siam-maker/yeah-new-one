@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import { Masthead, ReferenceList, TextLink } from "@/components/editorial/ui";
 
 export const metadata: Metadata = { title: "About", description: "The editorial purpose, evidence standards, and accessibility of Under the Surface." };
@@ -7,10 +8,16 @@ export default function AboutPage() {
   return <div className="shell">
     <Masthead title="About the publication" category="Under the Surface" description="An independent digital magazine about what’s hidden in plain sight, and how we come to know it." />
     <div className="layout-flow">
-      <div className="editorial-manifesto editorial-paper">
-        <h2 className="subhead">Follow the evidence.</h2>
-        <p>We collect stories, maps and experiments around the same question: how do we know what lies beyond direct observation?</p>
-        <TextLink href="/journeys">Take a guided expedition</TextLink>
+      <div className="about-spread editorial-paper">
+        <div className="editorial-manifesto">
+          <h2 className="subhead">Follow the evidence.</h2>
+          <p>We collect stories, maps and experiments around the same question: how do we know what lies beyond direct observation?</p>
+          <TextLink href="/journeys">Take a guided expedition</TextLink>
+        </div>
+        <figure>
+          <div><ExhibitImage src="/images/strata-wall.webp" alt="Editorial illustration of exposed sedimentary rock layers." fill sizes="(max-width:760px) 90vw, 48vw" /></div>
+          <figcaption>Exposed rock layers · Editorial illustration</figcaption>
+        </figure>
       </div>
       <div className="two-panel editorial-charter">
         <section className="pane"><h2 className="subhead">What we cover</h2><p className="editorial-text">Issue 001 follows familiar things into unfamiliar conditions: life on the far side of daylight, the landscapes recorded in rock, air trapped in ice, and light travelling across space. Each story starts from a concrete observation and traces the evidence outward.</p><div className="mt-4"><TextLink href="/stories">Read the journal</TextLink></div></section>

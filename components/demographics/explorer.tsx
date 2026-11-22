@@ -81,8 +81,7 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
     catch { setShare(url.href); setMessage("Select the link to copy it."); }
   }
 
-  return <div className="population-dashboard">
-    <div className="population-tools">
+  const filters = <div className="population-tools">
       <label>Snapshot year<select className="control-field" value={currentYear} onChange={(event)=>setYear(Number(event.target.value))}>
         {data.years.map((date)=><option key={date} value={date}>{date}{date>2023 ? " · projection" : ""}</option>)}</select></label>
       {!profile && <label>Map indicator<select className="control-field" value={indicator} onChange={(event)=>setIndicator(event.target.value as PopulationIndicator)}>
@@ -96,21 +95,48 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
         {areas.map((item)=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>}
       <label>Compare with<select className="control-field" value={second?.id===country.id ? "" : second?.id ?? ""} onChange={(event)=>setCompare(event.target.value)}>
         <option value="">Choose a country</option>{countries.filter((item)=>item.id!==country.id).map((item)=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-    </div>
-    <div className="population-time">
+    </div>;
+  const timeline = <div className="population-time">
       <label>Move through time <strong>{currentYear}</strong><input type="range" min="0" max={data.years.length-1} value={yearIndex}
         aria-valuetext={`${currentYear} ${currentYear > 2023 ? "projected" : "historical estimate"}`}
         onChange={(event)=>setYear(data.years[event.currentTarget.valueAsNumber])} /></label>
-      <div className="population-time-labels mono"><span>{data.years[0]} · Estimates</span><span>{data.years.at(-1)} · Projections</span></div>
-    </div>
-    {!profile && <div className="population-country-search">
-      <label>Find a country by name or code<input className="control-field" type="search" value={countryQuery} onChange={(event)=>setCountryQuery(event.target.value)} placeholder="Try Japan or BGD" /></label>
-      {normalized && <div className="pill-row" aria-label="Country matches">
-        {countryMatches.length ? countryMatches.map((item)=><button className="ghost-button" type="button" key={item.id} onClick={()=>{
-          setRegion("");setSelected(item.id);setCountryQuery("");
-        }}>{item.name} <span className="mono">{item.id}</span></button>) : <p role="status">No matching countries.</p>}
-      </div>}
-    </div>}
+      <div className="population-time-labels mono" aria-label="Timeline milestones">
+        {[1950, 1980, 2000, 2023, 2050].filter((date) => data.years.includes(date)).map((date) =>
+          <button key={date} type="button" aria-pressed={date === currentYear} onClick={() => setYear(date)}>{date}</button>
+        )}
+      </div>
+    </div>;
+  const ledger = record ? <CountryLedger country={country} record={record} year={currentYear} /> :
+    <p className="pane">This country has no record for the selected year.</p>;
+
+  return <div className="population-dashboard">
+    {profile ? <>
+      {filters}
+      {timeline}
+      <div className="population-chart-grid">
+        {ledger}
+        {comparison[1] && secondRecord && <CountryLedger country={comparison[1]} record={secondRecord} year={currentYear} />}
+      </div>
+    </> : <section className="population-workbench" aria-label="Population map and controls">
+      <div className="population-top">
+        <div className="population-display">
+          <PopulationVisual countries={areas} year={currentYear} indicator={indicator} country={country} compared={comparison[1]} globe={globe} changeGlobe={setGlobe} onSelect={setSelected} />
+          {timeline}
+          {filters}
+        </div>
+        <div className="population-inspector">
+          <div className="population-country-search">
+            <label>Find a country by name or code<input className="control-field" type="search" value={countryQuery} onChange={(event)=>setCountryQuery(event.target.value)} placeholder="Try Japan or BGD" /></label>
+            {normalized && <div className="pill-row" aria-label="Country matches">
+              {countryMatches.length ? countryMatches.map((item)=><button className="ghost-button" type="button" key={item.id} onClick={()=>{
+                setRegion("");setSelected(item.id);setCountryQuery("");
+              }}>{item.name} <span className="mono">{item.id}</span></button>) : <p role="status">No matching countries.</p>}
+            </div>}
+          </div>
+          {ledger}
+        </div>
+      </div>
+    </section>}
     <div className="population-status">
       <p className="mono">{currentYear > 2023 ? "Medium projection · UN WPP 2024" : "Historical estimates · UN WPP 2024"}</p>
       <button className="ghost-button" type="button" onClick={() => void copyLink()}><Link2 size={17} aria-hidden="true" /> Copy exploration link</button>
@@ -119,11 +145,6 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
     {share && <input className="control-field" aria-label="Exploration link" readOnly value={share} onFocus={(event)=>event.target.select()} />}
     {currentYear > 2023 && <p className="population-note">Medium projections use UN assumptions about fertility, mortality and migration. The separate density and urban series end with the historical snapshots.</p>}
 
-    <div className={profile ? "population-chart-grid" : "population-top"}>
-      {!profile && <PopulationVisual countries={areas} year={currentYear} indicator={indicator} country={country} compared={comparison[1]} globe={globe} changeGlobe={setGlobe} onSelect={setSelected} />}
-      {record ? <CountryLedger country={country} record={record} year={currentYear} /> : <p className="pane">This country has no record for the selected year.</p>}
-      {profile && comparison[1]?.records[currentYear] && <CountryLedger country={comparison[1]} record={comparison[1].records[currentYear]} year={currentYear} />}
-    </div>
     {!profile && <div className="population-status">
       <p className="population-note">United Nations world total for {currentYear} · {integer.format(data.world[currentYear-1950])} people.</p>
       <Link className="editorial-link" href={`/demographics/${country.id.toLowerCase()}?year=${currentYear}`}>Open {country.name} profile <ArrowUpRight size={18} aria-hidden="true" /></Link>

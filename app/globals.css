@@ -2,14 +2,14 @@
 @import "./ocean-environment.css";
 
 @theme {
-  --color-ink: #0a0e0d;
-  --color-paper: #f1ebdd;
-  --color-ember: #c87555;
-  --color-cobalt: #b6a9d2;
-  --font-sans: "Manrope Variable", system-ui, sans-serif;
-  --font-display: "Instrument Serif", Georgia, serif;
+  --color-ink: #0b1115;
+  --color-paper: #efe8d9;
+  --color-ember: #c27b5b;
+  --color-cobalt: #b4b4cf;
+  --font-sans: "IBM Plex Sans Variable", system-ui, sans-serif;
+  --font-display: "Newsreader Variable", Georgia, serif;
   --font-serif: var(--font-display);
-  --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 :root {
@@ -18,28 +18,30 @@
   --ivory: var(--color-paper);
   --ember: var(--color-ember);
   --violet: var(--color-cobalt);
-  --night: #111a17;
-  --deep: #142c40;
-  --cyan: #8ac1b9;
-  --amber: #d1a77d;
-  --muted: #b9b4a8;
-  --line: #dcdac432;
-  --panel: #141d19;
+  --night: #111c22;
+  --deep: #173b4a;
+  --teal: #376b70;
+  --cinema-ease: cubic-bezier(.21,.78,.22,1);
+  --cyan: #91bcc4;
+  --amber: #c4a98a;
+  --muted: #b7c0c0;
+  --line: #bfcbcb38;
+  --panel: #17242a;
   --shell: 1440px;
   --gutter: clamp(21px, 5vw, 88px);
   --serif: var(--font-display);
-  --display-weight: 400;
+  --display-weight: 460;
   --display-leading: .94;
-  --paper-warm: #e7e0d2;
-  --paper-ink: #17201b;
-  --paper-muted: #454c43;
+  --paper-warm: #efe8d9;
+  --paper-ink: #17232a;
+  --paper-muted: #405159;
   --paper-line: #5147373d;
-  --forest: #111a17;
-  --mineral: #82705a;
-  --glacial: #9db8c8;
-  --dispatch: #1b2a23;
+  --forest: #192923;
+  --mineral: #b59a77;
+  --glacial: #91bcc4;
+  --dispatch: #20333a;
   --section-space: clamp(55px,8vw,132px);
-  --surface-raised: #1c2721;
+  --surface-raised: #203037;
   --accent: var(--cyan);
   --body-size: clamp(16px, 1.15vw, 18px);
   --text-measure: 64ch;
@@ -64,6 +66,8 @@ body {
   @apply m-0 bg-ink font-sans text-paper antialiased;
   font-size: var(--body-size);
   line-height: 1.55;
+  font-synthesis: none;
+  font-optical-sizing: auto;
 }
 
 ::selection { background: var(--color-ember); color: var(--color-ink); }

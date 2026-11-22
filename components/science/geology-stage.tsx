@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { DoubleSide, MathUtils, SRGBColorSpace, TextureLoader, type Group, type Texture } from "three";
-import { strataBed } from "./terrain";
+import { plateRelief, strataBed } from "./terrain";
 import { earthLayers } from "@/lib/content/earth-interior";
 import type { Boundary, SceneSpec } from "./scene-types";
 
@@ -27,25 +27,37 @@ export function Strata({ layer, active }: { layer: number; active: boolean }) {
   </group>;
 }
 
-export function Tectonic({ boundary, progress }: { boundary: Boundary; progress: number }) {
+export function Tectonic({ boundary, progress, active }: { boundary: Boundary; progress: number; active: boolean }) {
   const amount = progress / 100;
   const convergence = boundary === "convergent";
   const opening = boundary === "divergent";
   const slide = !convergence && !opening;
+  const section = useRef<Group>(null);
+  const relief = useMemo(() => [plateRelief(false), plateRelief(true), plateRelief(true, true)], []);
+  useEffect(() => () => relief.forEach((mesh) => mesh.dispose()), [relief]);
+  useFrame(({ invalidate }, delta) => {
+    if (!section.current) return;
+    const angle = -.46 + amount * (slide ? .16 : -.15);
+    const rotation = section.current.rotation;
+    rotation.y = active ? MathUtils.damp(rotation.y, angle, 6, Math.min(.08, delta)) : angle;
+    if (active && Math.abs(angle - rotation.y) > .003) invalidate();
+  });
 
-  return <group rotation={[-.2, -.46, 0]}>
+  return <group ref={section} rotation-x={-.2}>
     <ambientLight intensity={1.35} /><directionalLight position={[1, 6, 3]} intensity={3} />
     <mesh position={[0, -1.18, 0]}><boxGeometry args={[5.9, .5, 3.2]} /><meshStandardMaterial color="#522936" /></mesh>
     <group position={[-1.4 + (convergence ? amount * .62 : opening ? -amount * .44 : 0), convergence ? -amount * .28 : 0, slide ? -amount * .75 : 0]}
       rotation={[0, 0, convergence ? -amount * .31 : 0]}>
       <mesh position={[0, -.43, 0]}><boxGeometry args={[2.8, .49, 2.9]} /><meshStandardMaterial color="#394a68" /></mesh>
-      <mesh position={[0, -.12, 0]}><boxGeometry args={[2.8, .17, 2.85]} /><meshStandardMaterial color="#6592a0" /></mesh>
+      <mesh position={[0, -.17, 0]}><boxGeometry args={[2.8, .054, 2.9]} /><meshStandardMaterial color="#456872" roughness={.9} /></mesh>
+      <mesh geometry={relief[0]} position={[0, -.141, 0]}><meshStandardMaterial vertexColors roughness={.88} /></mesh>
     </group>
     <group position={[1.4 + (opening ? amount * .44 : 0), 0, slide ? amount * .75 : 0]}>
       <mesh position={[0, -.39, 0]}><boxGeometry args={[2.8, .50, 2.9]} /><meshStandardMaterial color="#8c503e" /></mesh>
-      <mesh position={[0, -.06, 0]}><boxGeometry args={[2.8, .18, 2.85]} /><meshStandardMaterial color="#ba926d" /></mesh>
-      {convergence && amount > .08 && <mesh position={[-.67, amount * .4, -.19]} scale={[.95, amount * 1.6, .75]}>
-        <coneGeometry args={[.84, 1, 6]} /><meshStandardMaterial color="#b6875b" roughness={.95} />
+      <mesh position={[0, -.11, 0]}><boxGeometry args={[2.8, .075, 2.9]} /><meshStandardMaterial color="#a27d58" roughness={.94} /></mesh>
+      <mesh geometry={relief[1]} position={[0, -.071, 0]}><meshStandardMaterial vertexColors roughness={.89} /></mesh>
+      {convergence && amount > .08 && <mesh geometry={relief[2]} position={[-.57, -.04, -.1]} scale={[.95, amount * 1.5, .9]}>
+        <meshStandardMaterial vertexColors roughness={.94} />
       </mesh>}
     </group>
     {opening && amount > .03 && <mesh position={[0, -.41 + amount * .17, 0]}>

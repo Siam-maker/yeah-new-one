@@ -15,7 +15,8 @@ export const populationIndicators = {
   growth: { name: "Annual growth", unit: "%", breaks: [0,.75,1.5,2.5], labels: ["<0","0–0.75","0.75–1.5","1.5–2.5","≥2.5"] },
 } as const;
 export type PopulationIndicator = keyof typeof populationIndicators;
-export const indicatorColors = ["#2f514b","#476f64","#719784","#aabc9f","#dfcba2"] as const;
+export const populationNoValue = "#283942";
+export const indicatorColors = ["#31505b","#527680","#88a4a1","#c7baa1","#f1d2a0"] as const;
 export const ageLabels = Array.from({ length: 21 }, (_, index) => index === 20 ? "100+" : `${index * 5}–${index * 5 + 4}`);
 export const integer = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 export const decimal = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });

@@ -36,17 +36,19 @@ export const caveFragment = /* glsl */ `
     float distanceIn = length(p - cameraPosition);
     float fog = 1.0 - exp(-max(0.0,distanceIn-3.8)*(.035+descent*.035));
     float spill = max(0.0, 1.0 - length(vec2(p.x - 1.5, p.y) * vec2(.22, .31)));
-    vec3 pigment = mix(vec3(.005, .007, .010), vec3(.24, .25, .28), clamp(textureValue * 2.62 + bands * .10 + finer * .03, 0.0, 1.0));
-    vec3 stone = pigment * (.108 + face*.62 + rim*.22) * (.57 + laminatedShadow*.43);
+    float calcite = pow(max(0., sin(p.y * 15. + p.z * 5. - sin(p.x * 7.) * .42)), 19.);
+    vec3 pigment = mix(vec3(.005, .007, .010), vec3(.235, .229, .214), clamp(textureValue * 2.62 + bands * .10 + finer * .03, 0.0, 1.0));
+    pigment += vec3(.075,.067,.052) * calcite * smoothstep(.1,.78,textureValue);
+    vec3 stone = pigment * (.105 + face*.64 + rim*.23) * (.54 + laminatedShadow*.46);
     float damp = (1.-smoothstep(-1.25,.1,p.y)) * (1.-bands*.4);
     float reflected = pow(max(0.,dot(reflect(-lightDirection,inward),viewDirection)),18.);
-    stone += reflected * damp * vec3(.035,.067,.056);
-    stone += vec3(.010, .064, .055) * spill * (.48 + face * .46 + descent * .29) * (.95 + .05 * sin(time * .9));
+    stone += reflected * damp * vec3(.065,.085,.092);
+    stone += vec3(.018, .051, .065) * spill * (.48 + face * .46 + descent * .29) * (.95 + .05 * sin(time * .9));
     stone += vec3(.17,.095,.047) * oblique * (1.0 - fog) * (.40 + bands * .60);
     stone += vec3(.007, .014, .019) * rim;
     float vault = exp(-abs(p.x*.68+p.y*.36-1.15)*1.8) * smoothstep(-25.,-8.,p.z);
     stone += vec3(.028,.037,.035)*vault*(.45+.55*face)*(1.-descent*.62);
-    vec3 grading = mix(vec3(.009,.027,.022),vec3(.009,.020,.023),descent);
+    vec3 grading = mix(vec3(.009,.023,.033),vec3(.006,.015,.023),descent);
     gl_FragColor = vec4(mix(stone, grading, fog*.77), 1.0);
     #include <colorspace_fragment>
   }
@@ -84,6 +86,6 @@ export const moteFragment = /* glsl */ `
   varying float brightness;
   void main() {
     float glow = 1.0 - smoothstep(.06, .49, length(gl_PointCoord - .5));
-    gl_FragColor = vec4(.64,.77,.67,glow*brightness*.56);
+    gl_FragColor = vec4(.65,.75,.81,glow*brightness*.49);
   }
 `;

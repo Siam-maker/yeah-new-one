@@ -22,7 +22,7 @@ function Stage({ scene, profile, active }: { scene: SceneSpec; profile: RenderPr
     case "interior": return <Interior model={scene} active={active} />;
     case "ocean": return <Ocean depth={scene.depth} active={active} profile={profile} />;
     case "strata": return <Strata layer={scene.layer} active={active} />;
-    case "plates": return <Tectonic boundary={scene.boundary} progress={scene.progress} />;
+    case "plates": return <Tectonic boundary={scene.boundary} progress={scene.progress} active={active} />;
     case "cosmos": return <Planetarium model={scene} active={active} />;
     case "globe": return <Globe scene={scene} active={active} profile={profile} />;
   }

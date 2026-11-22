@@ -3,7 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { allowMotion } from "@/components/motion/preferences";
+import { allowMotion, finePointer } from "@/components/motion/preferences";
 import { createScrollMotion } from "@/components/motion/scroll-motion";
 
 export function EditorialMotion({ children }: { children: ReactNode }) {
@@ -68,6 +68,16 @@ export function EditorialMotion({ children }: { children: ReactNode }) {
         resize.disconnect();
         window.clearTimeout(refreshTimer);
       };
+    });
+    media.add(`${allowMotion} and ${finePointer}`, () => {
+      for (const frame of root.querySelectorAll<HTMLElement>(".opening-specimen > div, .edition-journal-lead, .pressure-art, .finale-image")) {
+        const image = frame.querySelector("img");
+        if (!image) continue;
+        gsap.fromTo(image, { yPercent:-4,scale:1.14 }, {
+          yPercent:4,scale:1.14,ease:"none",
+          scrollTrigger:{ trigger:frame,start:"top bottom",end:"bottom top",scrub:.65 },
+        });
+      }
     });
     return () => media.revert();
   }, []);

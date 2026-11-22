@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Layers3 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -36,7 +36,7 @@ export function FeatureSequence({ chapters }: { chapters: Chapter[] }) {
       setIndex(closest);
     }}>
       {chapters.map((chapter) => <Link href={`/stories/${chapter.slug}`} key={chapter.slug} className="sequence-item" data-pointer="tilt">
-        <div className="sequence-image"><Image src={chapter.image} alt="" fill sizes="(max-width:760px) 88vw, 70vw" /></div>
+        <div className="sequence-image"><ExhibitImage src={chapter.image} alt="" fill sizes="(max-width:760px) 88vw, 70vw" /></div>
         <div className="sequence-copy"><p className="mono">{chapter.label}</p><h3>{chapter.title}</h3><p>{chapter.deck}</p><ArrowUpRight size={27} aria-hidden="true" /></div>
       </Link>)}
     </div>
@@ -62,7 +62,7 @@ export function DisciplineExplorer({ items }: { items: TopicSummary[] }) {
       </button>)}
     </div>
     <div className="discipline-preview" key={item.slug}>
-      <div className="discipline-image"><Image src={item.image} alt="" fill sizes="(max-width:850px) 92vw, 56vw" /></div>
+      <div className="discipline-image"><ExhibitImage src={item.image} alt="" fill sizes="(max-width:850px) 92vw, 56vw" /></div>
       <div className="discipline-copy">
         <h3>{item.title}</h3><p>{item.intro}</p>
         <Link className="editorial-link" href={`/topics/${item.slug}`}>Open the topic guide <ArrowUpRight size={17} aria-hidden="true" /></Link>

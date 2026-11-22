@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PopulationMap } from "@/components/demographics/population-map";
 import { usePopulation } from "@/components/demographics/use-population";
-import { decimal, indicatorColors, populationIndicators, type PopulationIndicator } from "@/lib/content/demographics";
+import { decimal, indicatorColors, populationIndicators, populationNoValue, type PopulationIndicator } from "@/lib/content/demographics";
 import countryCenters from "@/public/data/country-centers.json";
 import { LiveScene } from "./live-scene";
 import type { AtlasPoint } from "@/lib/content/atlas";
@@ -23,7 +23,7 @@ export function AtlasPopulation({ indicator, country, year, setYear, globe, zoom
   const countries = useMemo(() => (data?.countries ?? []).filter((item) => region === "All regions" || item.region === region), [data, region]);
   const colors = useMemo(() => Object.fromEntries(countries.map((item) => {
     const value = item.records[usableYear]?.[indicator];
-    return [item.id, value == null ? "#2c332e" : indicatorColors[scale.breaks.filter((stop) => value >= stop).length]];
+    return [item.id, value == null ? populationNoValue : indicatorColors[scale.breaks.filter((stop) => value >= stop).length]];
   })), [countries, usableYear, indicator, scale]);
   if (!data) return <div className="pane" role="status">{error ? <>Population data is unavailable. <button type="button" className="ghost-button" onClick={retry}>Try again</button></> : "Loading country indicators…"}</div>;
   const current = countries.find((item) => item.id === country) ?? countries.find((item) => item.id === "BGD") ?? countries[0];
@@ -39,7 +39,7 @@ export function AtlasPopulation({ indicator, country, year, setYear, globe, zoom
         <LiveScene scene={{ kind:"globe", location:point, points:[], countryColors:colors, showBoundaries:boundaries, bathymetry, heading, zoom,
           markerColor:"#fff4d8", onSelect:select }} fallback={map} explicit onModeChange={onModeChange} />
         <div className="population-legend" aria-label={`Legend, ${scale.unit}`}>{scale.labels.map((label,index) => <span key={label}><i style={{ background:indicatorColors[index] }} />{label}</span>)}
-          <span><i style={{ background:"#2c332e" }} />No value</span></div>
+          <span><i style={{ background:populationNoValue }} />No value</span></div>
       </> : map}
       <details className="reference-fold"><summary>Sources and coverage</summary><p>UN World Population Prospects 2024 supplies population estimates and medium projections. Gapminder distributes the UN density series and World Bank urban shares through 2023 where available. Colors represent national values.</p><Link href="/data/DEMOGRAPHICS.md">Data preparation and limitations</Link></details>
     </div>

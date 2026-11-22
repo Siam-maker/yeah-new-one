@@ -1,22 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { AdditiveBlending, BackSide, Color, MathUtils, Vector3 } from "three";
+import { AdditiveBlending, BackSide, Color, MathUtils, SRGBColorSpace, TextureLoader, Vector3, type Texture } from "three";
 import { displayOrbit, planets } from "@/lib/content/cosmos";
 import { planetSurface } from "./planet-surface";
 import type { SceneSpec } from "./scene-types";
 
 const stars = new Float32Array(1100 * 3);
 const starColors = new Float32Array(stars.length);
+const radiance = new Float32Array(1100);
 for (let i=0;i<1100;i++) {
   const u = i / 1100;
   const theta = i * 2.399963;
-  const phi = Math.acos(1-2*u);
+  const sphere = Math.acos(1-2*u);
+  const phi = i % 3 === 0 ? Math.PI/2 + .2*Math.sin(i*7.13) + .31*Math.cos(theta) : sphere;
   const r = 35 + Math.sin(i*5.4)*6;
   stars.set([r*Math.cos(theta)*Math.sin(phi), r*Math.cos(phi), r*Math.sin(theta)*Math.sin(phi)],i*3);
   const color = new Color(i % 13 === 0 ? "#b5a7f8" : i % 7 === 0 ? "#edce9c" : "#b9ddec");
   starColors.set(color.toArray(),i*3);
+  radiance[i] = .45 + (i % 19 === 0 ? 1.3 : .52 * (1 + Math.sin(i*113.1)) * .5);
 }
 
 const origin = new Vector3();
@@ -27,7 +30,14 @@ const saturnRings = [
 ];
 
 export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:"cosmos"}>; active:boolean }) {
+  const [earth, setEarth] = useState<Texture>();
   const materials = useMemo(() => planets.map((planet) => planetSurface(planet.id, planet.color)), []);
+  useEffect(() => {
+    let current = true;
+    const texture = new TextureLoader().load("/images/earth-map.webp", (result) => { if (current) setEarth(result); });
+    texture.colorSpace = SRGBColorSpace;
+    return () => { current = false; texture.dispose(); };
+  }, []);
   useEffect(() => () => materials.forEach((texture) => texture?.dispose()), [materials]);
   const target = planets.find((item)=>item.id===model.selected) ?? planets[2];
 
@@ -62,7 +72,14 @@ export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:
     <points frustumCulled={false}><bufferGeometry>
       <bufferAttribute attach="attributes-position" args={[stars,3]} />
       <bufferAttribute attach="attributes-color" args={[starColors,3]} />
-    </bufferGeometry><pointsMaterial size={.065} vertexColors transparent opacity={.8} depthWrite={false} /></points>
+      <bufferAttribute attach="attributes-radiance" args={[radiance,1]} />
+    </bufferGeometry><shaderMaterial vertexColors transparent depthWrite={false} blending={AdditiveBlending}
+      vertexShader={`attribute float radiance; varying vec3 pigment; varying float intensity;
+        void main(){ vec4 p=modelViewMatrix*vec4(position,1.); pigment=color; intensity=radiance;
+        gl_Position=projectionMatrix*p; gl_PointSize=clamp(radiance*57./max(9.,-p.z),1.,3.8); }`}
+      fragmentShader={`varying vec3 pigment; varying float intensity;
+        void main(){ float disc=1.-smoothstep(.08,.49,length(gl_PointCoord-.5));
+        gl_FragColor=vec4(pigment,disc*min(.88,intensity*.62)); }`} /></points>
     <ambientLight intensity={.43} /><pointLight position={[0,0,0]} intensity={45} color="#ffe0a7" />
     <mesh><sphereGeometry args={[.43,48,28]} /><shaderMaterial
       vertexShader={`varying vec3 local; varying vec3 n; varying vec3 v; void main(){ local=position; vec4 p=modelViewMatrix*vec4(position,1.); n=normalize(normalMatrix*normal); v=normalize(-p.xyz); gl_Position=projectionMatrix*p; }`}
@@ -80,7 +97,7 @@ export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:
           {model.view === "orbits" && <lineLoop><bufferGeometry><bufferAttribute attach="attributes-position" args={[orbits[index],3]} /></bufferGeometry>
             <lineBasicMaterial color={selected ? "#afa7ff" : "#526187"} transparent opacity={selected ? .96 : .45} /></lineLoop>}
           <group position={[Math.cos(phase)*orbit,0,Math.sin(phase)*orbit]} onClick={(event)=>{event.stopPropagation();model.onSelect(planet.id);}}>
-            <mesh><sphereGeometry args={[radius,26,16]} /><meshStandardMaterial map={materials[index]} color={materials[index] ? "#ffffff" : planet.color} roughness={.85} /></mesh>
+            <mesh><sphereGeometry args={[radius,32,20]} /><meshStandardMaterial map={planet.id === "earth" ? earth ?? materials[index] : materials[index]} color={materials[index] ? "#ffffff" : planet.color} roughness={.85} /></mesh>
             {["earth","venus","uranus","neptune"].includes(planet.id) && <mesh><sphereGeometry args={[radius*1.075,24,14]} />
               <meshBasicMaterial color={planet.color} side={BackSide} transparent opacity={.34} blending={AdditiveBlending} depthWrite={false} />
             </mesh>}

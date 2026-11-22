@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import { displayOrbit, planets, lightMinutesPerAu } from "@/lib/content/cosmos";
 import { LiveScene } from "./live-scene";
 import { decimal, integer } from "@/lib/content/demographics";
 
 function OrbitalDiagram({ selected, years, zoom }: { selected: string; years: number; zoom:number }) {
   return <div className="orbit-diagram">
-    <Image src="/images/observatory.webp" fill sizes="100vw" alt="" />
+    <ExhibitImage src="/images/observatory.webp" fill sizes="100vw" alt="" />
     <svg viewBox={`${270-270/zoom} ${160-160/zoom} ${540/zoom} ${320/zoom}`} role="img" aria-label="Schematic solar system">
       <circle cx="270" cy="164" r="13" fill="#ffda92" />
       {planets.map((planet,index) => {
@@ -37,7 +37,7 @@ export function CosmicWorld() {
     <div className="cosmic-stage">
       <LiveScene scene={{ kind:"cosmos", selected:planet.id, years, view, zoom, onSelect:setSelected }} explicit={enable3D}
         fallback={view === "orbits" ? <OrbitalDiagram selected={planet.id} years={years} zoom={zoom} /> : <div className="orbit-diagram planet-fallback">
-          <Image src="/images/observatory.webp" fill sizes="100vw" alt="" />
+          <ExhibitImage src="/images/observatory.webp" fill sizes="100vw" alt="" />
           <svg viewBox="0 0 540 320" role="img" aria-label={`${planet.name} illustration`}>
             {planet.id === "saturn" && <ellipse cx="270" cy="160" rx={86*zoom} ry={26*zoom} fill="none" stroke="#d5bb94" strokeWidth={9*zoom} transform="rotate(-22 270 160)" />}
             <circle cx="270" cy="160" r={55*zoom} fill={planet.color} />

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
@@ -21,7 +21,7 @@ export default function LabPage() {
     <div className="layout-flow">
       <section><SectionHeading title="Three worlds" />
         <div className="world-collection">{worlds.map((world) => <Link href={world.href} className="world-link" key={world.href}>
-          <Image src={world.image} alt="" fill sizes="(max-width: 620px) 100vw, 35vw" /><div><p className="mono">{world.discipline}</p><h3>{world.name}</h3><p>{world.description}</p></div><ArrowUpRight size={23} aria-hidden="true" />
+          <ExhibitImage src={world.image} alt="" fill sizes="(max-width: 620px) 100vw, 35vw" /><div><p className="mono">{world.discipline}</p><h3>{world.name}</h3><p>{world.description}</p></div><ArrowUpRight size={23} aria-hidden="true" />
         </Link>)}</div></section>
       <DiscoveryIndex heading="Choose an experiment" pageSize={12} showMaterial={false}
         entries={labs.map((lab)=>({ title:lab.title,description:lab.description,href:`/lab/${lab.slug}`,kind:lab.discipline,topics:[lab.discipline] }))}

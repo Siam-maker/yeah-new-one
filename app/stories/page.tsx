@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { JournalIndex } from "@/components/editorial/journal-index";
@@ -20,7 +20,7 @@ export default function StoriesPage() {
     <div className="layout-flow">
       <article className="journal-cover">
         <div><p className="mono section-label">Cover story · {readingMinutes(cover)} min read</p><h2 className="subhead">{cover.title}</h2><p className="standfirst">{cover.deck}</p><Link className="editorial-link mt-4" href={`/stories/${cover.slug}`}>Read the cover story</Link></div>
-        <div className="journal-cover-image"><Image src={cover.image} alt={cover.imageDescription} fill sizes="(max-width:760px) 90vw, 46vw" /></div>
+        <div className="journal-cover-image"><ExhibitImage src={cover.image} alt={cover.imageDescription} fill sizes="(max-width:760px) 90vw, 46vw" /></div>
       </article>
       <JournalIndex groups={groups} categories={categories} />
     </div>

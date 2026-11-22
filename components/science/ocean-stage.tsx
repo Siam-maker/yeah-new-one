@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { AdditiveBlending, Color, DoubleSide, Fog, MathUtils, type Group } from "three";
 import { zoneAt } from "@/lib/content/ocean";
 import { terrainSurface } from "./terrain";
+import { pelagicFins, pelagicMesh } from "./pelagic-mesh";
 import type { RenderProfile } from "./render-profile";
 
 const particulates = new Float32Array(Array.from({ length: 154 }, (_, i) => [
@@ -23,6 +24,16 @@ const shaftVertex = `
     surface=uv;
     gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);
   }`;
+const surfaceFragment = `
+  varying vec2 surface;
+  void main(){
+    vec2 uv=surface*vec2(19.,12.);
+    float wind=sin(uv.x*1.3+sin(uv.y*.8)*1.6)*cos(uv.y*1.4+uv.x*.26);
+    float broken=sin(uv.x*2.+uv.y*1.9)*sin(uv.y*1.5+uv.x*.27);
+    float crest=pow(max(0.,wind*.57+broken*.47),3.);
+    float edge=smoothstep(0.,.19,surface.y)*smoothstep(0.,.16,surface.x)*smoothstep(0.,.16,1.-surface.x);
+    gl_FragColor=vec4(.39,.62,.68,(.07+crest*.45)*edge);
+  }`;
 const shaftFragment = `
   uniform float clarity;
   varying vec2 surface;
@@ -42,32 +53,35 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
   const dust = useRef<Group>(null);
   const school = useRef<Group>(null);
   const { invalidate } = useThree();
+  const fish = useMemo(() => [pelagicMesh(), pelagicFins()] as const, []);
+  useEffect(() => () => fish.forEach((geometry) => geometry.dispose()), [fish]);
   const seabed = useMemo(() => terrainSurface(layer.id), [layer.id]);
   const particles = useMemo(() => particulates.slice(0,habitat.particles*3), [habitat.particles]);
   useEffect(() => () => seabed.dispose(), [seabed]);
   const fogTarget = useMemo(() => new Color(layer.fog), [layer.fog]);
 
   useEffect(() => {
-    if (!active) return;
+    if (!active || profile.name === "low") return;
     const timer = window.setInterval(invalidate, profile.frameMs);
     return () => window.clearInterval(timer);
-  }, [active, invalidate, profile.frameMs]);
+  }, [active, invalidate, profile.frameMs, profile.name]);
 
   useFrame(({ camera, clock, scene }, delta) => {
-    const ease = active ? 1 - Math.exp(-3 * Math.min(delta, .1)) : 1;
+    const animated = active && profile.name !== "low";
+    const ease = animated ? 1 - Math.exp(-3 * Math.min(delta, .1)) : 1;
     if (scene.background instanceof Color) scene.background.lerp(fogTarget, ease);
     if (scene.fog instanceof Fog) {
       scene.fog.color.lerp(fogTarget, ease);
       scene.fog.far = MathUtils.lerp(scene.fog.far, habitat.visibility, ease);
     }
     const y = 2.4 - Math.log10(1 + depth / 100) * 2.45;
-    camera.position.y = active ? MathUtils.damp(camera.position.y, y, 3, Math.min(delta, .1)) : y;
+    camera.position.y = animated ? MathUtils.damp(camera.position.y, y, 3, Math.min(delta, .1)) : y;
     const z = 8.6-Math.log10(1+depth/195)*1.7;
-    camera.position.z = active ? MathUtils.damp(camera.position.z,z,2.6,Math.min(delta,.1)) : z;
+    camera.position.z = animated ? MathUtils.damp(camera.position.z,z,2.6,Math.min(delta,.1)) : z;
     camera.lookAt(0,camera.position.y-.64,-5.2);
     if (ground.current) ground.current.position.y = MathUtils.lerp(ground.current.position.y,habitat.bed,ease);
-    if (dust.current) dust.current.rotation.z = active ? clock.elapsedTime * .025 : 0;
-    if (school.current) school.current.position.x = active ? Math.sin(clock.elapsedTime * .35) * 1.7 : 0;
+    if (dust.current) dust.current.rotation.z = animated ? clock.elapsedTime * .025 : 0;
+    if (school.current) school.current.position.x = animated ? Math.sin(clock.elapsedTime * .35) * 1.7 : 0;
   });
 
   return <>
@@ -85,6 +99,11 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
         <pointsMaterial size={depth >= 4000 ? .075 : .045} color={depth >= 4000 ? "#c4dbde" : "#7eb5ee"} transparent opacity={habitat.density} depthWrite={false} />
       </points>
     </group>
+    {layer.id === "sunlight" && <mesh rotation={[-Math.PI/2,0,0]} position={[0,4,-13]}>
+      <planeGeometry args={[34,34]} />
+      <shaderMaterial vertexShader={shaftVertex} fragmentShader={surfaceFragment} side={DoubleSide}
+        transparent depthWrite={false} blending={AdditiveBlending} toneMapped={false} />
+    </mesh>}
     {depth < 1000 && <group rotation={[0,.19,-.27]} position={[-1,4.5,-10]}>
       {[0,1,2].slice(0,profile.name==="low" ? 2 : 3).map((ray)=><mesh key={ray} position={[ray*2.48,0,-ray*.57]}>
         <planeGeometry args={[3.8+ray*.9,16]} />
@@ -109,12 +128,13 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
       {Array.from({ length: depth < 200 ? 8 : 5 }, (_, index) => (
         <group key={index} position={[-4 + index * 1.42, Math.sin(index * 1.65) * 1.1, -3 - index % 4 * 1.7]}
           rotation={[0, index % 2 ? .34 : -.31, Math.sin(index) * .1]} scale={depth > 1000 ? .8 + index % 2 * .25 : .52}>
-          <mesh scale={[.92, .34, .22]}>
-            <sphereGeometry args={[1, 12, 8]} /><meshStandardMaterial color={layer.id === "sunlight" ? "#618ca3" : layer.id === "twilight" ? "#44546c" : "#2b263c"} roughness={.8} />
+          <mesh geometry={fish[0]}>
+            <meshStandardMaterial vertexColors color={layer.id === "midnight" ? "#6e7890" : "#ffffff"} metalness={.15} roughness={.55} side={DoubleSide} />
           </mesh>
-          <mesh position={[-1.05, 0, 0]} rotation={[0, 0, -Math.PI / 2]} scale={[.73, 1, .3]}>
-            <coneGeometry args={[.39, .72, 6]} /><meshStandardMaterial color="#203f56" />
+          <mesh geometry={fish[1]}>
+            <meshStandardMaterial color="#627e8c" transparent opacity={.77} roughness={.8} side={DoubleSide} />
           </mesh>
+          <mesh position={[.58,.054,.10]}><sphereGeometry args={[.043,8,6]} /><meshStandardMaterial color="#151d20" roughness={.28} /></mesh>
           {depth >= 200 && [0,1,2].map((point) => <mesh key={point} position={[.45-point*.25,-.12,.21]}>
             <sphereGeometry args={[layer.id === "midnight" ? .055 : .034,7,7]} /><meshBasicMaterial color={layer.id === "midnight" ? "#8ceeee" : "#9faeff"} />
           </mesh>)}

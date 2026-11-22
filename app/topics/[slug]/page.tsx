@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import { Masthead, ReferenceList, StoryTiles, TextLink } from "@/components/editorial/ui";
 import { ScienceDiagram } from "@/components/editorial/diagram";
 import { RecordVisit } from "@/components/publishing/reading-preferences";
@@ -28,7 +28,7 @@ export default async function TopicPage({ params }: Props) {
     <div className="topic-hero">
       <Masthead title={topic.title} category="Topic guide" description={topic.intro}
         crumbs={[{ label: "Topics", href: "/topics" }, { label: topic.title }]} />
-      <div className="topic-hero-image"><Image src={topic.image} alt="" fill sizes="(max-width: 760px) 92vw, 50vw" /></div>
+      <div className="topic-hero-image"><ExhibitImage src={topic.image} alt="" fill sizes="(max-width: 760px) 92vw, 50vw" /></div>
     </div>
     <div className="layout-flow">
       <div className="two-panel"><section><h2 className="subhead">The science</h2><p className="editorial-text">{topic.background}</p>

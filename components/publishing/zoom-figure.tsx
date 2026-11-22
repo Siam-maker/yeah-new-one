@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import { useId, useRef, useState } from "react";
 import { Maximize2, Minus, Plus, X } from "lucide-react";
 
@@ -12,7 +13,7 @@ export function ZoomFigure({ source, caption }: { source: string; caption: strin
 
   return <figure>
     <div className="article-image">
-      <Image src={source} alt={caption} fill preload sizes="(max-width:800px) 92vw, 48vw" />
+      <ExhibitImage src={source} alt={caption} fill preload sizes="(max-width:800px) 92vw, 48vw" />
       <button className="ghost-button figure-trigger" ref={trigger} type="button" onClick={() => { setScale(1); dialog.current?.showModal(); }}>
         <Maximize2 size={17} aria-hidden="true" /> Enlarge figure
       </button>

@@ -5,7 +5,7 @@ import { ArrowDown, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { allowMotion, finePointer } from "@/components/motion/preferences";
 import { createScrollMotion } from "@/components/motion/scroll-motion";
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import Link from "next/link";
 import { AbyssStage, type AbyssCamera } from "./abyss/abyss-stage";
 
@@ -57,7 +57,7 @@ export function Hero() {
 
   return <section className="hero edition-hero" ref={hero} aria-labelledby="hero-title">
     <div aria-hidden="true" className="hero-art"><div className="hero-art-frame">
-      <div className="hero-art-image"><Image src="/images/cavern-threshold.webp" alt="" fill fetchPriority="high" loading="eager" sizes="100vw" /></div>
+      <div className="hero-art-image"><ExhibitImage src="/images/cavern-threshold.webp" alt="" fill fetchPriority="high" loading="eager" sizes="100vw" /></div>
       <AbyssStage camera={camera} />
       <div className="hero-haze" />
     </div></div>

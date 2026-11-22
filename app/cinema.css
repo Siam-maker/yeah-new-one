@@ -1,0 +1,102 @@
+/* Route-level projection uses the same editorial plates as the publication. */
+.route-curtain {position:fixed;inset:0;z-index:100;visibility:hidden;pointer-events:none;overflow:hidden;isolation:isolate;background:var(--curtain-tint,var(--night));color:var(--color-paper);}
+.curtain-plate {position:absolute;z-index:-2;inset:0;background-position:center;background-size:cover;filter:saturate(.62) contrast(1.13);}
+.route-curtain::after {position:absolute;z-index:-1;inset:0;content:"";background:linear-gradient(82deg,#0b1115f3 7%,#0b1115b8 43%,#0b111533 100%),color-mix(in srgb,var(--curtain-tint) 27%,transparent);}
+.curtain-copy {display:grid;align-content:center;gap:11px;width:min(calc(100% - var(--gutter)*2),var(--shell));height:100%;margin:auto;}
+.curtain-channel {font:400 .85rem/1.5 var(--font-mono);letter-spacing:.02em;color:#d3c1a8;}
+.curtain-heading {font:470 clamp(2.35rem,7vw,7rem)/.95 var(--font-display);max-width:16ch;text-wrap:balance;}
+.curtain-seam {position:absolute;bottom:12%;inset-inline:var(--gutter);border-top:1px solid #dfb591aa;transform-origin:left;}
+.route-curtain[data-direction="back"] .curtain-seam {transform-origin:right;}
+@media(prefers-reduced-motion:reduce) {.route-curtain {display:none;}}
+
+/* Optical sizes follow each heading's rendered size. Numerals use the Mono face. */
+.mono {font:400 .78rem/1.5 var(--font-mono);letter-spacing:0;}
+.mono.section-label,.chapter-tag {font:500 .85rem/1.45 var(--font-mono);letter-spacing:0;}
+.ghost-button,.editorial-link {font-weight:580;}
+.edition-header .brand {font-size:1.68rem;font-weight:470;letter-spacing:-.04em;}
+.edition-header .brand-mark {color:var(--amber);}
+.edition-navigation {display:flex;gap:clamp(16px,2.7vw,43px);}
+.nav-channel {display:flex;align-items:center;gap:clamp(14px,1.75vw,30px);}
+.nav-channel + .nav-channel {border-inline-start:1px solid var(--line);padding-inline-start:clamp(16px,2.7vw,43px);}
+.edition-navigation a {font:510 .91rem/1.2 var(--font-sans);}
+.edition-header-actions {border-inline-start:1px solid var(--line);padding-inline-start:12px;}
+.edition-menu {background:var(--night);}
+.page-masthead h1 {font-weight:490;letter-spacing:-.045em;}
+.page-masthead p.standfirst {font-weight:410;}
+.subhead {font-weight:505;}
+.editorial-text,.article-body p {line-height:1.67;}
+.article-body p {font-weight:410;}
+.article-body blockquote {font-weight:490;}
+.article-caption {font-family:var(--font-sans);letter-spacing:.01em;}
+.edition-menu-inner .section-label {font-family:var(--font-display);font-size:1.55rem;}
+@media(max-width:1023px) {.edition-navigation {display:none;}.edition-header-actions {border:0;padding:0;}}
+@media(max-width:530px) {.edition-header .brand {font-size:1.37rem;}.edition-header .brand-mark {width:24px;}}
+
+/* Regional plates preserve their own color temperature and framing. */
+img[data-grade="limestone"] {filter:saturate(.76) contrast(1.08);object-position:61% 46%;}
+img[data-grade="mineral"] {filter:saturate(.79) contrast(1.1) sepia(.08);object-position:61% 54%;}
+img[data-grade="basalt"] {filter:saturate(.55) contrast(1.14);}
+img[data-grade="pelagic"] {filter:saturate(.82) contrast(1.09) hue-rotate(-5deg);object-position:62% center;}
+img[data-grade="midnight"] {filter:saturate(.72) contrast(1.12);object-position:62% 44%;}
+img[data-grade="glacial"] {filter:saturate(.64) contrast(1.03);object-position:60% 58%;}
+img[data-grade="harbor"] {filter:saturate(.72) contrast(1.09) sepia(.08);object-position:45% 65%;}
+img[data-grade="organic"] {filter:saturate(.77) contrast(1.08) sepia(.12);}
+img[data-grade="cosmic"] {filter:saturate(.69) contrast(1.12);object-position:62% center;}
+.edition-journal-lead img,.journal-cover-image img,.article-image img,.field-report-image img,.world-link img,.journey-display img {
+  transition:transform .62s var(--cinema-ease);
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  .world-link:hover img,.journey-cover-link:hover img,.edition-journal-lead:hover img {transform:scale(1.035);}
+}
+
+[data-discipline="ocean"] {--environment:#142c3b;--accent:#a2cbd2;}
+[data-discipline="earth"] {--environment:#312921;--accent:#d9b492;}
+[data-discipline="space"] {--environment:#222637;--accent:#c9c7dd;}
+[data-discipline="climate"] {--environment:#253941;--accent:#b7d1d0;}
+[data-discipline="signals"] {--environment:#26353c;--accent:#accad2;}
+[data-discipline="biodiversity"] {--environment:#273329;--accent:#c0cca4;}
+[data-discipline="footprint"] {--environment:#392e29;--accent:#e0b29a;}
+
+.edition-hero .hero-title {font-weight:470;font-size:clamp(92px,11.6vw,180px);line-height:.86;}
+.edition-hero .hero-title-mask {clip-path:inset(-.13em -.14em -.21em -.055em);}
+.edition-hero .hero-title-mask + .hero-title-mask {margin-left:.33em;}
+.edition-hero .hero-index,.edition-hero .hero-bottom {font-family:var(--font-mono);font-weight:400;}
+.edition-hero .hero-haze {background:radial-gradient(ellipse at 70% 26%,#e0aa782a,transparent 49%);}
+.edition-hero .hero-art-image img {object-position:66% 52%;}
+.edition-hero .index-rule {background:var(--amber);}
+.opening-specimen > div,.edition-journal-lead,.pressure-art,.finale-image,.sequence-image {overflow:hidden;}
+.about-spread {display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);}
+.about-spread .editorial-manifesto {display:block;align-self:center;padding:clamp(22px,5.5vw,80px);}
+.about-spread .editorial-manifesto h2 {font-size:clamp(49px,6.4vw,102px);margin-bottom:.19em;}
+.about-spread .editorial-manifesto a {margin-top:19px;}
+.about-spread figure {display:grid;grid-template-rows:minmax(276px,1fr) auto;min-width:0;}
+.about-spread figure > div {position:relative;}
+.about-spread figcaption,.story-spread .article-caption {background:var(--night);color:var(--color-paper);padding:10px 15px;font:400 .79rem/1.5 var(--font-mono);}
+.edition-journal-list article > p:first-child,.atlas-legend,.population-legend {font-family:var(--font-mono);}
+.discipline-selector button {transition:background .3s,border-color .3s;}
+.discipline-selector button[aria-pressed="true"] {background:var(--environment,var(--panel));border-color:var(--accent);}
+.discipline-selector button svg {transition:transform .26s var(--cinema-ease);}
+.discipline-preview {background:var(--environment,var(--panel));}
+[data-route="glossary"] .result-list,[data-route="search"] .result-list {border-top:1px solid var(--line);}
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  .discipline-selector button:hover svg {transform:translate(3px,-3px);}
+  .sequence-image img {transition:transform .68s var(--cinema-ease);}
+  .sequence-item:hover img {transform:translate(calc(var(--pointer-x,0)*-12px),calc(var(--pointer-y,0)*-10px)) scale(1.065);}
+}
+@media(min-width:1024px) and (prefers-reduced-motion:no-preference) {
+  .opening-spread [data-reveal="handoff"] {position:sticky;top:clamp(65px,11vh,135px);align-self:start;}
+}
+@media(min-width:1024px) {
+  .edition-hero .hero-content {align-self:flex-start;margin-inline-start:clamp(12px,5vw,90px);}
+  .edition-hero .hero-title-mask + .hero-title-mask {margin-inline-start:.57em;}
+}
+@media(max-width:1023px) {
+  .edition-hero .hero-title {font-size:clamp(70px,14.2vw,141px);}
+}
+@media(max-width:700px) {
+  .edition-hero .hero-title {font-size:clamp(57px,16.8vw,102px);}
+  .edition-hero .hero-title-mask + .hero-title-mask {margin-left:.21em;}
+  .edition-hero .hero-art-image img {object-position:67% center;}
+  .about-spread {grid-template-columns:minmax(0,1fr);}
+  .about-spread figure {grid-template-rows:minmax(226px,1fr) auto;}
+}

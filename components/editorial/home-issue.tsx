@@ -1,5 +1,5 @@
 import { ArrowRight, ArrowUpRight, Search } from "lucide-react";
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import Link from "next/link";
 import { articles, readingMinutes } from "@/lib/content/articles";
 import { fieldNotes } from "@/lib/content/field-notes";
@@ -34,7 +34,7 @@ export function HomeIssue() {
           <p>Light in the deep ocean. Air trapped in ancient ice. Continents that move a few centimetres a year. Follow the evidence into the parts of our world that rarely come into view.</p>
         </div>
         <figure className="opening-specimen" data-reveal="plate">
-          <div><Image src="/images/strata-wall.webp" alt="Illustration of exposed sedimentary rock layers." fill sizes="(max-width:700px) 88vw, 32vw" /></div>
+          <div><ExhibitImage src="/images/strata-wall.webp" alt="Illustration of exposed sedimentary rock layers." fill sizes="(max-width:700px) 88vw, 32vw" /></div>
           <figcaption><span>Layers of sedimentary rock</span><TextLink href="/stories/the-memory-of-rock">Read the story</TextLink></figcaption>
         </figure>
       </div>
@@ -66,7 +66,7 @@ export function HomeIssue() {
         </div>
         <div className="edition-journal-layout">
           <div className="edition-journal-lead" data-reveal="plate">
-            <Image src="/images/ice-margin.webp" alt="Editorial illustration of a glacial ice margin." fill sizes="(max-width:760px) 92vw, 51vw" />
+            <ExhibitImage src="/images/ice-margin.webp" alt="Editorial illustration of a glacial ice margin." fill sizes="(max-width:760px) 92vw, 51vw" />
             <Link href="/stories/reading-a-warmer-world">Read the cover story <ArrowUpRight size={21} aria-hidden="true" /></Link>
           </div>
           <div className="edition-journal-list">{latest.map((slug)=>{
@@ -79,7 +79,7 @@ export function HomeIssue() {
     </section>
 
     <section className="edition-lab pressure-room" data-discipline="ocean">
-      <div className="pressure-art"><Image src="/images/ocean-column.webp" alt="" fill sizes="100vw" /></div>
+      <div className="pressure-art"><ExhibitImage src="/images/ocean-column.webp" alt="" fill sizes="100vw" /></div>
       <div className="shell edition-section edition-lab-layout">
         <div>
           <p className="section-label">Interactive laboratory</p><h2>Feel the weight<br /> <em>of the ocean.</em></h2>
@@ -111,7 +111,7 @@ export function HomeIssue() {
       <div className="shell edition-section">
         <div className="edition-section-head" data-reveal="handoff"><div><p className="section-label">Guided expeditions</p><h2>Choose your route.</h2></div><TextLink href="/journeys">All journeys</TextLink></div>
         <div className="journey-spread">
-          <Link className="journey-cover-link" href="/journeys?route=mariana" data-reveal="plate"><Image src="/images/deep-sea.webp" alt="" fill sizes="(max-width:760px) 92vw,48vw" />
+          <Link className="journey-cover-link" href="/journeys?route=mariana" data-reveal="plate"><ExhibitImage src="/images/deep-sea.webp" alt="" fill sizes="(max-width:760px) 92vw,48vw" />
             <span>Into the Mariana Trench <ArrowUpRight size={19} aria-hidden="true" /></span>
           </Link>
           <ol>{journeys.map((journey)=><li key={journey.id}><Link href={`/journeys?route=${journey.id}`}><h3>{journey.title}</h3><p>{journey.introduction}</p><ArrowUpRight size={17} aria-hidden="true" /></Link></li>)}</ol>
@@ -151,7 +151,7 @@ export function HomeIssue() {
     </section>
 
     <section className="edition-finale">
-      <div className="finale-image"><Image src="/images/observatory.webp" alt="" fill sizes="100vw" /></div>
+      <div className="finale-image"><ExhibitImage src="/images/observatory.webp" alt="" fill sizes="100vw" /></div>
       <div className="shell finale-content" data-reveal="handoff">
         <h2>Keep <em>looking.</em></h2><TextLink href="/field-notes">Read the field notes</TextLink>
       </div>

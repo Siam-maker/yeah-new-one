@@ -1,6 +1,6 @@
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import type { ReactNode } from "react";
 import { articles, readingMinutes } from "@/lib/content/articles";
 import { labs, sources, topics, type SourceKey } from "@/lib/content/publication";
@@ -51,7 +51,7 @@ export function ReferenceList({ keys }: { keys: readonly SourceKey[] }) {
 
 export function Tile({ title, image, href, meta, description }: { title: string; image: string; href: string; meta: string; description: string }) {
   return <Link className="editorial-tile" href={href} data-pointer="tilt">
-    <div className="tile-image"><Image src={image} alt="" fill sizes="(max-width: 430px) 90vw,(max-width: 760px) 45vw, 31vw" /></div>
+    <div className="tile-image"><ExhibitImage src={image} alt="" fill sizes="(max-width: 430px) 90vw,(max-width: 760px) 45vw, 31vw" /></div>
     <div className="tile-copy"><p className="mono tile-meta">{meta}</p><h3>{title}</h3><p className="editorial-text">{description}</p></div>
   </Link>;
 }

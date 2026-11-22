@@ -12,6 +12,7 @@ import { Brand } from "./brand";
 
 const journeys = { label: "Journeys", href: "/journeys" };
 const primary = navigation.map((link) => link.href === "/field-notes" ? journeys : link);
+const channels = [primary.slice(0,3),primary.slice(3)];
 const references = [{ label: "Knowledge graph", href: "/connections" }, { label: "Demographics observatory", href: "/demographics" }, { label: "Scientific glossary", href: "/glossary" }, { label: "Your reading desk", href: "/library" }, { label: "About the publication", href: "/about" }];
 
 export function Header({ entries }: { entries: SearchEntry[] }) {
@@ -28,9 +29,9 @@ export function Header({ entries }: { entries: SearchEntry[] }) {
   }}>
     <div className="shell edition-header-row">
       <Brand />
-      <nav className="edition-navigation" aria-label="Main navigation">{primary.map(({ label, href }) => (
-        <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}</Link>
-      ))}</nav>
+      <nav className="edition-navigation" aria-label="Main navigation">{channels.map((links,index) => <div className="nav-channel" key={index}>
+        {links.map(({ label, href }) => <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}</Link>)}
+      </div>)}</nav>
       <div className="edition-header-actions">
         <SearchOverlay entries={entries} />
         <button className="edition-menu-toggle" id="menu-toggle" type="button" aria-expanded={open} aria-controls="edition-menu"
