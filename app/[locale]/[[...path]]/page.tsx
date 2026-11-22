@@ -117,7 +117,7 @@ export default async function LocalizedPage({params,searchParams}: Props) {
         <div className="pill-row"><Link href={path === "/learn" ? "#locale-courses" : link(path === "/" ? "/explore" : "/learn")} className="button button-accent">{path === "/" ? dictionary.nav["/explore"] : dictionary.nav["/learn"]}</Link>
           <Link href={link("/lab")} className="ghost-button">{dictionary.nav["/lab"]}</Link><Link href={link("/world")} className="ghost-button">{dictionary.nav["/world"]}</Link></div>
       </div>
-      <div className="locale-plate"><ExhibitImage src="/images/basalt-inlet.webp" fill alt="" preload sizes="(max-width:760px) 92vw, 45vw" /></div>
+      <div className="locale-plate"><ExhibitImage src="/images/basalt-inlet.webp" fill alt="" preload fetchPriority="high" sizes="(max-width:760px) 92vw, 45vw" /></div>
     </header>
     <section className="locale-lessons" id="locale-courses">
       <div><h2 className="subhead">{dictionary.page.orientation}</h2><p>{dictionary.page.method}</p><p className="locale-coverage">{dictionary.ui.coverage}</p></div>

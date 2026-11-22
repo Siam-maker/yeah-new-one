@@ -49,7 +49,7 @@ export function Hero() {
 
   return <section className="hero edition-hero" ref={hero} aria-labelledby="hero-title">
     <div aria-hidden="true" className="hero-art"><div className="hero-art-frame">
-      <div className="hero-art-image"><ExhibitImage src="/images/basalt-inlet.webp" alt="" fill preload sizes="(max-width: 740px) 100vw, 74vw" /></div>
+      <div className="hero-art-image"><ExhibitImage src="/images/basalt-inlet.webp" alt="" fill preload fetchPriority="high" sizes="(max-width: 740px) 100vw, 74vw" /></div>
       <AbyssStage camera={camera} enabled={enableCave} onWakeChange={onWakeChange} />
       <div className="hero-haze" />
     </div></div>
