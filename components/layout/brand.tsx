@@ -7,8 +7,8 @@ export function BrandMark() {
   </svg>;
 }
 
-export function Brand() {
-  return <Link className="brand" href="/" aria-label="Under the Surface home">
-    <BrandMark /><span>Under the <em>Surface</em></span>
+export function Brand({ href = "/" }: { href?: string } = {}) {
+  return <Link className="brand" href={href} aria-label="Under the Surface home">
+    <BrandMark /><span lang="en" dir="ltr">Under the <em>Surface</em></span>
   </Link>;
 }

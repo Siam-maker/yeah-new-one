@@ -61,13 +61,15 @@ export function Hero() {
           <span className="hero-title-mask"><em className="hero-word">beneath.</em></span>
         </h1>
         <div className="hero-brief">
-          <p className="hero-description">A field guide to the forces that shape oceans, rock, and distant worlds.</p>
-          <a href="#discoveries" className="button button-accent">
-            <span className="button-content">Begin the descent <ArrowDown size={17} aria-hidden="true" /></span>
-          </a>
+          <p className="hero-description">Explore the hidden systems shaping our planet and universe through science, interactive 3D experiences, real-world data, visual stories and experiments.</p>
+          <div className="pill-row hero-actions">
+            <Link href="/explore" className="button button-accent">Explore <ArrowUpRight size={16} aria-hidden="true" /></Link>
+            <Link href="/lab" className="ghost-button">Interactive Labs</Link>
+          </div>
         </div>
       </div>
       <div className="hero-bottom">
+        <a href="#discoveries">Begin the descent <ArrowDown size={15} aria-hidden="true" /></a>
         <a href="#introduction">Skip introduction <ArrowDown size={15} aria-hidden="true" /></a>
         <Link href="/lab/ocean-depth" prefetch={false}>Enter the depth lab <ArrowUpRight size={15} aria-hidden="true" /></Link>
         <button className="hero-scene-toggle" type="button" aria-pressed={enableCave} onClick={() => setEnableCave(!enableCave)}>3D cave</button>

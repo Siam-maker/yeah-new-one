@@ -1,3 +1,4 @@
+import { learningTracks } from "@/lib/content/learning-index";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ExhibitImage } from "@/components/editorial/exhibit-image";
@@ -43,6 +44,10 @@ export default async function TopicPage({ params }: Props) {
       <section><h2 className="subhead">Read the evidence</h2><DisciplineInstrument slug={slug} /></section>
       <section><h2 className="subhead">Further reading</h2><StoryTiles slugs={topic.articles} /></section>
       <section className="topic-reference"><h2 className="subhead">References</h2><ReferenceList keys={topic.sources} /><div className="mt-5"><TextLink href={`/connections?node=topic-${slug}`}>Explore this discipline’s connections</TextLink></div></section>
+    </div>
+    <div className="pill-row topic-learning">
+      {learningTracks.filter((track) => track.topic === slug).map((track) => <TextLink key={track.id} href={`/learn/${track.id}`}>{track.title}</TextLink>)}
+      <TextLink href="/learn">All learning courses</TextLink>
     </div>
   </div>;
 }

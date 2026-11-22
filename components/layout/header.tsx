@@ -4,52 +4,63 @@ import { ArrowUpRight, PanelsTopLeft, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { navigation, topics } from "@/lib/content/publication";
+import { topics } from "@/lib/content/publication";
+import { learningTracks } from "@/lib/content/learning-index";
+import { direction, htmlLanguage, localizedPath, splitLocale } from "@/lib/i18n/routing";
+import { messages } from "@/lib/i18n/messages";
 import { SearchOverlay } from "@/components/search/search-panel";
 import { ReadingModeButton } from "@/components/publishing/reading-preferences";
 import { Brand } from "./brand";
+import { LanguageSwitch } from "./language-switch";
 
-const journeys = { label: "Journeys", href: "/journeys" };
-const primary = navigation.map((link) => link.href === "/field-notes" ? journeys : link);
-const channels = [primary.slice(0,3),primary.slice(3)];
-const references = [{ label: "Knowledge graph", href: "/connections" }, { label: "Demographics observatory", href: "/demographics" }, { label: "Scientific glossary", href: "/glossary" }, { label: "Your reading desk", href: "/library" }, { label: "About the publication", href: "/about" }];
+const channels = [["/explore","/learn","/topics","/stories"],["/lab","/atlas","/journeys"]] as const;
+const index = ["/explore","/learn","/topics","/stories","/field-notes","/lab","/world","/atlas","/journeys"] as const;
+const references = ["/connections","/demographics","/glossary","/library","/learn/teaching","/about"] as const;
 
 export function Header() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
-  const current = (href: string) => pathname === href ? "page" : pathname.startsWith(href + "/") ? "location" : undefined;
+  const {locale,path} = splitLocale(pathname);
+  const dictionary = messages[locale];
+  const [menu,setMenu] = useState<string | null>(null);
+  const open = menu === pathname;
+  const close = () => setMenu(null);
+  const target = (href: string) => localizedPath(href,locale);
+  const current = (href: string) => path === href ? "page" : path.startsWith(href + "/") ? "location" : undefined;
 
-  return <header className="site-header edition-header" onKeyDown={(event) => {
+  return <header className="site-header edition-header" lang={htmlLanguage(locale)} dir={direction(locale)} onKeyDown={(event) => {
     if (event.key === "Escape" && open) {
       close();
       document.getElementById("menu-toggle")?.focus();
     }
   }}>
     <div className="shell edition-header-row">
-      <Brand />
-      <nav className="edition-navigation" aria-label="Main navigation">{channels.map((links,index) => <div className="nav-channel" key={index}>
-        {links.map(({ label, href }) => <Link key={href} href={href} prefetch={false} aria-current={current(href)} onClick={close}>{label}</Link>)}
-      </div>)}</nav>
+      <Brand href={target("/")} />
+      <nav className="edition-navigation" aria-label={locale === "en" ? "Main navigation" : dictionary.ui.index}>
+        {channels.map((links,group) => <div className="nav-channel" key={group}>
+          {links.map((href) => <Link key={href} href={target(href)} prefetch={false} aria-current={current(href)} onClick={close}>{dictionary.nav[href]}</Link>)}
+        </div>)}
+      </nav>
       <div className="edition-header-actions">
-        <SearchOverlay />
+        <SearchOverlay locale={locale} />
+        <LanguageSwitch />
         <button className="edition-menu-toggle" id="menu-toggle" type="button" aria-expanded={open} aria-controls="edition-menu"
-          aria-label={open ? "Close navigation" : "Open navigation"} onClick={() => setOpen(!open)}>
-          {open ? <X size={20} aria-hidden="true" /> : <PanelsTopLeft size={19} aria-hidden="true" />}<span>Index</span>
+          aria-label={open ? dictionary.ui.close : dictionary.ui.open} onClick={() => setMenu(open ? null : pathname)}>
+          {open ? <X size={20} aria-hidden="true" /> : <PanelsTopLeft size={19} aria-hidden="true" />}<span>{dictionary.ui.index}</span>
         </button>
       </div>
     </div>
     <div id="edition-menu" className="edition-menu" hidden={!open}>
       <div className="shell edition-menu-inner">
-        <nav aria-label="Publication index"><p className="mono section-label">The publication</p>
-          {[...navigation, journeys].map(({ label, href }) => <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+        <nav aria-label={locale === "en" ? "Publication index" : dictionary.ui.index}><p className="mono section-label">{locale === "en" ? "The publication" : dictionary.ui.index}</p>
+          {index.map((href) => <Link key={href} href={target(href)} aria-current={current(href)} onClick={close}>{dictionary.nav[href]}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
         </nav>
-        <nav aria-label="Disciplines"><p className="mono section-label">Disciplines</p>
-          {topics.map((topic) => <Link key={topic.slug} href={`/topics/${topic.slug}`} onClick={close}>{topic.title}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+        <nav aria-label={locale === "en" ? "Disciplines" : dictionary.nav["/topics"]}><p className="mono section-label">{locale === "en" ? "Disciplines" : dictionary.nav["/topics"]}</p>
+          {locale === "en" ? topics.map((topic) => <Link key={topic.slug} href={`/topics/${topic.slug}`} onClick={close}>{topic.title}<ArrowUpRight size={16} aria-hidden="true" /></Link>)
+            : learningTracks.map(({id}, i) => <Link key={id} href={target(`/learn/${id}`)} onClick={close}>{dictionary.subjects[i]}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
         </nav>
-        <nav aria-label="Reading tools"><p className="mono section-label">Reading tools</p>
-          {references.map(({ label, href }) => <Link key={href} href={href} aria-current={current(href)} onClick={close}>{label}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
-          <ReadingModeButton />
+        <nav aria-label={locale === "en" ? "Reading tools" : dictionary.nav["/library"]}><p className="mono section-label">{locale === "en" ? "Reading tools" : dictionary.nav["/library"]}</p>
+          {references.map((href) => <Link key={href} href={target(href)} aria-current={current(href)} onClick={close}>{dictionary.nav[href]}<ArrowUpRight size={16} aria-hidden="true" /></Link>)}
+          {locale === "en" && <ReadingModeButton />}
         </nav>
       </div>
     </div>

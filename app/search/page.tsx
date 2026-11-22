@@ -1,9 +1,10 @@
+import { languageAlternates } from "@/lib/i18n/routing";
 import type { Metadata } from "next";
 import { Masthead, TextLink } from "@/components/editorial/ui";
 import { SearchPanel } from "@/components/search/search-panel";
 import { countrySearchEntries, searchEntries } from "@/lib/content/search";
 
-export const metadata: Metadata = { title: "Search", description: "Search articles, topics, glossary definitions, and interactive labs." };
+export const metadata: Metadata = { alternates:languageAlternates("/search","en"), title: "Search", description: "Search articles, topics, glossary definitions, and interactive labs." };
 
 type Props = { searchParams: Promise<{ q?: string | string[] }> };
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { Bookmark, Link2, Share2 } from "lucide-react";
+import { rememberReading } from "@/components/publishing/reading-preferences";
 import { motion, useScroll } from "motion/react";
 
 const changed = "uts:bookmark";
@@ -60,7 +61,7 @@ export function ReadableArticle({ children }: { children: ReactNode }) {
   return <article ref={target} className="reading-surface"><motion.div className="article-progress" aria-hidden="true" style={{ scaleX: scrollYProgress }} />{children}</article>;
 }
 
-export function ArticleContents({ sections }: { sections: { id:string; title:string }[] }) {
+export function ArticleContents({ sections, slug, title }: { sections: { id:string; title:string }[]; slug:string; title:string }) {
   const [current,setCurrent] = useState("");
   useEffect(() => {
     let frame = 0;
@@ -69,6 +70,7 @@ export function ArticleContents({ sections }: { sections: { id:string; title:str
       frame = requestAnimationFrame(() => {
         const active = sections.findLast(({ id }) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= 144);
         setCurrent(active?.id ?? "");
+        if (active) rememberReading({ title,href:`/stories/${slug}#${active.id}` });
       });
     }
     update();
@@ -79,7 +81,7 @@ export function ArticleContents({ sections }: { sections: { id:string; title:str
       window.removeEventListener("scroll",update);
       window.removeEventListener("resize",update);
     };
-  },[sections]);
+  },[sections,slug,title]);
   return <nav aria-label="Table of contents" className="article-toc"><h2>In this story</h2>
     {sections.map(({ id,title })=><a href={`#${id}`} key={id} aria-current={current===id ? "location" : undefined}>{title}</a>)}
   </nav>;

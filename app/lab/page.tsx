@@ -26,6 +26,9 @@ export default function LabPage() {
       <DiscoveryIndex heading="Choose an experiment" pageSize={12} showMaterial={false}
         entries={labs.map((lab)=>({ title:lab.title,description:lab.description,href:`/lab/${lab.slug}`,kind:lab.discipline,topics:[lab.discipline] }))}
         filters={[...new Set(labs.map((lab)=>lab.discipline))].map((label)=>({ value:label,label }))} />
+      <section><SectionHeading title="Climate investigations" />
+        <div className="landing-lab-links"><TextLink href="/lab/ice-archive">Follow an ice-core sample</TextLink><TextLink href="/lab/climate-pathways">Compare emissions pathways</TextLink></div>
+      </section>
       <div className="two-panel"><ScienceDiagram kind="plates" /><section className="pane">
         <h2 className="subhead">Reading a model</h2>
         <p className="editorial-text">Our models isolate a relationship so it is easier to see. The Earth’s actual rates, materials, and shapes vary. Compare a schematic with mapped evidence for a particular location.</p>

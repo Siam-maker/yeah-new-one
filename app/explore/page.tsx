@@ -1,3 +1,6 @@
+import { datasets } from "@/lib/content/datasets";
+import { CopyCitation } from "@/components/publishing/copy-citation";
+import { languageAlternates } from "@/lib/i18n/routing";
 import type { Metadata } from "next";
 import { AtlasWindow, DisciplineExplorer, FeatureSequence } from "@/components/editorial/edition-controls";
 import { Masthead, SectionHeading, TextLink } from "@/components/editorial/ui";
@@ -6,7 +9,7 @@ import { locations } from "@/lib/content/atlas";
 import { articles } from "@/lib/content/articles";
 import { labs, topics } from "@/lib/content/publication";
 
-export const metadata: Metadata = { title: "Explore", description: "Find a discovery by place, discipline, or the evidence behind it." };
+export const metadata: Metadata = { alternates:languageAlternates("/explore","en"), title: "Explore", description: "Find a discovery by place, discipline, or the evidence behind it." };
 
 const startingPoints = [
   { slug: "life-below-the-light", label: "Bioluminescence" },
@@ -43,5 +46,12 @@ export default function ExplorePage() {
           <div className="mt-4"><TextLink href="/lab">Choose an experiment</TextLink></div></section>
       </div>
     </div>
+    <section className="dataset-directory" id="datasets" aria-labelledby="dataset-heading">
+      <h2 className="subhead" id="dataset-heading">Scientific datasets</h2>
+      {datasets.map((dataset) => <article className="pane" key={dataset.id} id={`dataset-${dataset.id}`}>
+        <p className="mono section-label">{dataset.origin}</p><h3 className="subhead">{dataset.title}</h3>
+        <p>{dataset.description}</p><div className="pill-row"><a href={dataset.file} download>Download JSON</a><a href={dataset.notes}>Methodology and sources</a><CopyCitation citation={dataset.citation} /></div>
+      </article>)}
+    </section>
   </div>;
 }

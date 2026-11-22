@@ -25,6 +25,7 @@ export function EarthInterior() {
       <div aria-live="polite"><p className="mono section-label">{layer.state}</p><h3 className="subhead">{layer.name}</h3><p className="interior-depth">{layer.depth}</p><p>{layer.detail}</p></div>
       <label>Cutaway angle <span>{rotation}°</span><input type="range" min="-55" max="55" value={rotation} aria-valuetext={`${rotation} degrees`} onChange={(event) => setRotation(event.currentTarget.valueAsNumber)} /></label>
       <button type="button" className="ghost-button scene-opt-in" aria-pressed={attempt3D} onClick={() => setAttempt3D(!attempt3D)}>Enable interactive 3D</button>
+      <button type="button" className="ghost-button" onClick={()=>{setSelected(1);setRotation(-24);}}>Reset cutaway</button>
       <p className="lab-key">The cutaway exaggerates the crust. Depths are approximate and vary by location.</p>
       <a className="editorial-link" href="https://pubs.usgs.gov/gip/interior/">USGS · The Interior of the Earth</a>
     </section>

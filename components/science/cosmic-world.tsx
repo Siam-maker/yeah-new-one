@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import { displayOrbit, planets, lightMinutesPerAu } from "@/lib/content/cosmos";
 import { LiveScene } from "./live-scene";
@@ -31,7 +31,16 @@ export function CosmicWorld() {
   const [years,setYears] = useState(0);
   const [view, setView] = useState<"orbits" | "planet">("orbits");
   const [zoom, setZoom] = useState(1);
+  const [playing,setPlaying] = useState(false);
+  const [speed,setSpeed] = useState(1);
   const [enable3D,setEnable3D] = useState(false);
+  useEffect(() => {
+    if (!playing) return;
+    const timer = window.setInterval(() => {
+      if (!document.hidden) setYears((elapsed) => (elapsed + speed/10) % 35);
+    },100);
+    return () => window.clearInterval(timer);
+  },[playing,speed]);
   const planet = planets.find((body)=>body.id===selected) ?? planets[2];
   return <div className="world-experiment cosmic-experiment">
     <div className="cosmic-stage">
@@ -57,6 +66,13 @@ export function CosmicWorld() {
         <label>Camera zoom <span>{zoom.toFixed(2)}×</span><input type="range" min=".8" max="1.55" step=".05" value={zoom} aria-valuetext={`${zoom.toFixed(2)} times`} onChange={(event) => setZoom(event.currentTarget.valueAsNumber)} /></label>
         <label htmlFor="orbital-year">Elapsed time <strong>{years.toFixed(1)} Earth years</strong></label>
         <input id="orbital-year" type="range" min="0" max="35" step=".1" value={years} onChange={(event)=>setYears(event.currentTarget.valueAsNumber)} />
+        <div className="pill-row">
+          <button className="ghost-button" type="button" aria-pressed={playing} onClick={()=>setPlaying(!playing)}>{playing ? "Pause orbit" : "Play orbit"}</button>
+          <button className="ghost-button" type="button" onClick={()=>{setPlaying(false);setSelected("earth");setYears(0);setZoom(1);setView("orbits");setSpeed(1);}}>Reset observatory</button>
+        </div>
+        <label>Playback speed<select className="control-field" value={speed} onChange={(event)=>setSpeed(Number(event.target.value))}>
+          {[.5,1,2].map((value)=><option key={value} value={value}>{value} simulated years per second</option>)}
+        </select></label>
         <button className="ghost-button scene-opt-in" type="button" aria-pressed={enable3D} onClick={() => setEnable3D(!enable3D)}>Enable interactive 3D</button>
         <p className="lab-key">Circular orbits with a shared starting angle. Orbital radii are compressed logarithmically and object sizes are exaggerated. Positions and surface textures are illustrative.</p>
       </section>

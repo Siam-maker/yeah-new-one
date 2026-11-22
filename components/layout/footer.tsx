@@ -1,33 +1,36 @@
-import { ArrowUpRight } from "lucide-react";
+"use client";
+
 import Link from "next/link";
-import { navigation } from "@/lib/content/publication";
+import { usePathname } from "next/navigation";
+import { direction, htmlLanguage, localizedPath, splitLocale } from "@/lib/i18n/routing";
+import { messages } from "@/lib/i18n/messages";
 import { Brand } from "./brand";
+import { LanguageSwitch } from "./language-switch";
 
 const groups = [
-  { title: "Read", links: [...navigation.filter(({ href }) => ["/stories","/topics","/field-notes"].includes(href)), { label:"About",href:"/about" }] },
-  { title: "Investigate", links: [
-    ...navigation.filter(({ href }) => ["/lab","/atlas"].includes(href)),
-    { label:"Demographics",href:"/demographics" }, { label:"Journeys",href:"/journeys" }, { label:"Connections",href:"/connections" },
-  ] },
-  { title: "Find", links: [
-    { label:"Glossary",href:"/glossary" }, { label:"Search",href:"/search" }, { label:"Reading desk",href:"/library" },
-  ] },
-];
+  { title:"Read", label:"/stories", links:["/stories","/topics","/field-notes","/about"] },
+  { title:"Investigate", label:"/explore", links:["/lab","/world","/atlas","/demographics","/journeys","/connections"] },
+  { title:"Find", label:"/search", links:["/learn","/learn/teaching","/glossary","/search","/library"] },
+] as const;
 
 export function Footer() {
-  return <footer className="site-footer publication-footer">
+  const {locale} = splitLocale(usePathname());
+  const dictionary = messages[locale];
+  const target = (href: string) => localizedPath(href,locale);
+  return <footer className="site-footer publication-footer" lang={htmlLanguage(locale)} dir={direction(locale)}>
     <div className="shell">
       <div className="footer-main">
-        <div className="footer-intro"><Brand /><p>An independent digital magazine about the worlds beneath the one we see.</p>
-          <Link href="/explore" className="editorial-link">Explore the publication <ArrowUpRight size={17} aria-hidden="true" /></Link>
+        <div className="footer-intro"><Brand href={target("/")} />
+          <p>{locale === "en" ? "Independent science stories, data, and interactive experiments." : dictionary.page.intro}</p>
+          <Link href={target("/explore")} className="editorial-link">{locale === "en" ? "Explore the publication" : dictionary.nav["/explore"]}</Link>
         </div>
-        <nav aria-label="Footer navigation" className="footer-directory">
-          {groups.map(({ title, links }) => <div key={title}><h2 className="mono">{title}</h2>
-            <ul>{links.map(({ label,href }) => <li key={href}><Link href={href}>{label}</Link></li>)}</ul>
+        <nav aria-label={locale === "en" ? "Footer navigation" : dictionary.ui.index} className="footer-directory">
+          {groups.map(({title,label,links}) => <div key={title}><h2 className="mono">{locale === "en" ? title : dictionary.nav[label]}</h2>
+            <ul>{links.map((href) => <li key={href}><Link href={target(href)}>{dictionary.nav[href]}</Link></li>)}</ul>
           </div>)}
         </nav>
       </div>
-      <div className="footer-bottom"><small>© {new Date().getFullYear()} Under the Surface</small></div>
+      <div className="footer-bottom"><small>© {new Intl.NumberFormat(htmlLanguage(locale),{useGrouping:false}).format(new Date().getUTCFullYear())} <span lang="en">Under the Surface</span></small><LanguageSwitch showPreference /></div>
     </div>
   </footer>;
 }

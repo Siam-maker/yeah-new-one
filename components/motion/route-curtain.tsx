@@ -1,5 +1,6 @@
 "use client";
 
+import { splitLocale } from "@/lib/i18n/routing";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
@@ -108,7 +109,7 @@ export function RouteCurtain() {
 
     const curtain = root.current;
     if (reduced || !curtain || !plate.current) return;
-    const destination = describe(path);
+    const destination = describe(splitLocale(path).path);
     const direction = returning ? -1 : 1;
     const [openMask, closedMask] = shutter(destination.motion, returning);
     plate.current.style.backgroundImage = `url("${destination.image}")`;

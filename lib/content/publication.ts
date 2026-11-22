@@ -32,6 +32,21 @@ export const sources = {
   epaSea: { name: "United States Environmental Protection Agency", title: "Climate change indicators: Sea level", url: "https://www.epa.gov/climate-indicators/climate-change-indicators-sea-level" },
   usgsWaves: { name: "USGS", title: "The science of earthquakes", url: "https://www.usgs.gov/programs/earthquake-hazards/science-earthquakes" },
   bathymetry: { name: "GEBCO", title: "Gridded bathymetry data", url: "https://www.gebco.net/data_and_products/gridded_bathymetry_data/" },
+  oceanCurrents: { name: "NOAA National Ocean Service", title: "Ocean currents tutorial", url: "https://oceanservice.noaa.gov/education/tutorial_currents/" },
+  oceanAcid: { name: "NOAA National Ocean Service", title: "What is ocean acidification?", url: "https://oceanservice.noaa.gov/facts/acidification.html" },
+  vents: { name: "NOAA National Ocean Service", title: "What is a hydrothermal vent?", url: "https://oceanservice.noaa.gov/facts/vents.html" },
+  coral: { name: "NOAA National Ocean Service", title: "Corals tutorial", url: "https://oceanservice.noaa.gov/education/tutorial_corals/" },
+  debris: { name: "NOAA Marine Debris Program", title: "Microplastics", url: "https://marinedebris.noaa.gov/what-marine-debris/microplastics" },
+  volcanoes: { name: "USGS", title: "Volcano Hazards Program", url: "https://www.usgs.gov/programs/VHP" },
+  climateSynthesis: { name: "IPCC", title: "AR6 Synthesis Report", url: "https://www.ipcc.ch/report/ar6/syr/" },
+  climateEvidence: { name: "NASA", title: "Evidence of climate change", url: "https://science.nasa.gov/climate-change/evidence/" },
+  redList: { name: "IUCN", title: "The IUCN Red List of Threatened Species", url: "https://www.iucnredlist.org/" },
+  evolution: { name: "University of California Museum of Paleontology", title: "Understanding Evolution", url: "https://evolution.berkeley.edu/" },
+  solar: { name: "NASA", title: "Our solar system", url: "https://science.nasa.gov/solar-system/" },
+  stars: { name: "NASA", title: "Stars", url: "https://science.nasa.gov/universe/stars/" },
+  holes: { name: "NASA", title: "Black holes", url: "https://science.nasa.gov/universe/black-holes/" },
+  exoplanets: { name: "NASA", title: "Exoplanets", url: "https://science.nasa.gov/exoplanets/" },
+  darkEnergy: { name: "NASA", title: "Dark energy", url: "https://science.nasa.gov/universe/dark-energy/" },
 } as const;
 
 export type SourceKey = keyof typeof sources;

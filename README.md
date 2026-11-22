@@ -31,3 +31,13 @@ The visual identity uses locally bundled Instrument Serif for display type, Manr
 The illustrated basalt inlet and weathered sedimentary section were created for the publication. They depict representative geology. The homepage cavern illustration is the initial image and the fallback for the demand-rendered procedural scene. The Population Observatory reuses the Atlas globe and preserves the chosen snapshot and comparison when sharing a globe view.
 
 Animation respects the operating system’s reduced-motion preference. The Atlas and Population Observatory also support explicit 3D mode, horizontal drag, and button-based rotation.
+
+## Learning and language coverage
+
+`lib/content/learning-index.ts` defines the course catalogue. `lib/content/learning-content.ts` holds 41 lessons, their investigation prompts, references, practice links and quiz explanations. Add new source keys in `lib/content/publication.ts`. Keep lesson IDs stable because they are anchor links and local progress keys. The teaching guide can be printed from `/learn/teaching`.
+
+English keeps the original unprefixed URLs. Bengali, Spanish, French, German, Arabic, Hindi, Simplified Chinese, Japanese and Portuguese use localized entry pages, search controls and short course introductions. The interface identifies where the original article, full course or instrument is in English. Localized fallback pages point to the English canonical URL and carry a no-index directive. The language selector remembers a preference on the current device and preserves the resource path.
+
+For translation contributions, start from the English source, preserve units and scientific names, and have a fluent reviewer with domain knowledge verify the wording against the cited sources. Edit the language dictionary in `lib/i18n/messages.ts` and the entry guides in `lib/i18n/introductions.ts`. Keep original-English links in place until corresponding translations complete that review. Translation and source coverage are tracked independently.
+
+The emissions pathways lab uses an explicitly hypothetical annual index. The ice-core lab illustrates the archive process and links to the NOAA catalog for actual paleoclimate observations. The catalogue at `/explore#datasets` links to existing public snapshots, their methodology, and citation text.

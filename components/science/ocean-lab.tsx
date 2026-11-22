@@ -11,9 +11,11 @@ const maximum = 11000;
 
 export function OceanLab() {
   const [depth, setDepth] = useState<number>(zones[0].sample);
+  const [clarity,setClarity] = useState(.035);
   const [enable3D,setEnable3D] = useState(false);
   const zone = zoneAt(depth);
   const index = zones.indexOf(zone);
+  const lightShare = 100 * Math.exp(-clarity * depth);
 
   return <>
     <div className="lab-layout">
@@ -39,6 +41,14 @@ export function OceanLab() {
           <div><dt>Depth</dt><dd>{format.format(depth)} m</dd></div>
           <div><dt>Approx. pressure</dt><dd>{format.format(1 + Math.round(depth / 10))} atm</dd></div>
         </dl>
+        <div className="lab-optics"><label>Water clarity<select className="control-field" value={clarity} onChange={(event)=>setClarity(Number(event.target.value))}>
+          <option value="0.035">Clear water · example</option><option value="0.08">More particles · example</option><option value="0.16">Turbid water · example</option>
+        </select></label>
+          <p>Modeled surface light remaining <strong>{lightShare < .01 ? "< 0.01" : lightShare.toFixed(2)}%</strong></p>
+          <meter aria-label="Modeled light remaining" min={0} max={100} value={lightShare} />
+          <p className="lab-key">Uniform-water model using exp(−k × depth). The clarity settings are illustrative. Real light depends on wavelength and local water conditions.</p>
+        </div>
+        <button className="ghost-button" type="button" onClick={()=>{setDepth(zones[0].sample);setClarity(.035);}}>Reset descent</button>
         <div><p>{zone.light}</p><p className="editorial-text">{zone.life}</p><p><strong>Look for:</strong> {zone.organism}</p></div>
       </section>
     </div>

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { articles, articleSectionId, readingMinutes } from "@/lib/content/articles";
 import { labs, topics } from "@/lib/content/publication";
-import { RecordVisit, ReadingModeButton } from "@/components/publishing/reading-preferences";
+import { RecordVisit, ReadingModeButton, ReadingControls } from "@/components/publishing/reading-preferences";
 import { ZoomFigure } from "@/components/publishing/zoom-figure";
 import { ArticleContents, ArticleControls, ReadableArticle } from "@/components/editorial/article-controls";
 import { Breadcrumbs, ReferenceList, SectionHeading, StoryTiles, TextLink } from "@/components/editorial/ui";
@@ -39,12 +39,12 @@ export default async function StoryPage({ params }: Props) {
         <p className="mono section-label mt-5">{topic?.title} · {readingMinutes(article)} min read</p>
         <h1>{article.title}</h1><p className="standfirst">{article.deck}</p>
         <ArticleControls slug={slug} title={article.title} />
-        <div className="mt-3"><ReadingModeButton /></div>
+        <div className="mt-3"><ReadingModeButton /><ReadingControls article /></div>
       </header>
       <ZoomFigure source={article.image} caption={article.imageDescription} />
       </div>
       <div className="article-grid layout-flow">
-        <ArticleContents sections={[...article.sections.map(({ title }, index)=>({ id:articleSectionId(index),title })),{ id:"sources",title:"References" }]} />
+        <ArticleContents slug={slug} title={article.title} sections={[...article.sections.map(({ title }, index)=>({ id:articleSectionId(index),title })),{ id:"sources",title:"References" }]} />
         <div className="article-body">
           {article.sections.map(({ title, paragraphs }, index) => <section key={title} id={articleSectionId(index)}>
             <h2>{title}</h2>
