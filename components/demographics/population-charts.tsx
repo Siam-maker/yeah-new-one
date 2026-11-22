@@ -12,7 +12,7 @@ export function PopulationTrend({ countries, year }: { countries: Country[]; yea
   const x = (index: number) => 56 + index * 5.33;
   const y = (value: number) => 178 - (value / max) * 155;
   const plot = (values: number[], start: number) => values.map((value, index) => `${x(index+start)},${y(value)}`).join(" ");
-  return <figure className="chart-panel">
+  return <figure className="chart-panel trend-panel">
     <p className="mono section-label">1950–2050 · {unit} of people</p>
     <h2>Population through time</h2>
     <div className="chart-keys">{countries.map((country,index) => <span key={country.id}><i style={{ background:trendColors[index] }} />{country.name}</span>)}<span>Dashed · medium projection</span></div>
@@ -23,7 +23,7 @@ export function PopulationTrend({ countries, year }: { countries: Country[]; yea
         const position = (event.clientX - bounds.left) / bounds.width * 620;
         setInspectedYear(Math.max(1950, Math.min(2050, 1950 + Math.round((position - x(0)) / 5.33))));
       }} onPointerLeave={() => setInspectedYear(undefined)} aria-label={`Population through time in ${unit} of people. Solid estimates through 2023 and dashed medium projections from 2024.`}>
-      <rect x={x(74)} y="16" width={x(100)-x(74)} height="162" fill="#c8af7a" opacity=".07" />
+      <rect x={x(74)} y="16" width={x(100)-x(74)} height="162" fill="#c8af7a" opacity=".11" />
       {[0, .25, .5, .75, 1].map((part) => <g key={part}>
         <path d={`M56 ${y(part*max)}H590`} className="chart-grid" />
         <text x="49" y={y(part*max)+4} textAnchor="end">{decimal.format(part*max/scale)}</text>
@@ -36,6 +36,11 @@ export function PopulationTrend({ countries, year }: { countries: Country[]; yea
         <circle cx={x(displayedYear-1950)} cy={y(country.trend[displayedYear-1950])} r="5" fill={trendColors[index]}><title>{country.name}, {displayedYear}: {integer.format(country.trend[displayedYear-1950])} people</title></circle>
       </g>)}
     </svg>
+    <label className="trend-inspection">Inspect trend year <strong className="mono">{displayedYear}</strong>
+      <input type="range" min={1950} max={2050} value={displayedYear}
+        aria-valuetext={`${displayedYear} • ${displayedYear > 2023 ? "medium projection" : "estimate"}`}
+        onChange={(event) => setInspectedYear(event.currentTarget.valueAsNumber)} onBlur={() => setInspectedYear(undefined)} />
+    </label>
     <figcaption>{displayedYear} · {countries.map((country) => `${country.name}: ${integer.format(country.trend[displayedYear-1950])}`).join(" · ")}. UN World Population Prospects 2024.</figcaption>
   </figure>;
 }
@@ -52,8 +57,8 @@ export function PopulationPyramid({ country, record, year, maximum }: { country:
       {record.ages.map(([male,female],i)=>{
         const y = 7+(20-i)*12.5;
         return <g key={i}>
-          <rect x={138-width(male)} y={y} width={width(male)} height="9" fill="#91bcc4"><title>Age {ageLabels[i]}, male: {integer.format(male)} ({decimal.format(ratio(male))}%)</title></rect>
-          <rect x="182" y={y} width={width(female)} height="9" fill="#d9ab85"><title>Age {ageLabels[i]}, female: {integer.format(female)} ({decimal.format(ratio(female))}%)</title></rect>
+          <rect className="pyramid-bar" x={138-width(male)} y={y} width={width(male)} height="9" fill="#91bcc4"><title>Age {ageLabels[i]}, male: {integer.format(male)} ({decimal.format(ratio(male))}%)</title></rect>
+          <rect className="pyramid-bar" x="182" y={y} width={width(female)} height="9" fill="#d9ab85"><title>Age {ageLabels[i]}, female: {integer.format(female)} ({decimal.format(ratio(female))}%)</title></rect>
           <text x="160" y={y+8} textAnchor="middle">{ageLabels[i]}</text>
         </g>;
       })}

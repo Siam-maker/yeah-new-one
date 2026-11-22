@@ -7,7 +7,8 @@ import { decimal, integer } from "@/lib/content/demographics";
 import { habitatPoints } from "@/lib/content/atlas";
 import { seaLevel, seaLevelTrend, temperature } from "@/lib/content/observations";
 import { ScienceDiagram } from "@/components/editorial/diagram";
-import { DisciplineInstrument, PressureInstrument } from "./discipline-instrument";
+import { DisciplineInstrument } from "./discipline-instrument";
+import { PressureInstrument } from "./pressure-instrument";
 import { LiveScene } from "./live-scene";
 import { ClimateInstrument, TrendGraphic } from "./trend";
 

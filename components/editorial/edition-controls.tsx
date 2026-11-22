@@ -2,6 +2,7 @@
 
 import { ExhibitImage } from "@/components/editorial/exhibit-image";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Layers3 } from "lucide-react";
 import { useRef, useState } from "react";
 import type { topics } from "@/lib/content/publication";
@@ -35,7 +36,7 @@ export function FeatureSequence({ chapters }: { chapters: Chapter[] }) {
       });
       setIndex(closest);
     }}>
-      {chapters.map((chapter) => <Link href={`/stories/${chapter.slug}`} key={chapter.slug} className="sequence-item" data-pointer="tilt">
+      {chapters.map((chapter) => <Link href={`/stories/${chapter.slug}`} key={chapter.slug} className="sequence-item">
         <div className="sequence-image"><ExhibitImage src={chapter.image} alt="" fill sizes="(max-width:760px) 88vw, 70vw" /></div>
         <div className="sequence-copy"><p className="mono">{chapter.label}</p><h3>{chapter.title}</h3><p>{chapter.deck}</p><ArrowUpRight size={27} aria-hidden="true" /></div>
       </Link>)}
@@ -74,13 +75,12 @@ export function DisciplineExplorer({ items }: { items: TopicSummary[] }) {
 export function AtlasWindow() {
   const [layer, setLayer] = useState<"ocean" | "geology">("ocean");
   return <div className="atlas-window">
-    <svg viewBox="0 0 360 180" role="img" aria-label={layer === "ocean" ? "Global bathymetry preview" : "Tectonic boundary preview"}>
-      <rect width="360" height="180" fill="#102338" />
-      {layer === "ocean" && <image href="/data/bathymetry.webp" width="360" height="180" />}
-      <image href="/data/atlas-land.svg" width="360" height="180" />
-      {layer === "geology" && <image href="/images/world-boundaries.svg" width="360" height="180" />}
-      <path d="M0 45H360 M0 90H360 M0 135H360 M90 0V180 M180 0V180 M270 0V180" stroke="#b4e6e7" strokeWidth=".35" opacity=".3" />
-    </svg>
+    <div className="atlas-window-map" role="img" aria-label={layer === "ocean" ? "Global bathymetry preview" : "Tectonic boundary preview"}>
+      {layer === "ocean" && <Image src="/data/bathymetry.webp" alt="" fill unoptimized />}
+      <Image src="/data/atlas-land.svg" alt="" fill unoptimized />
+      {layer === "geology" && <Image src="/images/world-boundaries.svg" alt="" fill unoptimized />}
+      <svg viewBox="0 0 360 180" aria-hidden="true"><path d="M0 45H360 M0 90H360 M0 135H360 M90 0V180 M180 0V180 M270 0V180" stroke="#b4e6e7" strokeWidth=".35" opacity=".3" /></svg>
+    </div>
     <div className="atlas-window-toolbar"><p className="mono"><Layers3 size={15} aria-hidden="true" /> Display layer</p>
       <div className="pill-row">
         <button className="ghost-button" type="button" aria-pressed={layer === "ocean"} onClick={() => setLayer("ocean")}>Ocean depth</button>

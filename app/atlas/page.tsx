@@ -33,10 +33,10 @@ export default async function AtlasPage({ searchParams }: { searchParams: Promis
   const view = query.view === "globe" ? "globe" : "map";
   return <div className="shell">
     <Masthead title="Field atlas" category="Global observations" description="Read one planet through eleven layers, from the ocean floor and tectonic plates to climate records and the distribution of people." />
-    <div className="layout-flow">
-      <div className="atlas-entry"><p>Choose a layer, search a place, and carry your selection between map and globe.</p><TextLink href="/demographics">Open the Demographics observatory</TextLink></div>
+    <div className="layout-flow atlas-flow">
       <Atlas key={JSON.stringify(query)} initialLayer={layer} initialLocation={location} initialIndicator={indicator} initialView={view}
         initialZoom={Number.isFinite(zoom) ? Math.max(1,Math.min(3,zoom)) : 1} initialYear={year} initialHeading={Number.isFinite(heading) ? heading % 360 : 0} initialBoundaries={toggle(query.plates)} initialBathymetry={toggle(query.bathy)} />
+      <div className="atlas-entry"><p>Choose a layer, search a place, and carry your selection between map and globe.</p><TextLink href="/demographics">Open the Demographics observatory</TextLink></div>
       <section id="earth-interior"><h2 className="subhead">Beneath the map</h2><EarthInterior /></section>
       <section><h2 className="subhead">The water above it</h2><ScienceDiagram kind="depth" /></section>
       <div className="two-panel"><section className="pane"><h2 className="subhead">Planetary scale</h2>

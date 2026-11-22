@@ -25,13 +25,14 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
   render() { return this.state.failed ? null : this.props.children; }
 }
 
-function Cave({ rock, steering, active, fps, detail, ambientMotion }: {
+function Cave({ rock, steering, active, fps, detail, ambientMotion, onWakeChange }: {
   rock: Texture;
   steering: RefObject<AbyssCamera>;
   active: boolean;
   fps: number;
   detail: number;
   ambientMotion: boolean;
+  onWakeChange: (wake: (() => void) | null) => void;
 }) {
   const { invalidate, gl } = useThree();
   const geometry = useMemo(() => buildCaveGeometry(detail), [detail]);
@@ -48,35 +49,38 @@ function Cave({ rock, steering, active, fps, detail, ambientMotion }: {
   useEffect(() => {
     if (!active) return;
     let frame = 0;
-    let last = 0;
+    let last = -Infinity;
+    let deadline = 0;
     const frameInterval = 1000 / fps;
-    let settlingUntil = 0;
-    let previous = { ...steering.current };
 
     function tick(now: number) {
-      const position = steering.current;
-      const moved = Math.abs(position.x-previous.x) + Math.abs(position.y-previous.y) + Math.abs(position.descent-previous.descent) > .001;
-      if (moved) {
-        previous = { ...position };
-        settlingUntil = now + 620;
-      }
-      if ((ambientMotion || now < settlingUntil) && now-last >= frameInterval) {
-        last = now;
+      frame = 0;
+      if (now - last >= frameInterval) {
         invalidate();
+        last = now;
       }
-      frame = requestAnimationFrame(tick);
+      if (now < deadline) frame = requestAnimationFrame(tick);
     }
 
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [active, fps, invalidate, steering, ambientMotion]);
+    function requestRender() {
+      deadline = performance.now() + (ambientMotion ? 900 : 590);
+      if (!frame) frame = requestAnimationFrame(tick);
+    }
+
+    onWakeChange(requestRender);
+    requestRender();
+    return () => {
+      onWakeChange(null);
+      cancelAnimationFrame(frame);
+    };
+  }, [active, fps, invalidate, ambientMotion, onWakeChange]);
 
   useFrame(({ camera }, delta) => {
     const { x, y, descent } = steering.current;
     const step = Math.min(delta, 0.07);
     camera.position.x = MathUtils.damp(camera.position.x, -.56 + x*.54 + descent*.78, 4, step);
     camera.position.y = MathUtils.damp(camera.position.y, -y * 0.33 - descent * 0.4, 4, step);
-    camera.position.z = MathUtils.damp(camera.position.z, cameraDistance - descent * 8.2, 4, step);
+    camera.position.z = MathUtils.damp(camera.position.z, cameraDistance - descent * 7.8, 4, step);
     if (active) elapsed.current += step;
 
     if (caveMaterial.current) {
@@ -94,7 +98,7 @@ function Cave({ rock, steering, active, fps, detail, ambientMotion }: {
 
   return (
     <>
-      <color attach="background" args={["#0d1917"]} />
+      <color attach="background" args={["#13191b"]} />
       <mesh geometry={geometry}>
         <shaderMaterial ref={caveMaterial} vertexShader={caveVertex} fragmentShader={caveFragment}
           uniforms={rockUniforms} side={DoubleSide} toneMapped={false} />
@@ -115,7 +119,7 @@ function Cave({ rock, steering, active, fps, detail, ambientMotion }: {
   );
 }
 
-export default function AbyssScene({ camera, active, source, dpr, fps, detail, ambientMotion }: {
+export default function AbyssScene({ camera, active, source, dpr, fps, detail, ambientMotion, onWakeChange }: {
   camera: RefObject<AbyssCamera>;
   active: boolean;
   source: string;
@@ -123,6 +127,7 @@ export default function AbyssScene({ camera, active, source, dpr, fps, detail, a
   fps: number;
   detail: number;
   ambientMotion: boolean;
+  onWakeChange: (wake: (() => void) | null) => void;
 }) {
   const [rock, setRock] = useState<Texture | null>(null);
   const [renderer, setRenderer] = useState<WebGLRenderer | null>(null);
@@ -166,7 +171,7 @@ export default function AbyssScene({ camera, active, source, dpr, fps, detail, a
           style={{ pointerEvents: "none" }}
           gl={{ antialias: false, powerPreference: "low-power", alpha: true }}
           onCreated={({ gl }) => setRenderer(gl)}>
-          <Cave rock={rock} steering={camera} active={active} fps={fps} detail={detail} ambientMotion={ambientMotion} />
+          <Cave rock={rock} steering={camera} active={active} fps={fps} detail={detail} ambientMotion={ambientMotion} onWakeChange={onWakeChange} />
         </Canvas>
       </div>
     </SceneBoundary>

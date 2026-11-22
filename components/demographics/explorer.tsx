@@ -17,7 +17,7 @@ function CountryLedger({ country, record, year }: { country: Country; record: Po
   return <section className="country-ledger">
     <div><p className="mono section-label">{country.region} · {year > 2023 ? "UN medium projection" : "UN estimate"}</p><h2>{country.name}</h2></div>
     <dl className="country-metrics">
-      <div><dt>Total population</dt><dd>{integer.format(record.population)}</dd></div>
+      <div className="country-total"><dt>Total population</dt><dd>{integer.format(record.population)}</dd></div>
       <div><dt>Median age</dt><dd><Format value={record.median} unit="years" /></dd></div>
       <div><dt>Under 15</dt><dd><Format value={record.young} unit="%" /></dd></div>
       <div><dt>65 and older</dt><dd><Format value={record.older} unit="%" /></dd></div>
@@ -65,6 +65,7 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
   const normalized = countryQuery.trim().toLowerCase();
   const countryMatches = normalized ? countries.filter((item)=>item.name.toLowerCase().includes(normalized) || item.id.toLowerCase() === normalized).slice(0,8) : [];
   const yearIndex = data.years.indexOf(currentYear);
+  const projectionStart = data.years.findIndex((date) => date > 2023) / Math.max(1, data.years.length - 1) * 100;
   const maximum = Math.max(2, Math.ceil(Math.max(...comparison.flatMap((item) => {
     const entry = item.records[currentYear];
     return entry ? entry.ages.flat().map((value) => value/entry.population*100) : [0];
@@ -100,6 +101,9 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
       <label>Move through time <strong>{currentYear}</strong><input type="range" min="0" max={data.years.length-1} value={yearIndex}
         aria-valuetext={`${currentYear} ${currentYear > 2023 ? "projected" : "historical estimate"}`}
         onChange={(event)=>setYear(data.years[event.currentTarget.valueAsNumber])} /></label>
+      <div className="timeline-epochs mono" style={{ gridTemplateColumns:`${projectionStart}% minmax(0,1fr)` }}>
+        <span>Estimates</span><span>Projections</span>
+      </div>
       <div className="population-time-labels mono" aria-label="Timeline milestones">
         {[1950, 1980, 2000, 2023, 2050].filter((date) => data.years.includes(date)).map((date) =>
           <button key={date} type="button" aria-pressed={date === currentYear} onClick={() => setYear(date)}>{date}</button>

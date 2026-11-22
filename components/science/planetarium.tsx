@@ -31,7 +31,7 @@ const saturnRings = [
 
 export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:"cosmos"}>; active:boolean }) {
   const [earth, setEarth] = useState<Texture>();
-  const materials = useMemo(() => planets.map((planet) => planetSurface(planet.id, planet.color)), []);
+  const materials = useMemo(() => planets.map((planet) => planet.id === "earth" ? undefined : planetSurface(planet.id, planet.color)), []);
   useEffect(() => {
     let current = true;
     const texture = new TextureLoader().load("/images/earth-map.webp", (result) => { if (current) setEarth(result); });
@@ -89,6 +89,7 @@ export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:
     <mesh rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.45,.62,80]} /><meshBasicMaterial color="#e68952" transparent opacity={.14} depthWrite={false} /></mesh>
     <group>
       {planets.map((planet,index)=>{
+        const surface = planet.id === "earth" ? earth : materials[index];
         const orbit=displayOrbit(planet.au);
         const phase=model.years / planet.years * Math.PI*2 + index * 1.1;
         const selected=planet.id===model.selected;
@@ -97,7 +98,7 @@ export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:
           {model.view === "orbits" && <lineLoop><bufferGeometry><bufferAttribute attach="attributes-position" args={[orbits[index],3]} /></bufferGeometry>
             <lineBasicMaterial color={selected ? "#afa7ff" : "#526187"} transparent opacity={selected ? .96 : .45} /></lineLoop>}
           <group position={[Math.cos(phase)*orbit,0,Math.sin(phase)*orbit]} onClick={(event)=>{event.stopPropagation();model.onSelect(planet.id);}}>
-            <mesh><sphereGeometry args={[radius,32,20]} /><meshStandardMaterial map={planet.id === "earth" ? earth ?? materials[index] : materials[index]} color={materials[index] ? "#ffffff" : planet.color} roughness={.85} /></mesh>
+            <mesh><sphereGeometry args={[radius,32,20]} /><meshStandardMaterial map={surface} color={surface ? "#ffffff" : planet.color} roughness={.85} /></mesh>
             {["earth","venus","uranus","neptune"].includes(planet.id) && <mesh><sphereGeometry args={[radius*1.075,24,14]} />
               <meshBasicMaterial color={planet.color} side={BackSide} transparent opacity={.34} blending={AdditiveBlending} depthWrite={false} />
             </mesh>}

@@ -1,22 +1,9 @@
 "use client";
 
 import { useId, useState } from "react";
-import { zoneAt } from "@/lib/content/ocean";
+import { PressureInstrument } from "./pressure-instrument";
 import { atlasPoints, emissionsYears } from "@/lib/content/observations";
 import { AnimatedReading, ClimateInstrument } from "./trend";
-
-export function PressureInstrument() {
-  const id = useId();
-  const [depth, setDepth] = useState(1000);
-  const zone = zoneAt(depth);
-  return <section className="instrument pressure-instrument" aria-label="Ocean pressure experiment">
-    <div className="instrument-head"><p className="mono">{zone.name}</p><p><AnimatedReading value={1 + depth / 10} digits={0} /> <span>atm</span></p></div>
-    <div className="depth-ruler" aria-hidden="true"><span style={{ width: `${depth / 110}%` }} /></div>
-    <label htmlFor={id}>Water depth <strong>{depth.toLocaleString("en")} m</strong></label>
-    <input id={id} type="range" min="0" max="11000" step="100" value={depth} onChange={(event) => setDepth(event.currentTarget.valueAsNumber)} />
-    <p className="instrument-note">Approximate absolute pressure. Start at 1 atmosphere and add about 1 for every 10 metres of seawater.</p>
-  </section>;
-}
 
 const beds = [
   ["Caprock", "A resistant layer may protect softer rock beneath it from erosion."],

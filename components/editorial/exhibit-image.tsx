@@ -1,6 +1,7 @@
 import Image, { type ImageProps } from "next/image";
 
 const grades: Readonly<Record<string, string>> = {
+  "basalt-inlet.webp":"basalt-inlet", "weathered-section.webp":"weathered-section",
   "cavern-threshold.webp":"limestone", "rift.webp":"limestone", "strata-wall.webp":"mineral", "canyon.webp":"mineral",
   "obsidian.webp":"basalt", "plunge.webp":"pelagic", "ocean-column.webp":"pelagic", "deep-sea.webp":"midnight",
   "ice-margin.webp":"glacial", "glacier.webp":"glacial", "harbor.webp":"harbor", "fossil.webp":"organic",

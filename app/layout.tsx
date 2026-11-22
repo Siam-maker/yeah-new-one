@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import "@fontsource-variable/newsreader/standard.css";
-import "@fontsource-variable/newsreader/standard-italic.css";
-import "@fontsource-variable/ibm-plex-sans";
-import "@fontsource-variable/ibm-plex-sans/wght-italic.css";
+import "@fontsource/instrument-serif/latin-400.css";
+import "@fontsource/instrument-serif/latin-400-italic.css";
+import "@fontsource-variable/manrope";
 import "@fontsource/ibm-plex-mono/latin-400.css";
 import "@fontsource/ibm-plex-mono/latin-500.css";
 import { Header } from "@/components/layout/header";
-import { searchEntries } from "@/lib/content/search";
 import { Footer } from "@/components/layout/footer";
 import { ReadingModeSync } from "@/components/publishing/reading-preferences";
 import { SiteInteractions } from "@/components/motion/site-interactions";
@@ -32,7 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <a href="#content" className="skip-link">Skip to content</a>
         <SiteInteractions /><RouteCurtain /><ReadingModeSync />
-        <Header entries={searchEntries} />
+        <Header />
         <main id="content" tabIndex={-1}>{children}</main>
         <Footer />
       </body>

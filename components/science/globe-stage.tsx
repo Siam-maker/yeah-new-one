@@ -11,6 +11,29 @@ function geographicPoint(lon: number, lat: number, radius: number) {
 }
 
 const north = new Vector3(0, 1, 0);
+const atmosphereVertex = `
+  varying vec3 normalInView;
+  varying vec3 viewDirection;
+  void main() {
+    vec4 vertex=modelViewMatrix*vec4(position,1.);
+    normalInView=normalize(normalMatrix*normal);
+    viewDirection=normalize(-vertex.xyz);
+    gl_Position=projectionMatrix*vertex;
+  }
+`;
+const atmosphereFragment = `
+  varying vec3 normalInView;
+  varying vec3 viewDirection;
+  void main() {
+    vec3 normal=normalize(normalInView);
+    float edge=1.-abs(dot(normal,normalize(viewDirection)));
+    float sun=dot(normal,normalize(vec3(-.76,.46,.21)));
+    float light=pow(max(0.,edge),3.6)*smoothstep(-.76,.74,sun);
+    float highAir=pow(max(0.,edge),8.3);
+    vec3 air=mix(vec3(.12,.28,.39),vec3(.40,.69,.71),smoothstep(0.,.73,sun));
+    gl_FragColor=vec4(air,light*.56+highAir*.085);
+  }
+`;
 
 export function Globe({ scene, active, profile }: { scene: Extract<SceneSpec, { kind: "globe" }>; active: boolean; profile: RenderProfile }) {
   const globe = useRef<Group>(null);
@@ -112,8 +135,7 @@ export function Globe({ scene, active, profile }: { scene: Extract<SceneSpec, { 
       <mesh renderOrder={3}>
         <sphereGeometry args={[1.555,48,32]} />
         <shaderMaterial side={BackSide} blending={AdditiveBlending} transparent depthWrite={false}
-          vertexShader={`varying vec3 n; varying vec3 v; void main(){ vec4 p=modelViewMatrix*vec4(position,1.0); n=normalize(normalMatrix*normal); v=normalize(-p.xyz); gl_Position=projectionMatrix*p; }`}
-          fragmentShader={`varying vec3 n; varying vec3 v; void main(){ float rim=pow(1.0-abs(dot(normalize(n),normalize(v))),2.6); float lit=.36+.64*smoothstep(-.65,.8,dot(normalize(n),normalize(vec3(-.8,.5,.1)))); vec3 air=mix(vec3(.13,.30,.49),vec3(.42,.68,.69),lit); gl_FragColor=vec4(air,rim*.56*lit); }`} />
+          vertexShader={atmosphereVertex} fragmentShader={atmosphereFragment} />
       </mesh>
       {scene.showBoundaries && boundaries && <lineSegments geometry={boundaries}><lineBasicMaterial color="#ff996d" /></lineSegments>}
       <mesh position={geographicPoint(scene.location.lon,scene.location.lat,1.542)} quaternion={new Quaternion().setFromUnitVectors(new Vector3(0,0,1),geographicPoint(scene.location.lon,scene.location.lat,1))}>

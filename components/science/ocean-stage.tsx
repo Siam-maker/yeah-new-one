@@ -63,8 +63,12 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
   useEffect(() => {
     if (!active || profile.name === "low") return;
     const timer = window.setInterval(invalidate, profile.frameMs);
-    return () => window.clearInterval(timer);
-  }, [active, invalidate, profile.frameMs, profile.name]);
+    const stop = window.setTimeout(() => window.clearInterval(timer), 2250);
+    return () => {
+      window.clearTimeout(stop);
+      window.clearInterval(timer);
+    };
+  }, [active, depth, invalidate, profile.frameMs, profile.name]);
 
   useFrame(({ camera, clock, scene }, delta) => {
     const animated = active && profile.name !== "low";
@@ -80,7 +84,10 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
     camera.position.z = animated ? MathUtils.damp(camera.position.z,z,2.6,Math.min(delta,.1)) : z;
     camera.lookAt(0,camera.position.y-.64,-5.2);
     if (ground.current) ground.current.position.y = MathUtils.lerp(ground.current.position.y,habitat.bed,ease);
-    if (dust.current) dust.current.rotation.z = animated ? clock.elapsedTime * .025 : 0;
+    if (dust.current) {
+      dust.current.rotation.z = animated ? clock.elapsedTime * .016 : 0;
+      dust.current.position.y = animated ? -.28 * Math.sin(clock.elapsedTime * .23) : 0;
+    }
     if (school.current) school.current.position.x = animated ? Math.sin(clock.elapsedTime * .35) * 1.7 : 0;
   });
 

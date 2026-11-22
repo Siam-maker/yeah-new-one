@@ -9,7 +9,11 @@ const AbyssScene = dynamic(() => import("./abyss-scene"), { ssr:false });
 
 export type AbyssCamera = { x:number; y:number; descent:number };
 
-export function AbyssStage({ camera }: { camera: RefObject<AbyssCamera> }) {
+export function AbyssStage({ camera, enabled, onWakeChange }: {
+  camera: RefObject<AbyssCamera>;
+  enabled: boolean;
+  onWakeChange: (wake: (() => void) | null) => void;
+}) {
   const stage = useRef<HTMLDivElement>(null);
   const [profile,setProfile] = useState<RenderProfile | null>(null);
   const [dpr,setDpr] = useState(1);
@@ -19,10 +23,11 @@ export function AbyssStage({ camera }: { camera: RefObject<AbyssCamera> }) {
     const element = stage.current;
     if (!element) return;
     const media = matchMedia(allowMotion);
+    const desktop = matchMedia("(min-width: 1024px) and (hover: hover) and (pointer: fine)");
     let intersects = false;
 
     function sync() {
-      if (!media.matches) {
+      if (!media.matches || (!desktop.matches && !enabled)) {
         setProfile(null);
         setVisible(false);
         return;
@@ -34,13 +39,15 @@ export function AbyssStage({ camera }: { camera: RefObject<AbyssCamera> }) {
     const observer = new IntersectionObserver(([entry]) => { intersects=entry.isIntersecting;sync(); });
     observer.observe(element);
     media.addEventListener("change",sync);
+    desktop.addEventListener("change",sync);
     document.addEventListener("visibilitychange",sync);
     return () => {
       observer.disconnect();
       media.removeEventListener("change",sync);
+      desktop.removeEventListener("change",sync);
       document.removeEventListener("visibilitychange",sync);
     };
-  },[]);
+  },[enabled]);
 
   useEffect(() => {
     if (!profile || !stage.current) return;
@@ -55,7 +62,7 @@ export function AbyssStage({ camera }: { camera: RefObject<AbyssCamera> }) {
   },[profile]);
 
   return <div className="abyss-stage" ref={stage} data-profile={profile?.name}>
-    {profile && <AbyssScene camera={camera} active={visible} source="/images/obsidian-surface.webp"
+    {profile && <AbyssScene camera={camera} active={visible} onWakeChange={onWakeChange} source="/images/obsidian-surface.webp"
       dpr={dpr} fps={Math.round(1000/profile.frameMs)} detail={profile.segments} ambientMotion={profile.name!=="low"} />}
   </div>;
 }

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Globe2, Map, Minus, Plus, RotateCcw, RotateCw } from "lucide-react";
+import { GlobeDrag } from "@/components/science/globe-drag";
 import { LiveScene } from "@/components/science/live-scene";
 import type { AtlasPoint } from "@/lib/content/atlas";
 import { indicatorColors, populationIndicators, populationNoValue, type Country, type PopulationIndicator } from "@/lib/content/demographics";
@@ -29,7 +30,7 @@ export function PopulationVisual({ countries, country, compared, year, indicator
 
   return <div className="population-visual">
     <div className="population-viewbar" aria-label="Population map views">
-      <button className="ghost-button" type="button" aria-pressed={!globe} onClick={()=>changeGlobe(false)}><Map size={16} aria-hidden="true"/> Map</button>
+      <button className="ghost-button" type="button" aria-pressed={!globe} onClick={()=>{ setRendering(false); changeGlobe(false); }}><Map size={16} aria-hidden="true"/> Map</button>
       <button className="ghost-button" type="button" aria-pressed={globe} onClick={()=>changeGlobe(true)}><Globe2 size={16} aria-hidden="true"/> 3D globe</button>
       <button className="ghost-button" type="button" aria-label="Zoom in" disabled={zoom>=3} onClick={()=>setZoom(Math.min(3,zoom+.5))}><Plus size={16} aria-hidden="true"/></button>
       <button className="ghost-button" type="button" aria-label="Zoom out" disabled={zoom<=1} onClick={()=>setZoom(Math.max(1,zoom-.5))}><Minus size={16} aria-hidden="true"/></button>
@@ -38,9 +39,9 @@ export function PopulationVisual({ countries, country, compared, year, indicator
         <button className="ghost-button" type="button" aria-label="Rotate east" onClick={()=>setHeading((value)=>value+24)}><RotateCw size={16} aria-hidden="true"/></button>
       </>}
     </div>
-    {globe ? <LiveScene explicit onModeChange={setRendering}
+    {globe ? <GlobeDrag enabled={rendering} rotate={(delta) => setHeading((angle) => angle + delta)}><LiveScene explicit onModeChange={setRendering}
       scene={{ kind:"globe", location:point, points:[], countryColors:colors, comparedId:compared?.id, showBoundaries:false,
-        heading, zoom, markerColor:"#fff0cf", onSelect:select }} fallback={map} /> : map}
+        heading, zoom, markerColor:"#fff0cf", onSelect:select }} fallback={map} /></GlobeDrag> : map}
     {globe && rendering && <div className="population-legend" aria-label={`Legend, ${scale.unit}`}>
       {scale.labels.map((label,index)=><span key={label}><i style={{ background:indicatorColors[index] }} />{label}</span>)}
       <span><i style={{ background:populationNoValue }} />No value</span>

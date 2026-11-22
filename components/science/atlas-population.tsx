@@ -6,16 +6,18 @@ import { PopulationMap } from "@/components/demographics/population-map";
 import { usePopulation } from "@/components/demographics/use-population";
 import { decimal, indicatorColors, populationIndicators, populationNoValue, type PopulationIndicator } from "@/lib/content/demographics";
 import countryCenters from "@/public/data/country-centers.json";
+import { GlobeDrag } from "./globe-drag";
 import { LiveScene } from "./live-scene";
 import type { AtlasPoint } from "@/lib/content/atlas";
 
 const centers: Record<string, number[]> = countryCenters;
 
-export function AtlasPopulation({ indicator, country, year, setYear, globe, zoom, heading, boundaries, bathymetry, select, onModeChange }: {
+export function AtlasPopulation({ indicator, country, year, setYear, globe, zoom, heading, boundaries, bathymetry, select, onModeChange, rotate }: {
   indicator: PopulationIndicator; country: string; year: number; setYear: (n: number) => void; globe: boolean; zoom: number; heading: number;
-  boundaries: boolean; bathymetry: boolean; select: (id: string) => void; onModeChange: (seen: boolean) => void;
+  boundaries: boolean; bathymetry: boolean; select: (id: string) => void; onModeChange: (seen: boolean) => void; rotate: (delta: number) => void;
 }) {
   const { data, error, retry } = usePopulation();
+  const [interactive,setInteractive] = useState(false);
   const [region, setRegion] = useState("All regions");
   const [query, setQuery] = useState("");
   const usableYear = data?.years.includes(year) ? year : 2023;
@@ -36,10 +38,10 @@ export function AtlasPopulation({ indicator, country, year, setYear, globe, zoom
   return <div className="atlas-grid atlas-pop-grid">
     <div className="atlas-map-panel">
       {globe ? <>
-        <LiveScene scene={{ kind:"globe", location:point, points:[], countryColors:colors, showBoundaries:boundaries, bathymetry, heading, zoom,
-          markerColor:"#fff4d8", onSelect:select }} fallback={map} explicit onModeChange={onModeChange} />
-        <div className="population-legend" aria-label={`Legend, ${scale.unit}`}>{scale.labels.map((label,index) => <span key={label}><i style={{ background:indicatorColors[index] }} />{label}</span>)}
-          <span><i style={{ background:populationNoValue }} />No value</span></div>
+        <GlobeDrag enabled={interactive} rotate={rotate}><LiveScene scene={{ kind:"globe", location:point, points:[], countryColors:colors, showBoundaries:boundaries, bathymetry, heading, zoom,
+          markerColor:"#fff4d8", onSelect:select }} fallback={map} explicit onModeChange={(ready) => { setInteractive(ready); onModeChange(ready); }} /></GlobeDrag>
+        {interactive && <div className="population-legend" aria-label={`Legend, ${scale.unit}`}>{scale.labels.map((label,index) => <span key={label}><i style={{ background:indicatorColors[index] }} />{label}</span>)}
+          <span><i style={{ background:populationNoValue }} />No value</span></div>}
       </> : map}
       <details className="reference-fold"><summary>Sources and coverage</summary><p>UN World Population Prospects 2024 supplies population estimates and medium projections. Gapminder distributes the UN density series and World Bank urban shares through 2023 where available. Colors represent national values.</p><Link href="/data/DEMOGRAPHICS.md">Data preparation and limitations</Link></details>
     </div>

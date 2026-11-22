@@ -2,12 +2,12 @@
 @import "./ocean-environment.css";
 
 @theme {
-  --color-ink: #0b1115;
-  --color-paper: #efe8d9;
-  --color-ember: #c27b5b;
+  --color-ink: #101313;
+  --color-paper: #f1eadd;
+  --color-ember: #b97e60;
   --color-cobalt: #b4b4cf;
-  --font-sans: "IBM Plex Sans Variable", system-ui, sans-serif;
-  --font-display: "Newsreader Variable", Georgia, serif;
+  --font-sans: "Manrope Variable", system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
   --font-serif: var(--font-display);
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
@@ -18,7 +18,7 @@
   --ivory: var(--color-paper);
   --ember: var(--color-ember);
   --violet: var(--color-cobalt);
-  --night: #111c22;
+  --night: #171c1c;
   --deep: #173b4a;
   --teal: #376b70;
   --cinema-ease: cubic-bezier(.21,.78,.22,1);
@@ -26,26 +26,33 @@
   --amber: #c4a98a;
   --muted: #b7c0c0;
   --line: #bfcbcb38;
-  --panel: #17242a;
+  --panel: #202829;
   --shell: 1440px;
   --gutter: clamp(21px, 5vw, 88px);
   --serif: var(--font-display);
-  --display-weight: 460;
+  --display-weight: 400;
   --display-leading: .94;
-  --paper-warm: #efe8d9;
-  --paper-ink: #17232a;
-  --paper-muted: #405159;
+  --paper-warm: #f1eadd;
+  --paper-ink: #202726;
+  --paper-muted: #495753;
   --paper-line: #5147373d;
   --forest: #192923;
   --mineral: #b59a77;
   --glacial: #91bcc4;
-  --dispatch: #20333a;
+  --dispatch: #203438;
+  --ocean-surface: #142d37;
+  --geology-surface: #332820;
+  --glacial-surface: #27363d;
+  --space-surface: #212436;
+  --rule-copper: #c7977e;
+  --instrument-text: #add0d2;
+  --font-measure: clamp(15px, 1.1vw, 17px);
   --section-space: clamp(55px,8vw,132px);
   --surface-raised: #203037;
   --accent: var(--cyan);
   --body-size: clamp(16px, 1.15vw, 18px);
   --text-measure: 64ch;
-  --display-tracking: -.026em;
+  --display-tracking: -.017em;
 }
 
 html { scroll-behavior: smooth; }
@@ -57,10 +64,15 @@ html { scroll-behavior: smooth; }
   height: 2px;
   background: var(--color-ember);
   transform-origin: left;
+  transform: scaleX(0);
   pointer-events: none;
 }
 
-.cursor-companion { display: none; }
+
+@supports (animation-timeline: scroll(root block)) {
+  .scroll-progress { animation: progress-fill linear both; animation-timeline: scroll(root block); }
+  @keyframes progress-fill { to { transform: scaleX(1); } }
+}
 
 body {
   @apply m-0 bg-ink font-sans text-paper antialiased;
@@ -315,32 +327,6 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) and (min-width: 701px) {
-  .cursor-companion {
-    display: block;
-    position: fixed;
-    inset: 0 auto auto 0;
-    z-index: 11;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .16s;
-  }
-  .cursor-companion::after {
-    content: "";
-    position: absolute;
-    width: 26px;
-    height: 26px;
-    border: 1px solid #ff8064a6;
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(.8);
-    transition: transform .22s ease, border-color .22s ease;
-  }
-  .cursor-companion[data-visible] { opacity: 1; }
-  .cursor-companion[data-mode="tilt"]::after {
-    border-color: #a9b5ffd1;
-    transform: translate(-50%, -50%) scale(1.13);
-  }
-  .cursor-companion[data-mode="magnetic"]::after { transform: translate(-50%, -50%) scale(1.25); }
-
   .site-navigation a::after {
     content: "";
     position: absolute;
@@ -445,8 +431,7 @@ body {
 
 @media (forced-colors: active) {
   .scroll-progress { background: Highlight; }
-  .cursor-companion { display: none; }
-}
+  }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

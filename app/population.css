@@ -90,3 +90,19 @@
   .population-workbench .population-tools label:last-child { grid-column:1/-1; }
   .population-title-grid { gap:10px; }
 }
+
+.country-metrics .country-total {
+  grid-column:1/-1;padding:13px 14px;background:var(--night);
+  border:1px solid var(--line);border-inline-start:2px solid var(--accent);
+}
+.country-total dd {font-size:clamp(1.22rem,2.35vw,2.22rem);line-height:1.35;letter-spacing:-.04em;}
+.timeline-epochs {display:grid;color:var(--ivory);font-size:clamp(10px,1.2vw,13px);}
+.timeline-epochs span {min-width:0;border-top:2px solid var(--glacial);padding-top:4px;}
+.timeline-epochs span + span {color:#e2b797;border-color:var(--rule-copper);text-align:right;}
+.population-time-labels {gap:3px;}
+.trend-inspection {display:block;font-size:.9rem;max-width:65ch;margin-top:12px;}
+.trend-inspection strong {margin-left:6px;color:var(--accent);}
+.trend-inspection input {display:block;width:100%;margin-block:8px 10px;accent-color:var(--glacial);}
+@media(prefers-reduced-motion:no-preference) {
+  .pyramid-bar {transition:x .32s var(--cinema-ease),width .32s var(--cinema-ease);}
+}

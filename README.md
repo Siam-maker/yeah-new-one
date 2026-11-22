@@ -26,4 +26,8 @@ The Journeys routes assemble expeditions from the publication’s stories, topic
 
 Scientific 3D scenes load near the viewport and share device profiles, demand rendering, and context-loss recovery through illustrated fallbacks. The Earth cutaway uses approximate depth boundaries. Its crust thickness is exaggerated. The observatory uses compressed circular orbits and illustrative surface textures.
 
-The visual identity uses locally bundled Instrument Serif and Manrope. The homepage cave illustration supports the adaptive procedural scene as a fallback. Both are editorial representations. The Population Observatory reuses the Atlas globe and preserves the chosen snapshot and comparison when sharing a globe view.
+The visual identity uses locally bundled Instrument Serif for display type, Manrope for body and interface text, and IBM Plex Mono for labels and measurements. Design tokens live in `app/globals.css`. Shared editorial styling and route transition treatments are in `app/cinema.css`.
+
+The illustrated basalt inlet and weathered sedimentary section were created for the publication. They depict representative geology. The homepage cavern illustration is the initial image and the fallback for the demand-rendered procedural scene. The Population Observatory reuses the Atlas globe and preserves the chosen snapshot and comparison when sharing a globe view.
+
+Animation respects the operating system’s reduced-motion preference. The Atlas and Population Observatory also support explicit 3D mode, horizontal drag, and button-based rotation.

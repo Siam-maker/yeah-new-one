@@ -16,7 +16,7 @@ export default async function DemographicsPage({ searchParams }: { searchParams:
       <div className="population-title-grid"><div><p className="mono section-label">Field Atlas / 1950–2050</p><h1>Population <em>Observatory</em></h1></div>
         <p>Compare countries and age structures across historical estimates and UN medium projections.</p></div>
     </header>
-    <PopulationExplorer initialCountry={typeof query.country === "string" ? query.country.toUpperCase() : undefined} initialYear={Number(query.year ?? 2023)}
+    <PopulationExplorer key={JSON.stringify(query)} initialCountry={typeof query.country === "string" ? query.country.toUpperCase() : undefined} initialYear={Number(query.year ?? 2023)}
       initialIndicator={indicator} initialGlobe={query.view === "globe"} initialCompare={typeof query.compare === "string" ? query.compare.toUpperCase() : undefined} />
     <section className="population-method">
       <h2 className="subhead">About the data</h2>

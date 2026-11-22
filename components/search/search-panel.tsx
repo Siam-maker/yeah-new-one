@@ -2,14 +2,14 @@
 
 import { useEffect, useId, useState, useRef } from "react";
 import Link from "next/link";
-import { Search, X } from "lucide-react";
+import { ArrowUpRight, Search, X } from "lucide-react";
 import type { SearchEntry } from "@/lib/content/search";
 
 const categories = ["All", "Article", "Topic", "Lab", "Glossary", "Location", "Field note", "Journey", "Tool"];
 const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
 
-export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = false }: {
-  entries: SearchEntry[]; initialQuery?: string; onNavigate?: () => void; compact?: boolean;
+export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = false, status = "ready" }: {
+  entries: SearchEntry[]; initialQuery?: string; onNavigate?: () => void; compact?: boolean; status?: "loading" | "error" | "ready";
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [category, setCategory] = useState("All");
@@ -34,16 +34,18 @@ export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = 
     </div>
     {!query && <div className="search-suggestions"><span>Try</span>{["trench", "ice", "coastal", "evolution"].map((suggestion) =>
       <button type="button" key={suggestion} className="ghost-button" onClick={() => { setQuery(suggestion); setCategory("All"); }}>{suggestion}</button>)}</div>}
-    <p className="mt-4 text-[var(--muted)]" role="status">{matches.length === 0 ? "No matching results. Try a broader term or change the content type." : `${matches.length} ${matches.length === 1 ? "result" : "results"}`}</p>
+    <p className="mt-4 text-[var(--muted)]" role="status">{status === "loading" ? "Loading the publication index…" : status === "error" ? "The index did not load. Open the search page to continue." : matches.length === 0 ? "No matching results. Try a broader term or change the content type." : `${matches.length} ${matches.length === 1 ? "result" : "results"}`}</p>
     {visible.length > 0 && <ul className="result-list">{visible.map((entry) => <li key={entry.href}>
-      <p className="mono tile-meta">{entry.kind}</p><Link href={entry.href} onClick={onNavigate}>{entry.title}</Link><p>{entry.description}</p>
+      <p className="mono tile-meta">{entry.kind}</p><Link href={entry.href} onClick={onNavigate}>{entry.title}<ArrowUpRight size={15} aria-hidden="true" /></Link><p>{entry.description}</p>
     </li>)}</ul>}
     {matches.length > limit && <button className="ghost-button mt-4" type="button" onClick={() => setLimit(limit + 8)}>Load more results</button>}
     {compact && <div className="mt-5"><Link className="editorial-link" href={`/search?q=${encodeURIComponent(query)}`} onClick={onNavigate}>Open the search page</Link></div>}
   </>;
 }
 
-export function SearchOverlay({ entries }: { entries: SearchEntry[] }) {
+export function SearchOverlay() {
+  const [entries,setEntries] = useState<SearchEntry[]>();
+  const [failed,setFailed] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
 
@@ -52,6 +54,8 @@ export function SearchOverlay({ entries }: { entries: SearchEntry[] }) {
     if (!panel || panel.open) return;
     panel.showModal();
     panel.querySelector("input")?.focus();
+    setFailed(false);
+    void import("@/lib/content/search").then(({ searchEntries }) => setEntries(searchEntries), () => setFailed(true));
   }
 
   useEffect(() => {
@@ -69,7 +73,7 @@ export function SearchOverlay({ entries }: { entries: SearchEntry[] }) {
     <button ref={trigger} className="header-action header-search" type="button" aria-haspopup="dialog" onClick={openSearch}>
       <Search size={19} aria-hidden="true" /><span>Search</span>
     </button>
-    <dialog className="search-dialog" ref={dialog} aria-labelledby="search-dialog-title" onClose={() => trigger.current?.focus()}
+    <dialog className="search-dialog archive-dialog" ref={dialog} aria-labelledby="search-dialog-title" onClose={() => trigger.current?.focus()}
       onKeyDown={(event) => {
         if (event.key !== "Escape") return;
         event.preventDefault();
@@ -79,7 +83,7 @@ export function SearchOverlay({ entries }: { entries: SearchEntry[] }) {
       <div className="dialog-heading"><h2 id="search-dialog-title">Search Under the Surface</h2>
         <button className="ghost-button" type="button" aria-label="Close search" onClick={() => dialog.current?.close()}><X size={20} aria-hidden="true" /></button>
       </div>
-      <SearchPanel entries={entries} compact onNavigate={() => dialog.current?.close()} />
+      <SearchPanel entries={entries ?? []} compact status={entries ? "ready" : failed ? "error" : "loading"} onNavigate={() => dialog.current?.close()} />
     </dialog>
   </>;
 }

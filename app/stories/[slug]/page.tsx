@@ -6,7 +6,7 @@ import { labs, topics } from "@/lib/content/publication";
 import { RecordVisit, ReadingModeButton } from "@/components/publishing/reading-preferences";
 import { ZoomFigure } from "@/components/publishing/zoom-figure";
 import { ArticleContents, ArticleControls, ReadableArticle } from "@/components/editorial/article-controls";
-import { Breadcrumbs, ReferenceList, StoryTiles, TextLink } from "@/components/editorial/ui";
+import { Breadcrumbs, ReferenceList, SectionHeading, StoryTiles, TextLink } from "@/components/editorial/ui";
 import { ScienceDiagram } from "@/components/editorial/diagram";
 import { OceanLab } from "@/components/science/ocean-lab";
 import { DisciplineInstrument } from "@/components/science/discipline-instrument";
@@ -66,6 +66,6 @@ export default async function StoryPage({ params }: Props) {
         </div>
       </div>
     </ReadableArticle>
-    <section className="layout-flow"><h2 className="subhead">Related stories</h2><StoryTiles slugs={related.map((item) => item.slug)} /></section>
+    <section className="layout-flow related-stories"><SectionHeading title="Related stories" href={topic ? `/topics/${topic.slug}` : "/stories"} linkLabel={topic?.title ?? "Browse the journal"} /><StoryTiles slugs={related.map((item) => item.slug)} /></section>
   </div>;
 }

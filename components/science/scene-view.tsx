@@ -58,7 +58,9 @@ export default function SceneView({ scene, profile, active, onReady, onFailure }
   return <VisualBoundary onFailure={onFailure}>
     <Canvas frameloop="demand" dpr={Math.min(profile.dpr, window.devicePixelRatio || 1)} camera={{ position: [0, ocean ? 1.2 : .05, ocean ? 8.6 : 7.4], near: .1, far: 90, fov: ocean ? 52 : 43 }}
       gl={{ antialias: false, powerPreference: profile.name === "high" ? "high-performance" : "low-power", alpha: true }} onCreated={({ gl, scene: root }) => {
-        if (!ocean && scene.kind !== "cosmos") root.background = new Color("#161c27");
+        if (!ocean && scene.kind !== "cosmos") {
+          root.background = new Color(scene.kind === "globe" || scene.kind === "interior" ? "#121e25" : "#221d1b");
+        }
         setRenderer(gl);
         onReady();
       }}>

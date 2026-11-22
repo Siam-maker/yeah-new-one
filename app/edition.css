@@ -95,9 +95,6 @@
 .sequence-controls button { min-width:45px; justify-content:center; }
 @media (hover:hover) and (prefers-reduced-motion:no-preference) {
   .sequence-image img { transition: transform .58s cubic-bezier(.22,1,.36,1); }
-  .sequence-item:hover img {
-    transform: translate(calc(var(--pointer-x,0) * -19px),calc(var(--pointer-y,0) * -13px)) skewX(calc(var(--pointer-x,0) * 1.4deg)) scale(1.067);
-  }
 }
 .edition-universe { background:var(--night); border-block:1px solid var(--line); }
 .discipline-explorer { display:grid; grid-template-columns:.69fr 1.31fr; gap: clamp(15px,3vw,45px); }

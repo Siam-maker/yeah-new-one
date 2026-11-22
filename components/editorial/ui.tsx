@@ -44,13 +44,13 @@ export function TextLink({ href, children }: { href: string; children: ReactNode
 export function ReferenceList({ keys }: { keys: readonly SourceKey[] }) {
   return <ul className="reference-list">
     {keys.map((key) => { const source = sources[key]; return <li key={key}>
-      <a href={source.url}>{source.title}</a> <span>· {source.name}</span>
+      <a href={source.url}>{source.title}</a><span>{source.name}</span>
     </li>; })}
   </ul>;
 }
 
 export function Tile({ title, image, href, meta, description }: { title: string; image: string; href: string; meta: string; description: string }) {
-  return <Link className="editorial-tile" href={href} data-pointer="tilt">
+  return <Link className="editorial-tile" href={href}>
     <div className="tile-image"><ExhibitImage src={image} alt="" fill sizes="(max-width: 430px) 90vw,(max-width: 760px) 45vw, 31vw" /></div>
     <div className="tile-copy"><p className="mono tile-meta">{meta}</p><h3>{title}</h3><p className="editorial-text">{description}</p></div>
   </Link>;
@@ -71,7 +71,7 @@ export function LabTiles() {
 
 export function TopicIndex() {
   return <ol className="field-index">{topics.map((topic, index) => <li key={topic.slug}>
-    <Link href={`/topics/${topic.slug}`} data-pointer="tilt">
+    <Link href={`/topics/${topic.slug}`}>
       <span className="mono field-count">0{index + 1}</span><h3>{topic.title}</h3><span className="editorial-text">{topic.intro}</span><ArrowUpRight size={23} aria-hidden="true" />
     </Link>
   </li>)}</ol>;

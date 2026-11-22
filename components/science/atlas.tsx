@@ -1,10 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Globe2, Map, Minus, Plus, RotateCcw, RotateCw } from "lucide-react";
 import { atlasLayers, type AtlasLayer, type AtlasPoint } from "@/lib/content/atlas";
 import { atlasPoints, emissionsYears, getEmissionSeries, seaLevel, seaLevelTrend, temperature } from "@/lib/content/observations";
+import { GlobeDrag } from "./globe-drag";
 import { LiveScene } from "./live-scene";
 import { populationIndicators, type PopulationIndicator } from "@/lib/content/demographics";
 import { AtlasBookmarks } from "./atlas-bookmarks";
@@ -12,6 +13,11 @@ import { TrendGraphic } from "./trend";
 
 const AtlasPopulation = dynamic(() => import("./atlas-population").then((module) => module.AtlasPopulation), { loading: () => <p role="status">Loading country indicators…</p> });
 const populationLayers = ["population", "density", "urban"] as const;
+const atlasGroups = [
+  { name:"Physical Earth", layers:["ocean", "geology", "tectonics"] },
+  { name:"Environment", layers:["environment", "biodiversity", "climate"] },
+  { name:"People", layers:["coastal", "footprint"] },
+] as const satisfies readonly { name: string; layers: readonly AtlasLayer[] }[];
 
 function MapPreview({ points, selected, boundaries, bathymetry, color, zoom, onSelect }: {
   points: readonly AtlasPoint[]; selected: AtlasPoint; boundaries: boolean; bathymetry: boolean; color: string;
@@ -66,7 +72,6 @@ export function Atlas({ initialLayer, initialLocation, initialIndicator, initial
   const [bathymetry, setBathymetry] = useState(initialBathymetry ?? (initialLayer === "ocean"));
   const [climateYear, setClimateYear] = useState(Math.max(1880, Math.min(2025, initialYear ?? 2025)));
   const [emissionYear, setEmissionYear] = useState(initialYear && emissionsYears.includes(initialYear) ? initialYear : 2023);
-  const drag = useRef<{ x: number; heading: number } | null>(null);
   const points = atlasPoints(layer, emissionYear);
   const source = atlasLayers[layer];
   const location = points.find((item) => item.id === selected) ?? points[0];
@@ -97,39 +102,40 @@ export function Atlas({ initialLayer, initialLocation, initialIndicator, initial
 
   return <div className="atlas-console">
     <div className="atlas-layers" aria-label="Scientific data layers">
-      {(Object.keys(atlasLayers) as AtlasLayer[]).map((key) => <button className="atlas-layer" type="button" key={key}
-        aria-pressed={!indicator && key === layer} onClick={() => changeLayer(key)}>
-        <span style={{ backgroundColor: atlasLayers[key].color }} />{atlasLayers[key].title}
-      </button>)}
-      {populationLayers.map((key) => <button className="atlas-layer" type="button" key={key} aria-pressed={indicator === key}
-        onClick={() => { setIndicator(key); setHeading(0); }}><span style={{ backgroundColor:"#7ac8b5" }} />{populationIndicators[key].name}</button>)}
+      {atlasGroups.map(({ name,layers }) => <fieldset className="atlas-layer-group" key={name}>
+        <legend className="mono">{name}</legend>
+        {layers.map((key) => <button className="atlas-layer" type="button" key={key}
+          aria-pressed={!indicator && key === layer} onClick={() => changeLayer(key)}>
+          <span style={{ backgroundColor:atlasLayers[key].color }} />{atlasLayers[key].title}
+        </button>)}
+        {name === "People" && populationLayers.map((key) => <button className="atlas-layer" type="button" key={key} aria-pressed={indicator === key}
+          onClick={() => { setIndicator(key); setHeading(0); }}><span style={{ backgroundColor:"#7ac8b5" }} />{populationIndicators[key].name}</button>)}
+      </fieldset>)}
     </div>
     <div className="atlas-toolbar">
         <div className="atlas-controls">
-          <button className="ghost-button" type="button" aria-pressed={view === "map"} onClick={() => { setView("map"); setGlobeReady(false); }}><Map size={17} /> Map</button>
-          <button className="ghost-button" type="button" aria-pressed={view === "globe"} onClick={() => setView("globe")}><Globe2 size={17} /> 3D globe</button>
+          <button className="ghost-button" type="button" aria-pressed={view === "map"} onClick={() => { setView("map"); setGlobeReady(false); }}><Map size={17} aria-hidden="true" /> Map</button>
+          <button className="ghost-button" type="button" aria-pressed={view === "globe"} onClick={() => setView("globe")}><Globe2 size={17} aria-hidden="true" /> 3D globe</button>
           <button className="ghost-button" type="button" aria-pressed={boundaries} onClick={() => setBoundaries(!boundaries)}>Plate boundaries</button>
           <button className="ghost-button" type="button" aria-pressed={bathymetry} onClick={() => setBathymetry(!bathymetry)}>Bathymetry</button>
-          <button className="ghost-button" type="button" aria-disabled={zoom === 1} onClick={() => setZoom(Math.max(1, zoom - .5))} aria-label="Zoom out"><Minus size={17} /></button>
-          <button className="ghost-button" type="button" aria-disabled={zoom === 3} onClick={() => setZoom(Math.min(3, zoom + .5))} aria-label="Zoom in"><Plus size={17} /></button>
+          <button className="ghost-button" type="button" aria-disabled={zoom === 1} onClick={() => setZoom(Math.max(1, zoom - .5))} aria-label="Zoom out"><Minus size={17} aria-hidden="true" /></button>
+          <button className="ghost-button" type="button" aria-disabled={zoom === 3} onClick={() => setZoom(Math.min(3, zoom + .5))} aria-label="Zoom in"><Plus size={17} aria-hidden="true" /></button>
           {view === "globe" && globeReady && <>
-            <button className="ghost-button" type="button" onClick={() => setHeading(heading - 30)} aria-label="Rotate west"><RotateCcw size={18} /></button>
-            <button className="ghost-button" type="button" onClick={() => setHeading(heading + 30)} aria-label="Rotate east"><RotateCw size={18} /></button>
+            <button className="ghost-button" type="button" onClick={() => setHeading(heading - 30)} aria-label="Rotate west"><RotateCcw size={18} aria-hidden="true" /></button>
+            <button className="ghost-button" type="button" onClick={() => setHeading(heading + 30)} aria-label="Rotate east"><RotateCw size={18} aria-hidden="true" /></button>
           </>}
         </div>
       <AtlasBookmarks href={`/atlas?${params}`} label={indicator ? `${populationIndicators[indicator].name} · ${country || "BGD"}` : location.name} />
     </div>
     {indicator ? <AtlasPopulation indicator={indicator} country={country} year={populationYear} setYear={setPopulationYear} globe={view === "globe"} zoom={zoom}
-      heading={heading} boundaries={boundaries} bathymetry={bathymetry} onModeChange={setGlobeReady} select={(id) => { setCountry(id); setHeading(0); }} /> : <div className="atlas-grid">
+      heading={heading} boundaries={boundaries} bathymetry={bathymetry} onModeChange={setGlobeReady} rotate={(delta) => setHeading((angle) => angle + delta)} select={(id) => { setCountry(id); setHeading(0); }} /> : <div className="atlas-grid">
       <div className="atlas-map-panel">
-        {view === "map" ? map : <div className={globeReady ? "atlas-drag" : undefined} onPointerDown={(event) => {
-          if (globeReady && event.pointerType === "mouse" && event.button === 0) drag.current = { x: event.clientX, heading };
-        }} onPointerMove={(event) => {
-          if (drag.current && event.buttons & 1) setHeading(drag.current.heading + (event.clientX - drag.current.x) * .32);
-        }} onPointerUp={() => { drag.current = null; }} onPointerLeave={() => { drag.current = null; }}>
+        <div className="atlas-frame-caption mono"><span>{source.title} · {view === "globe" && globeReady ? "Globe" : "Map"}</span>
+          <span>{degrees(location.lat,"N","S")} · {degrees(location.lon,"E","W")}</span></div>
+        {view === "map" ? map : <GlobeDrag enabled={globeReady} rotate={(delta) => setHeading((angle) => angle + delta)}>
           <LiveScene scene={{ kind: "globe", location, points: globePoints, showBoundaries: boundaries, bathymetry, heading,
             zoom, markerColor: source.color, onSelect: select }} explicit fallback={map} onModeChange={setGlobeReady} />
-        </div>}
+        </GlobeDrag>}
         <div className="atlas-legend">
           <span><i data-point style={{ backgroundColor: source.color }} /> {layer === "coastal" ? "Settlement size" : layer === "footprint" ? "Annual territorial CO₂" : "Selectable location"}</span>
           {boundaries && <span><i /> Plate boundaries</span>}
