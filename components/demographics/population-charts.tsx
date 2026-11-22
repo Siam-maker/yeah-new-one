@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ageLabels, decimal, integer, type Country, type PopulationRecord } from "@/lib/content/demographics";
 
 const trendColors = ["#91bcc4", "#e0b488"];
+const x = (index: number) => 56 + index * 5.33;
+const y = (value: number, maximum: number) => 178 - (value / maximum) * 155;
 
 export function PopulationTrend({ countries, year }: { countries: Country[]; year: number }) {
   const [inspectedYear, setInspectedYear] = useState<number>();
   const displayedYear = inspectedYear ?? year;
-  const max = Math.max(1, ...countries.flatMap((country) => country.trend));
+  const { max, lines } = useMemo(() => {
+    const max = Math.max(1, ...countries.flatMap((country) => country.trend));
+    const plot = (values: number[], start: number) => values.map((value, index) => `${x(index+start)},${y(value,max)}`).join(" ");
+    return {
+      max,
+      lines: countries.map(({ trend }) => ({ estimates:plot(trend.slice(0,74),0), projections:plot(trend.slice(73),73) })),
+    };
+  }, [countries]);
   const scale = max >= 1e9 ? 1e9 : max >= 1e6 ? 1e6 : 1000;
   const unit = scale === 1e9 ? "billions" : scale === 1e6 ? "millions" : "thousands";
-  const x = (index: number) => 56 + index * 5.33;
-  const y = (value: number) => 178 - (value / max) * 155;
-  const plot = (values: number[], start: number) => values.map((value, index) => `${x(index+start)},${y(value)}`).join(" ");
   return <figure className="chart-panel trend-panel">
     <p className="mono section-label">1950–2050 · {unit} of people</p>
     <h2>Population through time</h2>
@@ -25,15 +31,15 @@ export function PopulationTrend({ countries, year }: { countries: Country[]; yea
       }} onPointerLeave={() => setInspectedYear(undefined)} aria-label={`Population through time in ${unit} of people. Solid estimates through 2023 and dashed medium projections from 2024.`}>
       <rect x={x(74)} y="16" width={x(100)-x(74)} height="162" fill="#c8af7a" opacity=".11" />
       {[0, .25, .5, .75, 1].map((part) => <g key={part}>
-        <path d={`M56 ${y(part*max)}H590`} className="chart-grid" />
-        <text x="49" y={y(part*max)+4} textAnchor="end">{decimal.format(part*max/scale)}</text>
+        <path d={`M56 ${y(part*max,max)}H590`} className="chart-grid" />
+        <text x="49" y={y(part*max,max)+4} textAnchor="end">{decimal.format(part*max/scale)}</text>
       </g>)}
       {[1950,1975,2000,2025,2050].map((tick) => <text key={tick} x={x(tick-1950)} y="199" textAnchor="middle">{tick}</text>)}
       <path d={`M${x(displayedYear-1950)} 16V178`} stroke="#eae0c6" strokeOpacity=".5" />
       {countries.map((country,index) => <g key={country.id} fill="none" stroke={trendColors[index]} strokeWidth="2.5">
-        <polyline points={plot(country.trend.slice(0,74),0)} />
-        <polyline points={plot(country.trend.slice(73),73)} strokeDasharray="6 6" />
-        <circle cx={x(displayedYear-1950)} cy={y(country.trend[displayedYear-1950])} r="5" fill={trendColors[index]}><title>{country.name}, {displayedYear}: {integer.format(country.trend[displayedYear-1950])} people</title></circle>
+        <polyline points={lines[index].estimates} />
+        <polyline points={lines[index].projections} strokeDasharray="6 6" />
+        <circle cx={x(displayedYear-1950)} cy={y(country.trend[displayedYear-1950],max)} r="5" fill={trendColors[index]}><title>{country.name}, {displayedYear}: {integer.format(country.trend[displayedYear-1950])} people</title></circle>
       </g>)}
     </svg>
     <label className="trend-inspection">Inspect trend year <strong className="mono">{displayedYear}</strong>

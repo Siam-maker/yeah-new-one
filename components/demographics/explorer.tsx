@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { BrandMark } from "@/components/layout/brand";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowUpRight, Link2 } from "lucide-react";
 import { decimal, integer, populationIndicators, type Country, type PopulationIndicator, type PopulationRecord } from "@/lib/content/demographics";
 import { usePopulation } from "./use-population";
 import { PopulationVisual } from "./population-visual";
 import { PopulationPyramid, PopulationTrend } from "./population-charts";
+
+const emptyCountries: Country[] = [];
 
 function Format({ value, unit }: { value: number | null | undefined; unit?: string }) {
   return value == null ? <>Unavailable</> : <>{decimal.format(value)}{unit ? ` ${unit}` : ""}</>;
@@ -51,15 +53,16 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
   const [countryQuery,setCountryQuery] = useState("");
   const [message, setMessage] = useState("");
   const [share, setShare] = useState("");
-  if (error) return <div className="pane"><p>The population snapshot could not be loaded.</p><button className="ghost-button mt-3" onClick={retry} type="button">Retry loading</button></div>;
+  const countries = data?.countries ?? emptyCountries;
+  const areas = useMemo(() => region ? countries.filter((item) => item.region === region) : countries, [countries, region]);
+  const country = countries.find((item) => selected === item.id) ?? countries[0];
+  const second = countries.find((item) => compare === item.id);
+  const comparison = useMemo(() => country ? (second && second.id !== country.id ? [country, second] : [country]) : emptyCountries, [country, second]);
+
+  if (error || (data && !country)) return <div className="pane"><p>The population snapshot could not be loaded.</p><button className="ghost-button mt-3" onClick={retry} type="button">Retry loading</button></div>;
   if (!data) return <div className="pane dataset-loading" role="status"><BrandMark /> Reading the UN population snapshot…</div>;
 
   const currentYear = data.years.includes(year) ? year : 2023;
-  const countries = data.countries;
-  const areas = countries.filter((country) => !region || country.region === region);
-  const country = countries.find((country) => selected === country.id) ?? countries[0];
-  const second = countries.find((country) => compare === country.id);
-  const comparison = second && second.id !== country.id ? [country, second] : [country];
   const record = country.records[currentYear];
   const secondRecord = comparison[1]?.records[currentYear];
   const normalized = countryQuery.trim().toLowerCase();

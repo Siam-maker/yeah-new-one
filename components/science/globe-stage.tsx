@@ -78,9 +78,11 @@ export function Globe({ scene, active, profile }: { scene: Extract<SceneSpec, { 
     return () => controller.abort();
   }, [hasCountryOverlay]);
 
-  const hitPaths = useMemo(() => countryPaths ? Object.entries(countryPaths).map(([id,path]) => [id,new Path2D(path)] as const) : [], [countryPaths]);
+  const paths = useMemo(() => new Map(
+    Object.entries(countryPaths ?? {}).map(([id, path]) => [id, new Path2D(path)]),
+  ), [countryPaths]);
   const countryOverlay = useMemo(() => {
-    if (!countryPaths || !scene.countryColors) return;
+    if (!paths.size || !scene.countryColors) return;
     const canvas = document.createElement("canvas");
     canvas.width = 1440;
     canvas.height = 720;
@@ -88,8 +90,8 @@ export function Globe({ scene, active, profile }: { scene: Extract<SceneSpec, { 
     if (!context) return;
     context.scale(4, 4);
     for (const [id, color] of Object.entries(scene.countryColors)) {
-      if (!countryPaths[id]) continue;
-      const shape = new Path2D(countryPaths[id]);
+      const shape = paths.get(id);
+      if (!shape) continue;
       context.fillStyle = color;
       context.fill(shape, "evenodd");
       context.strokeStyle = id === scene.location.id ? "#fff0cf" : id === scene.comparedId ? "#edaa81" : "#3c565e";
@@ -99,7 +101,7 @@ export function Globe({ scene, active, profile }: { scene: Extract<SceneSpec, { 
     const texture = new CanvasTexture(canvas);
     texture.colorSpace = SRGBColorSpace;
     return { texture, context };
-  }, [countryPaths, scene.countryColors, scene.location.id, scene.comparedId]);
+  }, [paths, scene.countryColors, scene.location.id, scene.comparedId]);
   useEffect(() => () => countryOverlay?.texture.dispose(), [countryOverlay]);
 
   const target = useMemo(() => {
@@ -129,8 +131,12 @@ export function Globe({ scene, active, profile }: { scene: Extract<SceneSpec, { 
       {countryOverlay && <mesh onClick={(event) => {
         if (!event.uv || event.delta > 5) return;
         const {x,y} = event.uv;
-        const id = hitPaths.find(([code,path]) => scene.countryColors?.[code] && countryOverlay.context.isPointInPath(path,x*1440,(1-y)*720,"evenodd"))?.[0];
-        if (id) { event.stopPropagation(); scene.onSelect(id); }
+        for (const [id, path] of paths) {
+          if (!scene.countryColors?.[id] || !countryOverlay.context.isPointInPath(path,x*1440,(1-y)*720,"evenodd")) continue;
+          event.stopPropagation();
+          scene.onSelect(id);
+          break;
+        }
       }}><sphereGeometry args={[1.507, profile.segments, Math.floor(profile.segments*.61)]} /><meshBasicMaterial map={countryOverlay.texture} alphaTest={.4} toneMapped={false} /></mesh>}
       <mesh renderOrder={3}>
         <sphereGeometry args={[1.555,48,32]} />
