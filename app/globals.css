@@ -2,14 +2,14 @@
 @import "./ocean-environment.css";
 
 @theme {
-  --color-ink: #080b10;
-  --color-paper: #f0ede5;
-  --color-ember: #ff5938;
-  --color-cobalt: #827aff;
-  --font-sans: "Space Grotesk Variable", sans-serif;
-  --font-display: "Newsreader Variable", Georgia, serif;
+  --color-ink: #0a0e0d;
+  --color-paper: #f1ebdd;
+  --color-ember: #c87555;
+  --color-cobalt: #b6a9d2;
+  --font-sans: "Manrope Variable", system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
   --font-serif: var(--font-display);
-  --font-mono: "IBM Plex Mono", monospace;
+  --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 
 :root {
@@ -18,20 +18,28 @@
   --ivory: var(--color-paper);
   --ember: var(--color-ember);
   --violet: var(--color-cobalt);
-  --night: #0b1424;
-  --deep: #102a3a;
-  --cyan: #55dce8;
-  --amber: #c5a36a;
-  --muted: #bfc6cb;
-  --line: #d3e2e238;
-  --panel: #101824;
+  --night: #111a17;
+  --deep: #142c40;
+  --cyan: #8ac1b9;
+  --amber: #d1a77d;
+  --muted: #b9b4a8;
+  --line: #dcdac432;
+  --panel: #141d19;
   --shell: 1440px;
   --gutter: clamp(21px, 5vw, 88px);
   --serif: var(--font-display);
-  --display-weight: 520;
-  --display-leading: .98;
-  --paper-warm: #e9e3d3;
-  --surface-raised: #141f2a;
+  --display-weight: 400;
+  --display-leading: .94;
+  --paper-warm: #e7e0d2;
+  --paper-ink: #17201b;
+  --paper-muted: #454c43;
+  --paper-line: #5147373d;
+  --forest: #111a17;
+  --mineral: #82705a;
+  --glacial: #9db8c8;
+  --dispatch: #1b2a23;
+  --section-space: clamp(55px,8vw,132px);
+  --surface-raised: #1c2721;
   --accent: var(--cyan);
   --body-size: clamp(16px, 1.15vw, 18px);
   --text-measure: 64ch;
@@ -62,7 +70,7 @@ body {
 :focus-visible { outline: 2px solid var(--cyan); outline-offset: 5px; }
 
 .shell { width: min(calc(100% - var(--gutter) * 2), var(--shell)); margin-inline: auto; }
-.mono { font: 400 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.mono { font: 630 .8125rem/1.45 var(--font-sans); letter-spacing: .025em; font-variant-numeric: tabular-nums; }
 
 .skip-link { position: fixed; top: 9px; left: 9px; z-index: 20; padding: 10px 16px; background: var(--color-paper); color: var(--color-ink); transform: translateY(-150%); }
 .skip-link:focus { transform: translateY(0); }
@@ -86,17 +94,6 @@ body {
 .abyss-stage { position: absolute; inset: -5% 0 -7%; pointer-events: none; }
 .abyss-canvas { position: absolute; inset: 0; opacity: 0; transition: opacity .65s ease; }
 .abyss-canvas[data-ready] { opacity: 1; }
-.hero-threshold {
-  position: absolute;
-  z-index: 2;
-  bottom: 0;
-  inset-inline: 0;
-  height: 1px;
-  opacity: .68;
-  background: linear-gradient(90deg, var(--color-ember), #536bff 63%, transparent 95%);
-  transform-origin: left;
-  pointer-events: none;
-}
 .hero-art-image { position: absolute; inset: -5% 0 -7%; }
 .hero-art-image img { object-fit: cover; object-position: 61% 51%; }
 .hero-art-frame::after {
@@ -136,10 +133,6 @@ body {
 .button-content { display: inline-flex; align-items: center; gap: 21px; }
 .button-accent { background: var(--color-ember); color: var(--color-ink); }
 .button-accent:hover { background: var(--color-paper); }
-.hero-caption { position: absolute; right: 0; bottom: 95px; display: flex; align-items: center; gap: 12px; color: #d2cec8; }
-.hero-caption svg { color: var(--color-ember); }
-.hero-caption figcaption { display: grid; gap: 4px; border-left: 1px solid #ffffff4d; padding-left: 12px; }
-.hero-caption strong { color: var(--color-paper); font-weight: 400; }
 .hero-bottom { display: flex; min-height: 57px; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--line); color: #bebbb6; }
 .hero-bottom a { display: inline-flex; align-items: center; gap: 8px; }
 .hero-bottom a:hover { color: var(--color-paper); }
@@ -420,7 +413,6 @@ body {
   .hero-content { padding: 48px 0 30px; }
   .hero-title { font-size: clamp(60px, 15vw, 106px); }
   .hero-description { margin-block: 21px 18px; }
-  .hero-caption { display: none; }
   .hero-bottom { min-height: 49px; font-size: 9px; letter-spacing: .045em; }
   .section-heading { align-items: flex-start; flex-direction: column; gap: 13px; }
   .discovery-grid { grid-template-columns: 1fr; }

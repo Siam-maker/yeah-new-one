@@ -11,7 +11,7 @@
 .population-status { display:flex; gap:11px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
 .population-status > .mono { color:var(--accent); }
 .population-top { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(245px,.8fr); gap:14px; }
-.population-map-shell, .country-ledger, .chart-panel { min-width:0; background:#101b29; border:1px solid var(--line); }
+.population-map-shell, .country-ledger, .chart-panel { min-width:0; background:#161e19; border:1px solid var(--line); }
 .population-map-shell { align-self:start; }
 .population-map-header { padding:11px 14px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
 .population-map-header .mono { color:var(--accent); }

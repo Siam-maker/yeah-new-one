@@ -3,9 +3,11 @@
 import { useRef, useState } from "react";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ArrowUpRight, Minus, Plus, RotateCcw } from "lucide-react";
 import Link from "next/link";
+import { motion } from "motion/react";
+import { useReducedMotionPreference } from "@/components/motion/preferences";
 import type { KnowledgeLink, KnowledgeNode, NodeKind } from "@/lib/content/connections";
 
-const palette: Record<NodeKind,string> = { Discipline:"#75c9d1", Article:"#efba83", Concept:"#a9e1c5", Experiment:"#bcb0f2", Source:"#aabac9" };
+const palette: Record<NodeKind,string> = { Discipline:"#a1c4ba", Article:"#dfaa88", Concept:"#c3d8a3", Experiment:"#c4b7da", Source:"#a7b9c8" };
 const neutral = { x:0, y:0, zoom:1 };
 const viewControls = [
   { label:"Pan left", icon:ArrowLeft, move:{ x:-38,y:0 } },
@@ -20,6 +22,7 @@ function NodeLink({ node }: { node:KnowledgeNode }) {
 }
 
 export function KnowledgeGraph({ nodes, links, initial }: { nodes:KnowledgeNode[]; links:KnowledgeLink[]; initial:string }) {
+  const reduced = useReducedMotionPreference();
   const [selection,setSelection] = useState(initial);
   const [query,setQuery] = useState("");
   const [filter,setFilter] = useState("");
@@ -35,7 +38,8 @@ export function KnowledgeGraph({ nodes, links, initial }: { nodes:KnowledgeNode[
   });
   const visible = neighbors.slice(0,9).map((item,index,all)=>{
     const angle = index/all.length*Math.PI*2 - Math.PI/2;
-    return { ...item,x:360+Math.cos(angle)*247,y:215+Math.sin(angle)*148 };
+    const ring = item.node.kind === "Source" ? 1 : .88;
+    return { ...item,x:360+Math.cos(angle)*247*ring,y:215+Math.sin(angle)*148*ring };
   });
 
   function choose(id:string) {
@@ -78,16 +82,20 @@ export function KnowledgeGraph({ nodes, links, initial }: { nodes:KnowledgeNode[
           onPointerUp={()=>{drag.current=null;}} onPointerCancel={()=>{drag.current=null;}} onLostPointerCapture={()=>{drag.current=null;}}>
           <rect width="720" height="430" fill="transparent" />
           <g transform={`translate(${view.x} ${view.y}) translate(360 215) scale(${view.zoom}) translate(-360 -215)`}>
-            <circle cx="360" cy="215" r="110" className="graph-gridline"/>
+            <path d="M92 215h536M360 37v356" className="graph-axis"/>
+            <ellipse cx="360" cy="215" rx="167" ry="100" className="graph-gridline"/>
+            <ellipse cx="360" cy="215" rx="84" ry="51" className="graph-axis"/>
             <ellipse cx="360" cy="215" rx="247" ry="148" className="graph-gridline"/>
-            {visible.map(({ node,x,y })=><path key={node.id} d={`M360 215 L${x} ${y}`} stroke={palette[node.kind]} strokeOpacity=".44" />)}
+            {visible.map(({ node,x,y })=><motion.path key={selected.id+node.id} d={`M360 215 Q${(x+360)/2+(y-215)*.12} ${(y+215)/2-(x-360)*.11} ${x} ${y}`}
+              fill="none" stroke={palette[node.kind]} strokeOpacity=".59" initial={reduced ? false : { pathLength:0 }} animate={{ pathLength:1 }}
+              transition={{duration:.38,ease:"easeOut"}} />)}
             {visible.map(({ node,x,y })=><g key={node.id} data-node="" onClick={()=>choose(node.id)}>
               <circle cx={x} cy={y} r="20" fill="transparent" />
-              <circle cx={x} cy={y} r="8" fill={palette[node.kind]} stroke="#141f2a" strokeWidth="2" />
+              <circle cx={x} cy={y} r="7" fill={palette[node.kind]} stroke="#192520" strokeWidth="1.6" />
               <title>{node.label}</title>
-              <text x={x} y={y+25} textAnchor="middle">{node.label.length>21 ? node.label.slice(0,19)+"…" : node.label}</text>
+              <text x={x} y={y+24} textAnchor="middle">{node.label.length>22 ? node.label.slice(0,20)+"…" : node.label}</text>
             </g>)}
-            <circle cx="360" cy="215" r="23" fill="#131c27" stroke={palette[selected.kind]} strokeWidth="2" />
+            <circle cx="360" cy="215" r="23" fill="#17231e" stroke={palette[selected.kind]} strokeWidth="2" />
             <circle cx="360" cy="215" r="8" fill={palette[selected.kind]} />
             <text x="360" y="254" textAnchor="middle">{selected.label.length>32 ? selected.label.slice(0,30)+"…" : selected.label}</text>
           </g>

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { decimal, indicatorColors, populationIndicators, type Country, type PopulationIndicator } from "@/lib/content/demographics";
 
-export function PopulationMap({ countries, year, indicator, selected, onSelect, zoom = 1, center = [0, 0], bathymetry = false, boundaries = false }: {
-  countries: Country[]; year: number; indicator: PopulationIndicator; selected: string; onSelect: (id:string)=>void;
+export function PopulationMap({ countries, year, indicator, selected, compared, onSelect, zoom = 1, center = [0, 0], bathymetry = false, boundaries = false }: {
+  countries: Country[]; year: number; indicator: PopulationIndicator; selected: string; compared?:string; onSelect: (id:string)=>void;
   zoom?: number; center?: number[]; bathymetry?: boolean; boundaries?: boolean;
 }) {
   const [paths,setPaths] = useState<Record<string,string>>();
@@ -33,14 +33,14 @@ export function PopulationMap({ countries, year, indicator, selected, onSelect, 
       <output>{inspect ? `${inspect.name} · ${figure == null ? "No value" : `${decimal.format(figure)} ${scale.unit}`}` : "Select a country"}</output></div>
     <div className="population-map">
       <svg viewBox={`${left} ${top} ${width} ${height}`} aria-label={`Country-level map of ${scale.name.toLowerCase()} in ${year}`}>
-        <rect width="360" height="180" fill="#101c2c" />
+        <rect width="360" height="180" fill="#15251f" />
         {bathymetry && <image href="/data/bathymetry.webp" width="360" height="180" />}
-        <path d="M0 45H360 M0 90H360 M0 135H360 M90 0V180 M180 0V180 M270 0V180" stroke="#94c9d4" strokeWidth=".25" opacity=".3" />
+        <path d="M0 45H360 M0 90H360 M0 135H360 M90 0V180 M180 0V180 M270 0V180" stroke="#b8c7b6" strokeWidth=".25" opacity=".3" />
         {paths && countries.map((country) => {
           const value = country.records[year]?.[indicator];
-          const color = value == null ? "#252b37" : indicatorColors[scale.breaks.filter((n)=>value>=n).length];
-          return <path key={country.id} d={paths[country.id]} fill={color} fillRule="evenodd" stroke={selected===country.id ? "#fff4d8" : "#718091"}
-            strokeWidth={selected===country.id ? ".85" : ".32"} aria-label={country.name}
+          const color = value == null ? "#2c332e" : indicatorColors[scale.breaks.filter((n)=>value>=n).length];
+          return <path key={country.id} d={paths[country.id]} fill={color} fillRule="evenodd" stroke={selected===country.id ? "#fff4d8" : compared===country.id ? "#edaa81" : "#657568"}
+            strokeWidth={selected===country.id || compared===country.id ? ".85" : ".32"} aria-label={country.name}
             onPointerEnter={() => setHovered(country.id)} onPointerLeave={() => setHovered(undefined)}
             onClick={() => onSelect(country.id)} className="population-country"><title>{country.name}: {value == null ? "No value" : `${decimal.format(value)} ${scale.unit}`}</title></path>;
         })}
@@ -51,7 +51,7 @@ export function PopulationMap({ countries, year, indicator, selected, onSelect, 
     </div>
     <div className="population-legend" aria-label={`Legend, ${scale.unit}`}>
       {scale.labels.map((label,index) => <span key={label}><i style={{ background:indicatorColors[index] }} />{label}</span>)}
-      <span><i style={{ background:"#252b37" }} />No value</span>
+      <span><i style={{ background:"#2c332e" }} />No value</span>
     </div>
     <figcaption>Country boundaries from Natural Earth. Select a country here or with the keyboard-accessible country list.</figcaption>
   </figure>;

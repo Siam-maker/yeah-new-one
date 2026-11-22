@@ -33,7 +33,8 @@ export default async function StoryPage({ params }: Props) {
 
   return <div className="shell">
     <ReadableArticle><RecordVisit type="stories" title={article.title} href={`/stories/${slug}`} />
-      <header className="article-hero">
+      <div className="story-spread">
+      <header className="article-hero editorial-paper">
         <Breadcrumbs items={[{ label: "Journal", href: "/stories" }, { label: article.title }]} />
         <p className="mono section-label mt-5">{topic?.title} · {readingMinutes(article)} min read</p>
         <h1>{article.title}</h1><p className="standfirst">{article.deck}</p>
@@ -41,12 +42,14 @@ export default async function StoryPage({ params }: Props) {
         <div className="mt-3"><ReadingModeButton /></div>
       </header>
       <ZoomFigure source={article.image} caption={article.imageDescription} />
+      </div>
       <div className="article-grid layout-flow">
         <ArticleContents sections={[...article.sections.map(({ title }, index)=>({ id:articleSectionId(index),title })),{ id:"sources",title:"References" }]} />
         <div className="article-body">
           {article.sections.map(({ title, paragraphs }, index) => <section key={title} id={articleSectionId(index)}>
             <h2>{title}</h2>
             {paragraphs.map((paragraph) => <p key={paragraph.slice(0, 55)}>{paragraph}</p>)}
+            {index === 1 && <blockquote>{article.deck}</blockquote>}
             {index === 0 && <ScienceDiagram kind={article.diagram} />}
             {slug === "the-light-that-took-its-time" && index === 1 && <figure className="science-figure observation-figure">
               <Image src="/images/milky-way-msx.webp" width={500} height={500} alt="Infrared observations showing bright and dark features in the centre of the Milky Way." />

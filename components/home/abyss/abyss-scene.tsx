@@ -25,14 +25,16 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
   render() { return this.state.failed ? null : this.props.children; }
 }
 
-function Cave({ rock, steering, active, fps }: {
+function Cave({ rock, steering, active, fps, detail, ambientMotion }: {
   rock: Texture;
   steering: RefObject<AbyssCamera>;
   active: boolean;
   fps: number;
+  detail: number;
+  ambientMotion: boolean;
 }) {
   const { invalidate, gl } = useThree();
-  const geometry = useMemo(() => buildCaveGeometry(), []);
+  const geometry = useMemo(() => buildCaveGeometry(detail), [detail]);
   const rockUniforms = useMemo(() => ({ rock: { value: rock }, time: { value: 0 }, descent: { value: 0 } }), [rock]);
   const shaftUniforms = useMemo(() => ({ time: { value: 0 } }), []);
   const caveMaterial = useRef<ShaderMaterial>(null);
@@ -48,10 +50,18 @@ function Cave({ rock, steering, active, fps }: {
     let frame = 0;
     let last = 0;
     const frameInterval = 1000 / fps;
+    let settlingUntil = 0;
+    let previous = { ...steering.current };
 
     function tick(now: number) {
-      if (now - last >= frameInterval) {
-        last = now - (now - last) % frameInterval;
+      const position = steering.current;
+      const moved = Math.abs(position.x-previous.x) + Math.abs(position.y-previous.y) + Math.abs(position.descent-previous.descent) > .001;
+      if (moved) {
+        previous = { ...position };
+        settlingUntil = now + 620;
+      }
+      if ((ambientMotion || now < settlingUntil) && now-last >= frameInterval) {
+        last = now;
         invalidate();
       }
       frame = requestAnimationFrame(tick);
@@ -59,14 +69,14 @@ function Cave({ rock, steering, active, fps }: {
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [active, fps, invalidate]);
+  }, [active, fps, invalidate, steering, ambientMotion]);
 
   useFrame(({ camera }, delta) => {
     const { x, y, descent } = steering.current;
     const step = Math.min(delta, 0.07);
-    camera.position.x = MathUtils.damp(camera.position.x, -0.62 + x * 0.56 + descent * 0.45, 4, step);
+    camera.position.x = MathUtils.damp(camera.position.x, -.56 + x*.54 + descent*.78, 4, step);
     camera.position.y = MathUtils.damp(camera.position.y, -y * 0.33 - descent * 0.4, 4, step);
-    camera.position.z = MathUtils.damp(camera.position.z, cameraDistance - descent * 5.6, 4, step);
+    camera.position.z = MathUtils.damp(camera.position.z, cameraDistance - descent * 8.2, 4, step);
     if (active) elapsed.current += step;
 
     if (caveMaterial.current) {
@@ -84,12 +94,12 @@ function Cave({ rock, steering, active, fps }: {
 
   return (
     <>
-      <color attach="background" args={["#091927"]} />
+      <color attach="background" args={["#0d1917"]} />
       <mesh geometry={geometry}>
         <shaderMaterial ref={caveMaterial} vertexShader={caveVertex} fragmentShader={caveFragment}
           uniforms={rockUniforms} side={DoubleSide} toneMapped={false} />
       </mesh>
-      <mesh position={[1.65, .22, -7.5]} rotation={[0, .2, -.29]} renderOrder={2}>
+      <mesh position={[1.65, 1.05, -8.25]} rotation={[0, .21, -.29]} renderOrder={2}>
         <planeGeometry args={[7, 7]} />
         <shaderMaterial ref={shaftMaterial} vertexShader={caveVertex} fragmentShader={shaftFragment}
           uniforms={shaftUniforms} transparent depthWrite={false} blending={AdditiveBlending} toneMapped={false} />
@@ -105,12 +115,14 @@ function Cave({ rock, steering, active, fps }: {
   );
 }
 
-export default function AbyssScene({ camera, active, source, dpr, fps }: {
+export default function AbyssScene({ camera, active, source, dpr, fps, detail, ambientMotion }: {
   camera: RefObject<AbyssCamera>;
   active: boolean;
   source: string;
   dpr: number;
   fps: number;
+  detail: number;
+  ambientMotion: boolean;
 }) {
   const [rock, setRock] = useState<Texture | null>(null);
   const [renderer, setRenderer] = useState<WebGLRenderer | null>(null);
@@ -139,8 +151,9 @@ export default function AbyssScene({ camera, active, source, dpr, fps }: {
   useEffect(() => {
     if (!renderer) return;
     const canvas = renderer.domElement;
-    canvas.addEventListener("webglcontextlost", stopScene);
-    return () => canvas.removeEventListener("webglcontextlost", stopScene);
+    function handleLoss(event:Event) { event.preventDefault();stopScene(); }
+    canvas.addEventListener("webglcontextlost",handleLoss);
+    return () => canvas.removeEventListener("webglcontextlost",handleLoss);
   }, [renderer, stopScene]);
 
   if (lost || !rock) return null;
@@ -148,12 +161,12 @@ export default function AbyssScene({ camera, active, source, dpr, fps }: {
   return (
     <SceneBoundary onFailure={stopScene}>
       <div className="abyss-canvas" data-ready={renderer ? "" : undefined} data-running={active ? "" : undefined}>
-        <Canvas camera={{ position: [0, 0, cameraDistance], fov: 55, near: 0.1, far: 40 }} dpr={dpr}
+        <Canvas camera={{ position: [-.56, 0, cameraDistance], fov: 55, near: 0.1, far: 40 }} dpr={dpr}
           frameloop="demand"
           style={{ pointerEvents: "none" }}
           gl={{ antialias: false, powerPreference: "low-power", alpha: true }}
           onCreated={({ gl }) => setRenderer(gl)}>
-          <Cave rock={rock} steering={camera} active={active} fps={fps} />
+          <Cave rock={rock} steering={camera} active={active} fps={fps} detail={detail} ambientMotion={ambientMotion} />
         </Canvas>
       </div>
     </SceneBoundary>

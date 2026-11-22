@@ -5,7 +5,7 @@ import { populationIndicators, type PopulationIndicator } from "@/lib/content/de
 
 export const metadata: Metadata = { title:"Demographics", description:"Compare population, age structure, density and urbanization with UN and World Bank data." };
 
-type Query = { country?: string; compare?: string; year?: string; indicator?: string };
+type Query = { country?: string; compare?: string; year?: string; indicator?: string; view?:string };
 
 export default async function DemographicsPage({ searchParams }: { searchParams:Promise<Query> }) {
   const query = await searchParams;
@@ -13,11 +13,11 @@ export default async function DemographicsPage({ searchParams }: { searchParams:
   return <div className="shell population-page">
     <header className="population-intro">
       <Breadcrumbs items={[{ label:"Atlas", href:"/atlas" }, { label:"Demographics" }]} />
-      <div className="population-title-grid"><div><p className="mono section-label">Global population observatory</p><h1>Where people live.<br /><em>How populations change.</em></h1></div>
+      <div className="population-title-grid"><div><p className="section-label">Population Observatory</p><h1>Where people live.<br /><em>How we change.</em></h1></div>
         <p>Move between historical estimates and medium projections. Compare countries on the same scale, then examine the age structure behind each total.</p></div>
     </header>
     <PopulationExplorer initialCountry={typeof query.country === "string" ? query.country.toUpperCase() : undefined} initialYear={Number(query.year ?? 2023)}
-      initialIndicator={indicator} initialCompare={typeof query.compare === "string" ? query.compare.toUpperCase() : undefined} />
+      initialIndicator={indicator} initialGlobe={query.view === "globe"} initialCompare={typeof query.compare === "string" ? query.compare.toUpperCase() : undefined} />
     <section className="population-method">
       <h2 className="subhead">About the data</h2>
       <p>Population, age and sex come from UN World Population Prospects 2024. Estimates extend through 2023. The displayed future years use the UN medium variant. Median age is derived from single-year age counts, with interpolation inside the median age interval. Five-year bands use common percentage axes.</p>

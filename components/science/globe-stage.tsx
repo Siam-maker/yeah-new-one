@@ -69,14 +69,14 @@ export function Globe({ scene, active, profile }: { scene: Extract<SceneSpec, { 
       const shape = new Path2D(countryPaths[id]);
       context.fillStyle = color;
       context.fill(shape, "evenodd");
-      context.strokeStyle = id === scene.location.id ? "#fff2cc" : "#52616a";
-      context.lineWidth = id === scene.location.id ? .8 : .35;
+      context.strokeStyle = id === scene.location.id ? "#fff0cf" : id === scene.comparedId ? "#edaa81" : "#546962";
+      context.lineWidth = id === scene.location.id || id === scene.comparedId ? .85 : .29;
       context.stroke(shape);
     }
     const texture = new CanvasTexture(canvas);
     texture.colorSpace = SRGBColorSpace;
     return { texture, context };
-  }, [countryPaths, scene.countryColors, scene.location.id]);
+  }, [countryPaths, scene.countryColors, scene.location.id, scene.comparedId]);
   useEffect(() => () => countryOverlay?.texture.dispose(), [countryOverlay]);
 
   const target = useMemo(() => {
@@ -113,7 +113,7 @@ export function Globe({ scene, active, profile }: { scene: Extract<SceneSpec, { 
         <sphereGeometry args={[1.555,48,32]} />
         <shaderMaterial side={BackSide} blending={AdditiveBlending} transparent depthWrite={false}
           vertexShader={`varying vec3 n; varying vec3 v; void main(){ vec4 p=modelViewMatrix*vec4(position,1.0); n=normalize(normalMatrix*normal); v=normalize(-p.xyz); gl_Position=projectionMatrix*p; }`}
-          fragmentShader={`varying vec3 n; varying vec3 v; void main(){ float rim=pow(1.0-abs(dot(normalize(n),normalize(v))),2.6); float lit=.36+.64*smoothstep(-.65,.8,dot(normalize(n),normalize(vec3(-.8,.5,.1)))); gl_FragColor=vec4(.28,.68,.95,rim*.57*lit); }`} />
+          fragmentShader={`varying vec3 n; varying vec3 v; void main(){ float rim=pow(1.0-abs(dot(normalize(n),normalize(v))),2.6); float lit=.36+.64*smoothstep(-.65,.8,dot(normalize(n),normalize(vec3(-.8,.5,.1)))); gl_FragColor=vec4(.36,.67,.74,rim*.47*lit); }`} />
       </mesh>
       {scene.showBoundaries && boundaries && <lineSegments geometry={boundaries}><lineBasicMaterial color="#ff996d" /></lineSegments>}
       <mesh position={geographicPoint(scene.location.lon,scene.location.lat,1.542)} quaternion={new Quaternion().setFromUnitVectors(new Vector3(0,0,1),geographicPoint(scene.location.lon,scene.location.lat,1))}>

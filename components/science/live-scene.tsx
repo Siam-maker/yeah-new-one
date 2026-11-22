@@ -52,6 +52,6 @@ export function LiveScene({ scene, fallback, explicit = false, onModeChange }: {
     {show3D && <div className="scene-canvas" data-ready={ready || undefined}>
       <SceneView scene={scene} profile={profile} active={visible && tabVisible && !reduced} onReady={onReady} onFailure={onFailure} />
     </div>}
-    {faulted && <p className="scene-runtime-note" role="status">3D rendering ended. The illustration and controls are still available.</p>}
+    {faulted && <p className="scene-runtime-note" role="status">3D rendering ended. The illustration and controls are still available. <button type="button" onClick={()=>setFaulted(false)}>Retry 3D</button></p>}
   </div>;
 }

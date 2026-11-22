@@ -35,9 +35,9 @@ export function FeatureSequence({ chapters }: { chapters: Chapter[] }) {
       });
       setIndex(closest);
     }}>
-      {chapters.map((chapter, position) => <Link href={`/stories/${chapter.slug}`} key={chapter.slug} className="sequence-item" data-pointer="tilt">
+      {chapters.map((chapter) => <Link href={`/stories/${chapter.slug}`} key={chapter.slug} className="sequence-item" data-pointer="tilt">
         <div className="sequence-image"><Image src={chapter.image} alt="" fill sizes="(max-width:760px) 88vw, 70vw" /></div>
-        <div className="sequence-copy"><p className="mono">0{position + 1} / {chapter.label}</p><h3>{chapter.title}</h3><p>{chapter.deck}</p><ArrowUpRight size={27} aria-hidden="true" /></div>
+        <div className="sequence-copy"><p className="mono">{chapter.label}</p><h3>{chapter.title}</h3><p>{chapter.deck}</p><ArrowUpRight size={27} aria-hidden="true" /></div>
       </Link>)}
     </div>
     <div className="sequence-controls">
@@ -58,7 +58,7 @@ export function DisciplineExplorer({ items }: { items: TopicSummary[] }) {
     <div className="discipline-selector" aria-label="Select a scientific discipline">
       {items.map((topic, position) => <button type="button" key={topic.slug} aria-pressed={index === position}
         data-discipline={topic.theme} onClick={() => setIndex(position)}>
-        <span className="mono">0{position + 1}</span><strong>{topic.title}</strong><ArrowUpRight size={17} aria-hidden="true" />
+        <strong>{topic.title}</strong><ArrowUpRight size={17} aria-hidden="true" />
       </button>)}
     </div>
     <div className="discipline-preview" key={item.slug}>

@@ -40,15 +40,10 @@ export function EditorialMotion({ children }: { children: ReactNode }) {
               clipPath: "inset(0% 0% 0% 0%)", scale: 1, duration: .95, clearProps: "clipPath,transform",
             }).from(element.querySelector(".sequence-copy"), { y: 14, opacity: .62, duration: .54 }, .12);
             break;
-          case "discovery":
-            timeline.fromTo(element.querySelector(".discovery-media"), {
-              clipPath: "inset(5% 13% 26% 10%)", yPercent: 8, opacity: 0.4,
-            }, {
-              clipPath: "inset(0% 0% 0% 0%)", yPercent: 0, opacity: 1, duration: 0.73,
-              clearProps: "clipPath",
-            }).from(element.querySelectorAll(".card-category, .discovery-copy h3"), {
-              y: 11, opacity: 0.45, stagger: 0.09, duration: 0.48,
-            }, 0.15);
+          case "plate":
+            timeline.fromTo(element, { clipPath:"inset(16% 3% 0 3%)", filter:"saturate(.65)" }, {
+              clipPath:"inset(0% 0% 0% 0%)", filter:"saturate(1)", duration:.84, clearProps:"clipPath,filter",
+            });
             break;
           case "story":
             timeline.fromTo(element.querySelector("h3"), {

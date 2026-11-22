@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Color, DoubleSide, Fog, MathUtils, type Group } from "three";
+import { AdditiveBlending, Color, DoubleSide, Fog, MathUtils, type Group } from "three";
 import { zoneAt } from "@/lib/content/ocean";
 import { terrainSurface } from "./terrain";
 import type { RenderProfile } from "./render-profile";
@@ -17,9 +17,27 @@ const habitats = {
   hadal:{ visibility:18,density:.74,light:.45,bed:-3.05,roughness:1,particles:154 },
 };
 
+const shaftVertex = `
+  varying vec2 surface;
+  void main(){
+    surface=uv;
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);
+  }`;
+const shaftFragment = `
+  uniform float clarity;
+  varying vec2 surface;
+  void main(){
+    float taper=.11+surface.y*.24;
+    float edge=exp(-pow(abs(surface.x-.5)/taper,2.));
+    float falloff=pow(surface.y,.77)*smoothstep(0.,.17,surface.y)*(1.-smoothstep(.86,1.,surface.y));
+    gl_FragColor=vec4(.33,.64,.68,edge*falloff*clarity);
+  }`;
+
 export function Ocean({ depth, active, profile }: { depth: number; active: boolean; profile: RenderProfile }) {
   const layer = zoneAt(depth);
   const habitat = habitats[layer.id];
+  const clarity = Math.exp(-depth/294)*.36;
+  const shaftUniforms = useMemo(()=>({ clarity:{ value:clarity } }),[clarity]);
   const ground = useRef<Group>(null);
   const dust = useRef<Group>(null);
   const school = useRef<Group>(null);
@@ -44,6 +62,9 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
     }
     const y = 2.4 - Math.log10(1 + depth / 100) * 2.45;
     camera.position.y = active ? MathUtils.damp(camera.position.y, y, 3, Math.min(delta, .1)) : y;
+    const z = 8.6-Math.log10(1+depth/195)*1.7;
+    camera.position.z = active ? MathUtils.damp(camera.position.z,z,2.6,Math.min(delta,.1)) : z;
+    camera.lookAt(0,camera.position.y-.64,-5.2);
     if (ground.current) ground.current.position.y = MathUtils.lerp(ground.current.position.y,habitat.bed,ease);
     if (dust.current) dust.current.rotation.z = active ? clock.elapsedTime * .025 : 0;
     if (school.current) school.current.position.x = active ? Math.sin(clock.elapsedTime * .35) * 1.7 : 0;
@@ -64,10 +85,11 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
         <pointsMaterial size={depth >= 4000 ? .075 : .045} color={depth >= 4000 ? "#c4dbde" : "#7eb5ee"} transparent opacity={habitat.density} depthWrite={false} />
       </points>
     </group>
-    {depth < 1000 && <group rotation={[0, 0, -.37]} position={[-1, 6, -9]}>
-      {[0, 1, 2, 3].map((ray) => <mesh key={ray} position={[ray * 1.25, 0, -ray * .5]}>
-        <coneGeometry args={[1.0 + ray * .2, 15, 9, 1, true]} />
-        <meshBasicMaterial color="#67cced" transparent opacity={(layer.id === "sunlight" ? .08 : .03) - ray * .004} depthWrite={false} />
+    {depth < 1000 && <group rotation={[0,.19,-.27]} position={[-1,4.5,-10]}>
+      {[0,1,2].slice(0,profile.name==="low" ? 2 : 3).map((ray)=><mesh key={ray} position={[ray*2.48,0,-ray*.57]}>
+        <planeGeometry args={[3.8+ray*.9,16]} />
+        <shaderMaterial uniforms={shaftUniforms} vertexShader={shaftVertex} fragmentShader={shaftFragment}
+          side={DoubleSide} transparent depthWrite={false} blending={AdditiveBlending} toneMapped={false}/>
       </mesh>)}
     </group>}
     <group ref={ground} position={[0,-4.4,-4]}><mesh geometry={seabed}><meshStandardMaterial vertexColors roughness={habitat.roughness} side={DoubleSide} /></mesh></group>

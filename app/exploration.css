@@ -27,7 +27,7 @@
 .knowledge-map:active {cursor:grabbing;}
 .knowledge-map [data-node] {cursor:pointer;}
 .knowledge-map [data-node]:hover circle:nth-of-type(2) {stroke:#fff7e5;stroke-width:3;}
-.knowledge-map text {fill:#f0e9db;font:13px var(--font-sans);paint-order:stroke;stroke:#101824;stroke-width:4px;stroke-linejoin:round;}
+.knowledge-map text {fill:#f0e9db;font:13px var(--font-sans);paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round;}
 .graph-gridline {fill:none;stroke:#9db7c76b;stroke-width:1;stroke-dasharray:2 9;}
 .knowledge-legend {display:flex;flex-wrap:wrap;gap:6px 16px;padding:12px 15px;border-top:1px solid var(--line);font-size:.85rem;}
 .knowledge-legend span {display:flex;align-items:center;gap:7px;}

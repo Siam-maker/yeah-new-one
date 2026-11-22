@@ -1,12 +1,4 @@
-.edition-hero .hero-title { font-weight:530; font-size:clamp(74px,11.5vw,168px); letter-spacing:-.051em; line-height:.94; }
-.edition-hero .hero-title-minor { font:italic 450 .52em/.98 var(--serif); letter-spacing:-.039em; padding:.06em 0; }
-.edition-hero .hero-title-mask + .hero-title-mask { margin-top:0; }
-.hero-rail { display:flex; gap:12px; flex-wrap:wrap; color:#a6c1c9; margin:0 0 23px; }
-.hero-rail span + span { padding-left:12px; border-left:1px solid #a6c1c959; }
-.edition-hero .abyss-stage { inset:0 0 0 15%; opacity:.86; mask-image:radial-gradient(ellipse at 78% 51%,black 0,#000 35%,#000a 58%,transparent 85%); }
-.edition-hero .hero-art-frame::after { background:linear-gradient(90deg,#080b10ed,#080b10a3 24%,#080b1022 67%,transparent),linear-gradient(0deg,#080b10 0,#080b106b 26%,transparent 65%); }
-.edition-hero .hero-brief { margin-top:25px; }
-.evidence-strip { background:#0b1424; border-block:1px solid var(--line); }
+.evidence-strip { background:var(--night); border-block:1px solid var(--line); }
 .evidence-strip-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
 .evidence-strip a { min-width:0; display:grid; grid-template-columns:1fr auto; align-items:center; gap:2px 10px; padding:clamp(14px,2.8vw,36px); border-inline-end:1px solid var(--line); }
 .evidence-strip a:first-child { border-inline-start:1px solid var(--line); }
@@ -15,17 +7,14 @@
 .evidence-strip a small { color:var(--muted); font-size:14px; grid-column:1; }
 .evidence-strip a svg { grid-column:2; grid-row:1 / 3; color:var(--cyan); }
 @media(max-width:760px) {
-  .edition-hero .hero-title { font-size:clamp(61px,17.7vw,123px); }
-  .edition-hero .hero-title-minor { font-size:.57em; }
-  .hero-rail { font-size:10px; gap:6px; margin-bottom:19px; }
-  .hero-rail span + span { padding-left:6px; }
+
   .evidence-strip-grid { grid-template-columns:minmax(0,1fr); }
   .evidence-strip a { border-inline:0 !important; border-block-end:1px solid var(--line); padding:13px 2px; }
 }
 .world-experiment { display:grid; gap:14px; }
 .cosmic-stage { position:relative; }
 .cosmic-stage .scene-frame { min-height:clamp(285px,49vw,670px); }
-.world-stage-label { position:absolute; top:13px; left:13px; max-width:calc(100% - 26px); border:1px solid var(--line); background:#080b10dd; color:#e9e2ff; padding:6px 10px; pointer-events:none; }
+.world-stage-label { position:absolute; top:13px; left:13px; max-width:calc(100% - 26px); border:1px solid var(--line); background:#0a0e0ddd; color:#e9e2ff; padding:6px 10px; pointer-events:none; }
 .world-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px 14px; margin-top:14px; }
 .world-metrics div { border-top:1px solid var(--line); padding-top:6px; }
 .world-metrics dt { color:var(--muted); font-size:14px; }
@@ -43,10 +32,10 @@
 .atlas-pop-grid .scene-fallback {display:block;overflow-y:auto;}
 .atlas-pop-grid .scene-fallback .population-map-shell {margin:0;}
 .world-quicklinks {display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:18px;}
-.world-collection {display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:2px;background:#323c47;}
+.world-collection {display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:2px;background:#4b5348;}
 .world-link {isolation:isolate;position:relative;display:flex;align-items:end;min-height:clamp(20rem,36vw,32rem);padding:24px;background:#131e2a;overflow:hidden;}
 .world-link img {z-index:-2;object-fit:cover;}
-.world-link::after {content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#080b10 3%,#080b10cc 31%,#080b100d 85%);}
+.world-link::after {content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,var(--ink) 3%,#0a0e0dcc 31%,#0a0e0d0d 85%);}
 .world-link > div {padding-right:12px;}
 .world-link h3 {font:clamp(1.9rem,3.4vw,3.5rem)/.92 var(--font-serif);margin:10px 0;}
 .world-link .mono {font-size:.78rem;color:#80dbe2;}
@@ -65,5 +54,4 @@
 .orbit-diagram img {z-index:-2;}
 .orbit-diagram svg {width:100%;height:100%;max-height:645px;}
 
-.hero-caption figcaption strong {white-space:nowrap;}
 .cosmic-stage .scene-canvas {background:radial-gradient(ellipse at 45% 60%,#24234a64,transparent 60%), #090c1c;}

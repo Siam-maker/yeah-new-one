@@ -7,6 +7,6 @@ export const metadata: Metadata = { title: "Your reading desk", description: "Sa
 
 export default function LibraryPage() {
   return <div className="shell"><Masthead title="Your reading desk" description="Bookmarks and recent explorations are stored on this device." />
-    <div className="layout-flow"><div className="reading-shelf-tools"><ReadingModeButton /><TextLink href="/journeys">Return to your expeditions</TextLink></div><ReadingLibrary stories={articles.map(({ slug, title }) => ({ slug, title, href: `/stories/${slug}` }))} /></div>
+    <div className="layout-flow"><div className="reading-shelf-tools"><ReadingModeButton /><TextLink href="/journeys">Return to your expeditions</TextLink></div><div className="reading-library"><ReadingLibrary stories={articles.map(({ slug, title }) => ({ slug, title, href: `/stories/${slug}` }))} /></div></div>
   </div>;
 }

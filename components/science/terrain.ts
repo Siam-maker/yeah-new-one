@@ -30,14 +30,18 @@ export function strataBed(level: number) {
   const geometry = new BufferGeometry();
   const p:number[] = [], c:number[] = [], faces:number[] = [];
   const columns=31, rows=19, n=columns*rows;
-  const colors=["#80564d","#a37054","#b78a61","#c8a779","#d6bf8e","#818c7e"];
+  const colors=["#77564c","#a47458","#b4805c","#bea77c","#d6c7a6","#9b9d7d"];
+  const bedColor = new Color(colors[level]);
+  const pigment = new Color();
   for(const surface of [0,1]) for(let row=0;row<rows;row++) for(let col=0;col<columns;col++) {
     const u=col/(columns-1), v=row/(rows-1), x=(u-.5)*5.6, z=(v-.5)*2.6;
     const l=level+surface;
     const fault=u<.57 ? 0 : .25;
-    const y=(l-3)*.43 + .13*Math.sin(x*1.2+z*.5)+fault+z*.11;
+    const y=(l-3)*.43 + .13*Math.sin(x*1.2+z*.5)+.035*Math.cos(x*8+z*6)+fault+z*.11;
     p.push(x+(v-.5)*.13*Math.sin(u*19),y,z);
-    const pigment = new Color(colors[level]).multiplyScalar(.79+.24*(.5+.5*Math.sin(col*1.43+row*2.7+level)));
+    const grain = Math.sin(col*1.43+row*2.7+level)*Math.cos(row*.83 + x*1.6);
+    const bedMark = Math.sin(z*7.1+x*.94+Math.sin(x*2.9)*.7);
+    pigment.copy(bedColor).multiplyScalar(.86+.11*grain+.08*bedMark);
     c.push(...pigment.toArray());
     if(col<columns-1 && row<rows-1){
       const i=surface*n+row*columns+col;

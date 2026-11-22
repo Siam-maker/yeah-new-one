@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { BrandMark } from "@/components/layout/brand";
 import { useState } from "react";
 import { ArrowUpRight, Link2 } from "lucide-react";
 import { decimal, integer, populationIndicators, type Country, type PopulationIndicator, type PopulationRecord } from "@/lib/content/demographics";
 import { usePopulation } from "./use-population";
-import { PopulationMap } from "./population-map";
+import { PopulationVisual } from "./population-visual";
 import { PopulationPyramid, PopulationTrend } from "./population-charts";
 
 function Format({ value, unit }: { value: number | null | undefined; unit?: string }) {
@@ -37,10 +38,11 @@ function CountryLedger({ country, record, year }: { country: Country; record: Po
 }
 
 export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = "population", initialYear = 2023,
-  initialCompare = "", profile = false }: {
-  initialCountry?: string; initialIndicator?: PopulationIndicator; initialYear?: number; initialCompare?: string; profile?: boolean;
+  initialCompare = "", profile = false, initialGlobe = false }: {
+  initialCountry?: string; initialIndicator?: PopulationIndicator; initialYear?: number; initialCompare?: string; profile?: boolean; initialGlobe?:boolean;
 }) {
   const { data, error, retry } = usePopulation();
+  const [globe,setGlobe] = useState(initialGlobe);
   const [selected, setSelected] = useState(initialCountry);
   const [compare, setCompare] = useState(initialCompare);
   const [year, setYear] = useState(initialYear);
@@ -50,7 +52,7 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
   const [message, setMessage] = useState("");
   const [share, setShare] = useState("");
   if (error) return <div className="pane"><p>The population snapshot could not be loaded.</p><button className="ghost-button mt-3" onClick={retry} type="button">Retry loading</button></div>;
-  if (!data) return <div className="pane" role="status">Reading the UN population snapshot…</div>;
+  if (!data) return <div className="pane dataset-loading" role="status"><BrandMark /> Reading the UN population snapshot…</div>;
 
   const currentYear = data.years.includes(year) ? year : 2023;
   const countries = data.countries;
@@ -74,7 +76,7 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
 
   async function copyLink() {
     const url = new URL(window.location.href);
-    url.search = new URLSearchParams({ country:country.id, year:String(currentYear), indicator, ...(compare ? { compare } : {}) }).toString();
+    url.search = new URLSearchParams({ country:country.id, year:String(currentYear), indicator, ...(compare ? { compare } : {}), ...(globe ? { view:"globe" } : {}) }).toString();
     try { await navigator.clipboard.writeText(url.href); setMessage("Exploration link copied."); }
     catch { setShare(url.href); setMessage("Select the link to copy it."); }
   }
@@ -118,7 +120,7 @@ export function PopulationExplorer({ initialCountry = "JPN", initialIndicator = 
     {currentYear > 2023 && <p className="population-note">Medium projections use UN assumptions about fertility, mortality and migration. The separate density and urban series end with the historical snapshots.</p>}
 
     <div className={profile ? "population-chart-grid" : "population-top"}>
-      {!profile && <PopulationMap countries={areas} year={currentYear} indicator={indicator} selected={country.id} onSelect={setSelected} />}
+      {!profile && <PopulationVisual countries={areas} year={currentYear} indicator={indicator} country={country} compared={comparison[1]} globe={globe} changeGlobe={setGlobe} onSelect={setSelected} />}
       {record ? <CountryLedger country={country} record={record} year={currentYear} /> : <p className="pane">This country has no record for the selected year.</p>}
       {profile && comparison[1]?.records[currentYear] && <CountryLedger country={comparison[1]} record={comparison[1].records[currentYear]} year={currentYear} />}
     </div>

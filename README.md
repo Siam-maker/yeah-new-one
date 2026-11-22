@@ -25,3 +25,5 @@ To enable subscriptions, set `NEWSLETTER_ENDPOINT` to a trusted HTTPS provider a
 The Journeys routes assemble expeditions from the publication’s stories, topics, Atlas locations and labs. Stops are marked on the current browser. The Connections graph derives edges from topic guides, citation lists, glossary links, and companion readings. Its node index and connection lists provide an alternative to the visual graph.
 
 Scientific 3D scenes load near the viewport and share device profiles, demand rendering, and context-loss recovery through illustrated fallbacks. The Earth cutaway uses approximate depth boundaries. Its crust thickness is exaggerated. The observatory uses compressed circular orbits and illustrative surface textures.
+
+The visual identity uses locally bundled Instrument Serif and Manrope. The homepage cave illustration supports the adaptive procedural scene as a fallback. Both are editorial representations. The Population Observatory reuses the Atlas globe and preserves the chosen snapshot and comparison when sharing a globe view.

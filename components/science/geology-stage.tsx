@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { DoubleSide, MathUtils, type Group } from "three";
+import { DoubleSide, MathUtils, SRGBColorSpace, TextureLoader, type Group, type Texture } from "three";
 import { strataBed } from "./terrain";
 import { earthLayers } from "@/lib/content/earth-interior";
 import type { Boundary, SceneSpec } from "./scene-types";
@@ -56,6 +56,15 @@ export function Tectonic({ boundary, progress }: { boundary: Boundary; progress:
 
 export function Interior({ model, active }: { model: Extract<SceneSpec,{ kind:"interior" }>; active:boolean }) {
   const shell = useRef<Group>(null);
+  const [surface,setSurface] = useState<Texture>();
+  useEffect(() => {
+    let active = true;
+    const texture = new TextureLoader().load("/images/earth-map.webp", (image) => { if (active) setSurface(image); });
+    texture.colorSpace = SRGBColorSpace;
+    texture.repeat.x = .5;
+    texture.offset.x = .5;
+    return () => { active=false;texture.dispose(); };
+  },[]);
   useFrame(({ invalidate }, delta) => {
     if (!shell.current) return;
     const target = MathUtils.degToRad(model.rotation);
@@ -67,7 +76,7 @@ export function Interior({ model, active }: { model: Extract<SceneSpec,{ kind:"i
     <group ref={shell}>
       <mesh>
         <sphereGeometry args={[earthLayers[0].radius,52,36,Math.PI,Math.PI]} />
-        <meshStandardMaterial color="#6b6d54" roughness={.89} />
+        <meshStandardMaterial map={surface} color={surface ? "#eee7d0" : "#6b6d54"} roughness={.79} />
       </mesh>
       {earthLayers.map((layer,index) => {
         const next = earthLayers[index+1]?.radius ?? 0;

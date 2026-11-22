@@ -22,7 +22,7 @@ export const caveFragment = /* glsl */ `
     vec3 groove = vec3(.09*sin(p.z*17.+p.y*8.), .13*sin(p.y*38.+p.z*13.), .07*cos(p.x*20.+p.z*10.));
     vec3 n = normalize(rockNormal + groove);
     vec3 inward = gl_FrontFacing ? n : -n;
-    vec3 lightDirection = normalize(vec3(1.3 + .2 * sin(time * .55), -.35, -7.4) - p);
+    vec3 lightDirection = normalize(vec3(1.9 + .14 * sin(time * .55), 1.8, -8.4) - p);
     vec3 viewDirection = normalize(cameraPosition - p);
     float face = abs(dot(inward, lightDirection));
     float laminatedShadow = smoothstep(-.85, .35, sin(p.y * 12.0 + p.z * 3.2 + sin(p.x * 4.0)));
@@ -37,13 +37,16 @@ export const caveFragment = /* glsl */ `
     float fog = 1.0 - exp(-max(0.0,distanceIn-3.8)*(.035+descent*.035));
     float spill = max(0.0, 1.0 - length(vec2(p.x - 1.5, p.y) * vec2(.22, .31)));
     vec3 pigment = mix(vec3(.005, .007, .010), vec3(.24, .25, .28), clamp(textureValue * 2.62 + bands * .10 + finer * .03, 0.0, 1.0));
-    vec3 stone = pigment * (.12 + face * .75 + rim * .22) * (.58 + laminatedShadow * .42);
-    stone += vec3(.004, .062, .092) * spill * (.48 + face * .46 + descent * .29) * (.95 + .05 * sin(time * .9));
-    stone += vec3(.15, .079, .036) * oblique * (1.0 - fog) * (.40 + bands * .60);
+    vec3 stone = pigment * (.108 + face*.62 + rim*.22) * (.57 + laminatedShadow*.43);
+    float damp = (1.-smoothstep(-1.25,.1,p.y)) * (1.-bands*.4);
+    float reflected = pow(max(0.,dot(reflect(-lightDirection,inward),viewDirection)),18.);
+    stone += reflected * damp * vec3(.035,.067,.056);
+    stone += vec3(.010, .064, .055) * spill * (.48 + face * .46 + descent * .29) * (.95 + .05 * sin(time * .9));
+    stone += vec3(.17,.095,.047) * oblique * (1.0 - fog) * (.40 + bands * .60);
     stone += vec3(.007, .014, .019) * rim;
     float vault = exp(-abs(p.x*.68+p.y*.36-1.15)*1.8) * smoothstep(-25.,-8.,p.z);
     stone += vec3(.028,.037,.035)*vault*(.45+.55*face)*(1.-descent*.62);
-    vec3 grading = mix(vec3(.008,.024,.035),vec3(.012,.018,.041),descent);
+    vec3 grading = mix(vec3(.009,.027,.022),vec3(.009,.020,.023),descent);
     gl_FragColor = vec4(mix(stone, grading, fog*.77), 1.0);
     #include <colorspace_fragment>
   }
@@ -56,8 +59,8 @@ export const shaftFragment = /* glsl */ `
     vec2 p = rockUv - vec2(.5);
     float face = exp(-abs(p.x + p.y * .29 + sin(time * .38) * .08) * 9.0);
     float fade = smoothstep(0.0, .32, rockUv.y) * (1.0 - smoothstep(.48, 1.0, rockUv.y));
-    float alpha = face * fade * .13;
-    gl_FragColor = vec4(.12, .72, .82, alpha);
+    float alpha = face * fade * (.19 + .019*sin(rockUv.y*23.+time*.2));
+    gl_FragColor = vec4(.77,.52,.29,alpha);
   }
 `;
 
@@ -81,6 +84,6 @@ export const moteFragment = /* glsl */ `
   varying float brightness;
   void main() {
     float glow = 1.0 - smoothstep(.06, .49, length(gl_PointCoord - .5));
-    gl_FragColor = vec4(.35, .83, .91, glow * brightness * .63);
+    gl_FragColor = vec4(.64,.77,.67,glow*brightness*.56);
   }
 `;

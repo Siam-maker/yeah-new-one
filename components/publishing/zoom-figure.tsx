@@ -12,7 +12,7 @@ export function ZoomFigure({ source, caption }: { source: string; caption: strin
 
   return <figure>
     <div className="article-image">
-      <Image src={source} alt={caption} fill preload sizes="92vw" />
+      <Image src={source} alt={caption} fill preload sizes="(max-width:800px) 92vw, 48vw" />
       <button className="ghost-button figure-trigger" ref={trigger} type="button" onClick={() => { setScale(1); dialog.current?.showModal(); }}>
         <Maximize2 size={17} aria-hidden="true" /> Enlarge figure
       </button>

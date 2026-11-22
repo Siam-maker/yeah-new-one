@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import "@fontsource-variable/newsreader";
-import "@fontsource-variable/space-grotesk";
-import "@fontsource/ibm-plex-mono/latin-400.css";
-import "@fontsource/ibm-plex-mono/latin-500.css";
-import "@fontsource/ibm-plex-mono/latin-600.css";
+import "@fontsource/instrument-serif/latin-400.css";
+import "@fontsource/instrument-serif/latin-400-italic.css";
+import "@fontsource-variable/manrope";
 import { Header } from "@/components/layout/header";
 import { searchEntries } from "@/lib/content/search";
 import { Footer } from "@/components/layout/footer";
@@ -16,6 +14,7 @@ import "./edition.css";
 import "./universe.css";
 import "./population.css";
 import "./exploration.css";
+import "./reconstruction.css";
 
 export const metadata: Metadata = {
   title: { default: "Under the Surface — A field guide to the unseen", template: "%s — Under the Surface" },
