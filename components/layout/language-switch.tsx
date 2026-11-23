@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Globe2 } from "lucide-react";
-import { useEffect, useSyncExternalStore } from "react";
-import { direction, htmlLanguage, isLocale, languages, localizedPath, locales, splitLocale } from "@/lib/i18n/routing";
+import { useSyncExternalStore } from "react";
+import { htmlLanguage, isLocale, languages, localizedPath, locales, splitLocale, type Locale } from "@/lib/i18n/routing";
 import { messages } from "@/lib/i18n/messages";
 
 const preference = "uts:language";
@@ -26,7 +26,6 @@ function savedLanguage() {
 
 export function LanguageSwitch({ showPreference = false }: { showPreference?: boolean }) {
   const {locale,path} = splitLocale(usePathname());
-  const router = useRouter();
   const saved = useSyncExternalStore(observeLanguage,savedLanguage,() => "en" as const);
   return <div className="language-switch">
     <label><Globe2 size={17} aria-hidden="true" /><span className="sr-only">{messages[locale].ui.language}</span>
@@ -37,7 +36,7 @@ export function LanguageSwitch({ showPreference = false }: { showPreference?: bo
           localStorage.setItem(preference,code);
           window.dispatchEvent(new Event(eventName));
         } catch {}
-        router.push(localizedPath(path,code) + window.location.search + window.location.hash);
+        window.location.assign(localizedPath(path,code) + window.location.search + window.location.hash);
       }}>
         {locales.map((code) => <option key={code} value={code} lang={htmlLanguage(code)}>{languages[code]}</option>)}
       </select>
@@ -46,11 +45,6 @@ export function LanguageSwitch({ showPreference = false }: { showPreference?: bo
   </div>;
 }
 
-export function LocaleDocument() {
-  const {locale} = splitLocale(usePathname());
-  useEffect(() => {
-    document.documentElement.lang = htmlLanguage(locale);
-    document.documentElement.dir = direction(locale);
-  }, [locale]);
+export function SkipLink({ locale }: { locale: Locale }) {
   return <a lang={htmlLanguage(locale)} href="#content" className="skip-link">{messages[locale].ui.skip}</a>;
 }

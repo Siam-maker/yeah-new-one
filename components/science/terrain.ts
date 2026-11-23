@@ -2,7 +2,7 @@ import { BufferGeometry, Color, Float32BufferAttribute } from "three";
 
 export function terrainSurface(zone: string) {
   const geometry = new BufferGeometry();
-  const p: number[] = [], c: number[] = [], faces: number[] = [];
+  const p: number[] = [], c: number[] = [], faces: number[] = [], uv:number[] = [];
   const columns=65, rows=47;
   const ridge = new Color(zone === "sunlight" ? "#829484" : zone === "hadal" ? "#535061" : "#4d5f65");
   const basin = new Color(zone === "hadal" ? "#202437" : "#172832");
@@ -13,6 +13,7 @@ export function terrainSurface(zone: string) {
     const ledge = Math.pow(Math.max(0, Math.sin(-z*.35+x*.17)),3)*1.45;
     const y = -2.2 + rough*(zone === "abyssal" ? .27 : .92) + ledge*(zone === "abyssal" ? .17 : .91) - trench*(zone === "hadal" ? 5.4 : zone === "abyssal" ? .15 : 1.1);
     p.push(x,y,z);
+    uv.push(col/(columns-1),row/(rows-1));
     c.push(...basin.clone().lerp(ridge,Math.max(0,Math.min(1,(y+6)/5))).toArray());
     if(row<rows-1&&col<columns-1){
       const i=row*columns+col;
@@ -21,6 +22,7 @@ export function terrainSurface(zone: string) {
   }
   geometry.setAttribute("position",new Float32BufferAttribute(p,3));
   geometry.setAttribute("color",new Float32BufferAttribute(c,3));
+  geometry.setAttribute("uv",new Float32BufferAttribute(uv,2));
   geometry.setIndex(faces); geometry.computeVertexNormals();
   return geometry;
 }

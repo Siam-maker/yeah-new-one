@@ -13,7 +13,8 @@ type MessageSet = { nav: Nav; ui: UI; page: Landing; subjects: [string,string,st
 
 const labels = ["language","index","open","close","skip","coverage","original","searchTitle","searchPlaceholder","all","type","difficulty","anyLevel","empty","more","recent","results","searchPage","loading","searchError"] as const;
 const landingFields = ["headline","intro","courses","orientation","method","resourceIntro"] as const;
-function message(nav: string[], ui: string[], page: string[], subjects: MessageSet["subjects"]): MessageSet {
+type Strings<T extends readonly unknown[]> = { [Key in keyof T]: string };
+function message(nav: Strings<typeof navPaths>, ui: Strings<typeof labels>, page: Strings<typeof landingFields>, subjects: MessageSet["subjects"]): MessageSet {
   return {
     nav:Object.fromEntries(navPaths.map((path,i) => [path,nav[i]])) as Nav,
     ui:Object.fromEntries(labels.map((key,i) => [key,ui[i]])) as UI,
@@ -30,8 +31,8 @@ export const messages: Record<Locale,MessageSet> = {
     ["Ocean & marine science","Earth science & geology","Climate & atmosphere","Biodiversity & evolution","Space & astronomy","Population & demographics","Interdisciplinary science"]),
   bn:message(
     ["প্রচ্ছদ","অন্বেষণ","শিখুন","বিষয়সমূহ","জার্নাল","পরীক্ষাগার","ত্রিমাত্রিক জগৎ","অ্যাটলাস","জনমিতি","নির্দেশিত অভিযান","জ্ঞানের সংযোগ","পরিভাষা","পাঠের তালিকা","পরিচিতি","মাঠের নোট","খুঁজুন","শিক্ষকদের উপকরণ"],
-    ["ভাষা","সূচি","সূচি খুলুন","সূচি বন্ধ করুন","মূল বিষয়বস্তুতে যান","এই ভাষায় সূচি ও প্রাথমিক নির্দেশিকা আছে। পূর্ণাঙ্গ নিবন্ধ, পাঠক্রম ও পরীক্ষাগুলো মূল ইংরেজিতে পাওয়া যায়।","মূল ইংরেজি সংস্করণ খুলুন","Under the Surface-এ খুঁজুন","সমুদ্র, বরফ বা কোনো দেশ লিখুন","সব বিষয়বস্তু","বিষয়বস্তুর ধরন","কঠিনতার স্তর","সব স্তর","কিছু পাওয়া যায়নি। অন্য শব্দ ব্যবহার করুন বা বাছাই বদলান।","আরও ফলাফল দেখুন","আগের অনুসন্ধান","ফলাফল","অনুসন্ধান পাতা খুলুন","অনুসন্ধানের সূচি লোড হচ্ছে…","সূচি লোড হয়নি। অনুসন্ধান পাতা ব্যবহার করুন।"],
-    ["পৃথিবী ও মহাবিশ্বকে জানুন","বিজ্ঞানের গল্প পড়ুন, বাস্তব তথ্যের মানচিত্র দেখুন এবং ত্রিমাত্রিক মডেলে পরীক্ষা করে পৃথিবী ও মহাবিশ্বের আড়ালে কাজ করা প্রক্রিয়াগুলো বুঝুন।","নির্দেশিত বিজ্ঞান পাঠ","একটি প্রশ্ন দিয়ে শুরু করুন","কোনটি সরাসরি মাপলেন আর কোনটি সেই মাপ থেকে অনুমান করলেন? পর্যবেক্ষণ ও সিদ্ধান্ত আলাদা করে লিখলে অন্যরা ব্যাখ্যাটিকে যাচাই করতে পারে।","একটি বিষয় বেছে নিন। পরিচিতি পড়ে মূল ইংরেজি পাঠে পরীক্ষা, তথ্য ও সূত্র দেখুন।"],
+    ["ভাষা","সূচি","সূচি খুলুন","সূচি বন্ধ করুন","মূল বিষয়বস্তুতে যান","সাতটি পাঠক্রম, বিষয়ের নির্দেশিকা, নির্বাচিত নিবন্ধ ও পরীক্ষার নির্দেশনা বাংলায় আছে। অন্য উপকরণে ইংরেজি ভাষা উল্লেখ করা হয়েছে।","মূল ইংরেজি সংস্করণ খুলুন","Under the Surface-এ খুঁজুন","সমুদ্র, বরফ বা কোনো দেশ লিখুন","সব বিষয়বস্তু","বিষয়বস্তুর ধরন","কঠিনতার স্তর","সব স্তর","কিছু পাওয়া যায়নি। অন্য শব্দ ব্যবহার করুন বা বাছাই বদলান।","আরও ফলাফল দেখুন","আগের অনুসন্ধান","ফলাফল","অনুসন্ধান পাতা খুলুন","অনুসন্ধানের সূচি লোড হচ্ছে…","সূচি লোড হয়নি। অনুসন্ধান পাতা ব্যবহার করুন।"],
+    ["পৃথিবী ও মহাবিশ্বকে জানুন","বিজ্ঞানের গল্প পড়ুন, বাস্তব তথ্যের মানচিত্র দেখুন এবং ত্রিমাত্রিক মডেলে পরীক্ষা করে পৃথিবী ও মহাবিশ্বের আড়ালে কাজ করা প্রক্রিয়াগুলো বুঝুন।","নির্দেশিত বিজ্ঞান পাঠ","একটি প্রশ্ন দিয়ে শুরু করুন","কোনটি সরাসরি মাপলেন আর কোনটি সেই মাপ থেকে অনুমান করলেন? পর্যবেক্ষণ ও সিদ্ধান্ত আলাদা করে লিখলে অন্যরা ব্যাখ্যাটিকে যাচাই করতে পারে।","সাতটি পাঠক্রম থেকে বেছে নিন। পাঠের সঙ্গে পরীক্ষা, তথ্য, প্রশ্ন ও মূল সূত্র অনুসরণ করুন।"],
     ["সমুদ্র ও সামুদ্রিক বিজ্ঞান","পৃথিবীবিজ্ঞান ও ভূতত্ত্ব","জলবায়ু ও বায়ুমণ্ডল","জীববৈচিত্র্য ও বিবর্তন","মহাকাশ ও জ্যোতির্বিজ্ঞান","জনসংখ্যা ও জনমিতি","আন্তঃবিষয়ক বিজ্ঞান"]),
   es:message(
     ["Inicio","Explorar","Aprender","Disciplinas","Revista","Laboratorio","Mundo 3D","Atlas","Demografía","Expediciones","Conexiones","Glosario","Mesa de lectura","Acerca de","Notas de campo","Buscar","Recursos docentes"],

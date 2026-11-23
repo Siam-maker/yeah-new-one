@@ -8,8 +8,8 @@ const craters = [
 
 export function planetSurface(id: string, tint: string) {
   const canvas = document.createElement("canvas");
-  canvas.width = 256;
-  canvas.height = 128;
+  canvas.width = 512;
+  canvas.height = 256;
   const context = canvas.getContext("2d");
   if (!context) return;
   context.fillStyle = tint;
@@ -23,7 +23,7 @@ export function planetSurface(id: string, tint: string) {
       const latitude = y / canvas.height;
       const u = x / canvas.width;
       const longitude = u * Math.PI * 2;
-      const variation = Math.sin(longitude*5 + y*.31)*Math.cos(longitude*7-y*.3);
+      const variation = Math.sin(longitude*5 + latitude*39)*Math.cos(longitude*7-latitude*38);
       const turbulence = Math.sin(longitude*3 + Math.sin(latitude*15)*1.2 + latitude*9) + .7*Math.sin(longitude*9-latitude*21);
       const bands = .87 + .11*Math.cos(latitude*57+.75*Math.sin(longitude*2))
         + .065*Math.sin(latitude*108+variation*.53) + .033*turbulence;

@@ -9,9 +9,10 @@ const AbyssScene = dynamic(() => import("./abyss-scene"), { ssr:false });
 
 export type AbyssCamera = { x:number; y:number; descent:number };
 
-export function AbyssStage({ camera, enabled, onWakeChange }: {
+export function AbyssStage({ camera, mode, onStatus, onWakeChange }: {
   camera: RefObject<AbyssCamera>;
-  enabled: boolean;
+  mode: "auto" | "live" | "still";
+  onStatus: (status: "still" | "loading" | "live" | "unavailable") => void;
   onWakeChange: (wake: (() => void) | null) => void;
 }) {
   const stage = useRef<HTMLDivElement>(null);
@@ -25,15 +26,30 @@ export function AbyssStage({ camera, enabled, onWakeChange }: {
     const media = matchMedia(allowMotion);
     const desktop = matchMedia("(min-width: 1024px) and (hover: hover) and (pointer: fine)");
     let intersects = false;
+    let activation = 0;
+    let mounted = false;
 
     function sync() {
-      if (!media.matches || (!desktop.matches && !enabled)) {
+      window.clearTimeout(activation);
+      if (mode === "still" || !media.matches || (mode === "auto" && !desktop.matches)) {
         setProfile(null);
         setVisible(false);
+        mounted = false;
+        onStatus(mode === "live" ? "unavailable" : "still");
         return;
       }
-      if (intersects) setProfile(renderProfile());
       setVisible(intersects && !document.hidden);
+      if (!intersects || document.hidden || mounted) return;
+      activation = window.setTimeout(() => {
+        const candidate = renderProfile();
+        if (!candidate || (mode === "auto" && candidate.name === "low")) {
+          if (mode === "live") onStatus("unavailable");
+          return;
+        }
+        mounted = true;
+        setProfile(candidate);
+        onStatus("loading");
+      }, mode === "auto" ? 1600 : 0);
     }
 
     const observer = new IntersectionObserver(([entry]) => { intersects=entry.isIntersecting;sync(); });
@@ -42,12 +58,13 @@ export function AbyssStage({ camera, enabled, onWakeChange }: {
     desktop.addEventListener("change",sync);
     document.addEventListener("visibilitychange",sync);
     return () => {
+      window.clearTimeout(activation);
       observer.disconnect();
       media.removeEventListener("change",sync);
       desktop.removeEventListener("change",sync);
       document.removeEventListener("visibilitychange",sync);
     };
-  },[enabled]);
+  },[mode,onStatus]);
 
   useEffect(() => {
     if (!profile || !stage.current) return;
@@ -63,6 +80,6 @@ export function AbyssStage({ camera, enabled, onWakeChange }: {
 
   return <div className="abyss-stage" ref={stage} data-profile={profile?.name}>
     {profile && <AbyssScene camera={camera} active={visible} onWakeChange={onWakeChange} source="/images/obsidian-surface.webp"
-      dpr={dpr} fps={Math.round(1000/profile.frameMs)} detail={profile.segments} ambientMotion={profile.name!=="low"} />}
+      dpr={dpr} fps={Math.round(1000/profile.frameMs)} detail={profile.segments} ambientMotion={profile.name!=="low"} onStatus={onStatus} />}
   </div>;
 }

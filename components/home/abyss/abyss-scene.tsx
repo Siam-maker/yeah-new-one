@@ -119,7 +119,7 @@ function Cave({ rock, steering, active, fps, detail, ambientMotion, onWakeChange
   );
 }
 
-export default function AbyssScene({ camera, active, source, dpr, fps, detail, ambientMotion, onWakeChange }: {
+export default function AbyssScene({ camera, active, source, dpr, fps, detail, ambientMotion, onStatus, onWakeChange }: {
   camera: RefObject<AbyssCamera>;
   active: boolean;
   source: string;
@@ -127,6 +127,7 @@ export default function AbyssScene({ camera, active, source, dpr, fps, detail, a
   fps: number;
   detail: number;
   ambientMotion: boolean;
+  onStatus: (status: "live" | "unavailable") => void;
   onWakeChange: (wake: (() => void) | null) => void;
 }) {
   const [rock, setRock] = useState<Texture | null>(null);
@@ -136,7 +137,8 @@ export default function AbyssScene({ camera, active, source, dpr, fps, detail, a
     setLost(true);
     setRenderer(null);
     setRock(null);
-  }, []);
+    onStatus("unavailable");
+  }, [onStatus]);
 
   useEffect(() => {
     if (lost) return;
@@ -170,7 +172,7 @@ export default function AbyssScene({ camera, active, source, dpr, fps, detail, a
           frameloop="demand"
           style={{ pointerEvents: "none" }}
           gl={{ antialias: false, powerPreference: "low-power", alpha: true }}
-          onCreated={({ gl }) => setRenderer(gl)}>
+          onCreated={({ gl }) => { setRenderer(gl); onStatus("live"); }}>
           <Cave rock={rock} steering={camera} active={active} fps={fps} detail={detail} ambientMotion={ambientMotion} onWakeChange={onWakeChange} />
         </Canvas>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import type { SearchEntry } from "@/lib/content/search";
@@ -68,8 +68,8 @@ export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = 
   const tokens = term.split(/\s+/).filter(Boolean);
   const labels = filters[locale];
   const indexed = useMemo(() => {
-    const archive = entries.map((entry) => ({ ...entry,lang:"en" as Locale }));
-    const translated = locale === "en" ? [] : learningTracks.map((track,index) => ({
+    const archive = entries.map((entry) => ({ ...entry,lang:entry.lang ?? "en" as Locale }));
+    const translated = locale === "en" || locale === "bn" ? [] : learningTracks.map((track,index) => ({
       title:dictionary.subjects[index],href:localizedPath(`/learn/${track.id}`,locale),description:dictionary.page.resourceIntro,
       kind:"Course" as const,level:track.level,keywords:"",lang:locale,
     }));
@@ -119,7 +119,7 @@ export function SearchPanel({ entries, initialQuery = "", onNavigate, compact = 
     <p className="mt-4 text-[var(--muted)]" role="status">{status === "loading" ? dictionary.ui.loading : status === "error" ? dictionary.ui.searchError : matches.length === 0 ? dictionary.ui.empty :
       `${new Intl.NumberFormat(htmlLanguage(locale)).format(matches.length)} ${locale === "en" && matches.length === 1 ? "result" : dictionary.ui.results}`}</p>
     {visible.length > 0 && <ul className="result-list">{visible.map(({entry}) => <li key={entry.href}>
-      <p className="mono tile-meta">{labels[categories.indexOf(entry.kind)]}{entry.level && ` · ${labels[categories.length+levels.indexOf(entry.level)]}`}{locale !== entry.lang && <span lang="en"> · English</span>}</p>
+      <p className="mono tile-meta">{labels[categories.indexOf(entry.kind)]}{entry.level && ` · ${labels[categories.length+levels.indexOf(entry.level)]}`}{locale !== entry.lang && <span lang={locale === "bn" ? "bn" : "en"}> · {locale === "bn" ? "ইংরেজি" : "English"}</span>}</p>
       <Link href={entry.href} hrefLang={htmlLanguage(entry.lang)} lang={htmlLanguage(entry.lang)} dir={direction(entry.lang)} onClick={() => { saveQuery(query);onNavigate?.(); }}>
         <span><Highlight value={entry.title} tokens={query.trim().split(/\s+/).filter(Boolean)} /></span><ArrowUpRight size={15} aria-hidden="true" /></Link>
       <p lang={htmlLanguage(entry.lang)} dir={direction(entry.lang)}><Highlight value={entry.description} tokens={query.trim().split(/\s+/).filter(Boolean)} /></p>
@@ -136,14 +136,14 @@ export function SearchOverlay({ locale = "en" }: { locale?:Locale }) {
   const trigger = useRef<HTMLButtonElement>(null);
   const dictionary = messages[locale];
 
-  function openSearch() {
+  const openSearch = useCallback(() => {
     const panel = dialog.current;
     if (!panel || panel.open) return;
     panel.showModal();
     panel.querySelector("input")?.focus();
     setFailed(false);
-    void import("@/lib/content/search").then(({ searchEntries,countrySearchEntries }) => setEntries([...searchEntries,...countrySearchEntries]), () => setFailed(true));
-  }
+    void import("@/lib/content/search").then(({ entriesForEdition }) => entriesForEdition(locale)).then(setEntries, () => setFailed(true));
+  },[locale]);
 
   useEffect(() => {
     function shortcut(event: KeyboardEvent) {
@@ -154,7 +154,7 @@ export function SearchOverlay({ locale = "en" }: { locale?:Locale }) {
     }
     document.addEventListener("keydown", shortcut);
     return () => document.removeEventListener("keydown", shortcut);
-  }, []);
+  }, [openSearch]);
 
   return <>
     <button ref={trigger} className="header-action header-search" type="button" aria-haspopup="dialog" aria-label={dictionary.nav["/search"]} onClick={openSearch}>

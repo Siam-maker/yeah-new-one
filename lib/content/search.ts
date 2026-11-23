@@ -1,3 +1,4 @@
+import type { Locale } from "../i18n/routing";
 import directory from "@/public/data/country-directory.json";
 import { atlasLayers, type AtlasLayer } from "./atlas";
 import { atlasPoints } from "./observations";
@@ -9,7 +10,7 @@ import { learningTracks,type Level } from "./learning-index";
 import { glossary, labs, termId, topics } from "./publication";
 
 export type SearchKind = "Article" | "Topic" | "Lab" | "Glossary" | "Location" | "Field note" | "Country" | "Journey" | "Tool" | "Course" | "Dataset";
-export type SearchEntry = { title: string; href: string; description: string; kind: SearchKind; keywords: string; level?: Level };
+export type SearchEntry = { title: string; href: string; description: string; kind: SearchKind; keywords: string; level?: Level; lang?:Locale };
 
 export const searchEntries: SearchEntry[] = [
   ...learningTracks.map((track):SearchEntry => ({ title:track.title, href:`/learn/${track.id}`, description:track.deck, kind:"Course", keywords:track.subject, level:track.level })),
@@ -42,3 +43,10 @@ export const countrySearchEntries: SearchEntry[] = directory.map(({ id, name, re
   title:name, href:`/demographics/${id.toLowerCase()}`, description:`Population profile in ${region}. Compare age structure, density and urban share.`,
   kind:"Country", keywords:id,
 }));
+
+export async function entriesForEdition(locale:Locale):Promise<SearchEntry[]> {
+  const archive=[...searchEntries,...countrySearchEntries];
+  if (locale!=="bn") return archive;
+  const {bengaliSearchEntries}=await import("../i18n/bengali-search");
+  return [...bengaliSearchEntries,...archive];
+}

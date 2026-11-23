@@ -3,8 +3,14 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { ExhibitImage } from "@/components/editorial/exhibit-image";
+import { BengaliHome,BengaliJournal,BengaliLab,BengaliLabs,BengaliLearning,BengaliLibrary,BengaliStory,BengaliTopic,BengaliTopics } from "@/components/i18n/bengali-edition";
+import { CourseReader } from "@/components/learning/course-reader";
+import { ProgressDashboard } from "@/components/learning/progress-dashboard";
+import { bengaliPaths,contentAlternates,entryPaths } from "@/lib/i18n/coverage";
+import { bengaliLabs,bengaliTopics } from "@/lib/i18n/bengali-guides";
+import { bengaliStories } from "@/lib/i18n/bengali-stories";
 import { SearchPanel } from "@/components/search/search-panel";
-import { direction, htmlLanguage, isLocale, languageAlternates, localizedPath, locales, type Locale } from "@/lib/i18n/routing";
+import { direction, htmlLanguage, isLocale, localizedPath, locales, type Locale } from "@/lib/i18n/routing";
 import { messages } from "@/lib/i18n/messages";
 import { introductions } from "@/lib/i18n/introductions";
 import { learningTracks } from "@/lib/content/learning-index";
@@ -14,15 +20,27 @@ import countries from "@/public/data/country-directory.json";
 
 type Query = Record<string,string | string[] | undefined>;
 type Props = { params: Promise<{ locale:string; path?:string[] }>; searchParams:Promise<Query> };
-const entryPaths = ["/","/explore","/learn","/search"];
 
-function identify(path: string, locale: Locale) {
+type Edition = {title:string;localized:boolean;description?:string;track?:number};
+function identify(path: string, locale: Locale): Edition | undefined {
   const dictionary = messages[locale];
+  if (path === "/learn/progress") return {title:locale === "bn" ? "পাঠের অগ্রগতি" : "Learning progress",localized:locale === "bn"};
+  if (locale === "bn") {
+    const [,family,slug,extra]=path.split("/");
+    if (slug && !extra) {
+      const story=family==="stories" ? bengaliStories[slug] : undefined;
+      if (story) return {title:story.title,description:story.deck,localized:true};
+      const topic=family==="topics" ? bengaliTopics[slug] : undefined;
+      if (topic) return {title:topic.title,description:topic.intro,localized:true};
+      const lab=family==="lab" ? bengaliLabs[slug] : undefined;
+      if (lab) return {title:lab[0],description:lab[1],localized:true};
+    }
+  }
   if (path === "/") return { title:dictionary.page.headline, localized:true };
   if (path === "/lab/ice-archive") return { title:"Ice-core archive", localized:false };
   if (path === "/lab/climate-pathways") return { title:"Emissions pathways", localized:false };
   if (path === "/lab/observatory") return { title:"The cosmic observatory", localized:false };
-  if (Object.hasOwn(dictionary.nav,path)) return { title:dictionary.nav[path as keyof typeof dictionary.nav], localized:entryPaths.includes(path) };
+  if (Object.hasOwn(dictionary.nav,path)) return { title:dictionary.nav[path as keyof typeof dictionary.nav], localized:entryPaths.includes(path) || (locale === "bn" && bengaliPaths.includes(path)) };
   const [, family, slug, extra] = path.split("/");
   if (extra || !slug) return;
   if (family === "learn") {
@@ -39,7 +57,7 @@ function identify(path: string, locale: Locale) {
 
 export function generateStaticParams() {
   return locales.filter((locale) => locale !== "en").flatMap((locale) =>
-    [...entryPaths,...learningTracks.map(({id}) => `/learn/${id}`)].map((path) => ({locale,path:path.split("/").filter(Boolean)})));
+    [...entryPaths,...(locale === "bn" ? bengaliPaths : [])].map((path) => ({locale,path:path.split("/").filter(Boolean)})));
 }
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
@@ -48,9 +66,9 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   if (!isLocale(locale) || locale === "en") return {};
   const page = identify(path,locale);
   if (!page) return {};
-  const description = page.track !== undefined ? introductions[locale][page.track] : messages[locale].page.intro;
+  const description = page.description ?? (page.track !== undefined ? introductions[locale][page.track] : messages[locale].page.intro);
   return page.localized ? {
-    title:page.title, description, alternates:languageAlternates(path,locale),
+    title:page.title, description, alternates:contentAlternates(path,locale),
     openGraph:{title:page.title,description,locale:htmlLanguage(locale),siteName:"Under the Surface"},
   } : {title:page.title,robots:{index:false,follow:true},alternates:{canonical:path}};
 }
@@ -81,18 +99,33 @@ export default async function LocalizedPage({params,searchParams}: Props) {
     const href = path + queryString(await searchParams);
     return <article className="shell localized-page fallback-edition" lang={lang} dir={dir}>
       <h1 lang={page.title === dictionary.nav[path as keyof typeof dictionary.nav] ? lang : "en"}>{page.title}</h1>
-      <p>{dictionary.ui.coverage}</p>
+      <p>{locale === "bn" ? "এই পাতার বিষয়বস্তু ইংরেজিতে পাওয়া যায়।" : dictionary.ui.coverage}</p>
       <Link className="editorial-link" href={href} hrefLang="en">{dictionary.ui.original} <ArrowUpRight size={17} aria-hidden="true" /></Link>
     </article>;
   }
 
   if (path === "/search") {
     const query = (await searchParams).q;
-    const { searchEntries,countrySearchEntries } = await import("@/lib/content/search");
+    const { entriesForEdition } = await import("@/lib/content/search");
     return <div className="shell localized-page" lang={lang} dir={dir}>
       <header className="locale-heading"><h1>{dictionary.ui.searchTitle}</h1><p>{dictionary.ui.coverage}</p></header>
-      <SearchPanel locale={locale} initialQuery={typeof query === "string" ? query.slice(0,120) : ""} entries={[...searchEntries,...countrySearchEntries]} />
+      <SearchPanel locale={locale} initialQuery={typeof query === "string" ? query.slice(0,120) : ""} entries={await entriesForEdition(locale)} />
     </div>;
+  }
+
+  if (locale === "bn") {
+    if (page.track !== undefined) return <CourseReader id={learningTracks[page.track].id} locale="bn" />;
+    if (path === "/" || path === "/explore") return <BengaliHome explore={path === "/explore"} />;
+    if (path === "/learn") return <BengaliLearning />;
+    if (path === "/learn/progress") return <ProgressDashboard locale="bn" />;
+    if (path === "/library") return <BengaliLibrary />;
+    if (path === "/stories") return <BengaliJournal />;
+    if (path === "/topics") return <BengaliTopics />;
+    if (path === "/lab") return <BengaliLabs />;
+    const [family,slug]=segments;
+    if (family === "stories") return <BengaliStory slug={slug} />;
+    if (family === "topics") return <BengaliTopic slug={slug} />;
+    if (family === "lab") return <BengaliLab slug={slug} />;
   }
 
   if (page.track !== undefined) {

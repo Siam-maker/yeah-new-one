@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { AdditiveBlending, Color, DoubleSide, Fog, MathUtils, type Group } from "three";
+import { AdditiveBlending, Color, CatmullRomCurve3, DoubleSide, Fog, MathUtils, RepeatWrapping, TextureLoader, Vector3, type Group, type Texture } from "three";
 import { zoneAt } from "@/lib/content/ocean";
 import { terrainSurface } from "./terrain";
 import { pelagicFins, pelagicMesh } from "./pelagic-mesh";
+import { cameraOffset, transitionAmount } from "./scene-camera";
+import type { SceneSpec } from "./scene-types";
 import type { RenderProfile } from "./render-profile";
 
 const particulates = new Float32Array(Array.from({ length: 154 }, (_, i) => [
@@ -31,7 +33,7 @@ const surfaceFragment = `
     float wind=sin(uv.x*1.3+sin(uv.y*.8)*1.6)*cos(uv.y*1.4+uv.x*.26);
     float broken=sin(uv.x*2.+uv.y*1.9)*sin(uv.y*1.5+uv.x*.27);
     float crest=pow(max(0.,wind*.57+broken*.47),3.);
-    float edge=smoothstep(0.,.19,surface.y)*smoothstep(0.,.16,surface.x)*smoothstep(0.,.16,1.-surface.x);
+    float edge=smoothstep(0.,.22,surface.y)*smoothstep(0.,.33,1.-surface.y)*smoothstep(0.,.22,surface.x)*smoothstep(0.,.22,1.-surface.x);
     gl_FragColor=vec4(.39,.62,.68,(.07+crest*.45)*edge);
   }`;
 const shaftFragment = `
@@ -44,10 +46,14 @@ const shaftFragment = `
     gl_FragColor=vec4(.33,.64,.68,edge*falloff*clarity);
   }`;
 
-export function Ocean({ depth, active, profile }: { depth: number; active: boolean; profile: RenderProfile }) {
+export function Ocean({ model, active, profile }: { model: Extract<SceneSpec,{kind:"ocean"}>; active: boolean; profile: RenderProfile }) {
+  const { depth, clarity: coefficient, camera:view } = model;
   const layer = zoneAt(depth);
   const habitat = habitats[layer.id];
-  const clarity = Math.exp(-depth/294)*.36;
+  const clarity = Math.exp(-coefficient*depth*.17)*.43;
+  const orbit = useRef(new Vector3());
+  const aim = useRef(new Vector3());
+  const look = useRef(new Vector3());
   const shaftUniforms = useMemo(()=>({ clarity:{ value:clarity } }),[clarity]);
   const ground = useRef<Group>(null);
   const dust = useRef<Group>(null);
@@ -55,6 +61,22 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
   const { invalidate } = useThree();
   const fish = useMemo(() => [pelagicMesh(), pelagicFins()] as const, []);
   useEffect(() => () => fish.forEach((geometry) => geometry.dispose()), [fish]);
+  const [bump,setBump] = useState<Texture>();
+  useEffect(()=>{
+    let current=true;
+    const texture=new TextureLoader().load("/images/obsidian-surface.webp",(result)=>{if(current)setBump(result);});
+    texture.wrapS=texture.wrapT=RepeatWrapping;
+    texture.repeat.set(7,7);
+    return ()=>{current=false;texture.dispose();};
+  },[]);
+  const filaments=useMemo(()=>Array.from({length:7},(_,strand)=>{
+    const theta=strand/7*Math.PI*2;
+    return new CatmullRomCurve3(Array.from({length:8},(_,segment)=>new Vector3(
+      Math.cos(theta)*(.32+segment*.019)+Math.sin(segment*1.15+strand)*.084,
+      -segment*.145,
+      Math.sin(theta)*(.32+segment*.022),
+    )));
+  }),[]);
   const seabed = useMemo(() => terrainSurface(layer.id), [layer.id]);
   const particles = useMemo(() => particulates.slice(0,habitat.particles*3), [habitat.particles]);
   useEffect(() => () => seabed.dispose(), [seabed]);
@@ -72,17 +94,20 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
 
   useFrame(({ camera, clock, scene }, delta) => {
     const animated = active && profile.name !== "low";
-    const ease = animated ? 1 - Math.exp(-3 * Math.min(delta, .1)) : 1;
+    const ease = transitionAmount(animated,delta,4);
     if (scene.background instanceof Color) scene.background.lerp(fogTarget, ease);
     if (scene.fog instanceof Fog) {
       scene.fog.color.lerp(fogTarget, ease);
-      scene.fog.far = MathUtils.lerp(scene.fog.far, habitat.visibility, ease);
+      scene.fog.far = MathUtils.lerp(scene.fog.far, habitat.visibility / (1 + (coefficient-.035)*7), ease);
     }
-    const y = 2.4 - Math.log10(1 + depth / 100) * 2.45;
-    camera.position.y = animated ? MathUtils.damp(camera.position.y, y, 3, Math.min(delta, .1)) : y;
-    const z = 8.6-Math.log10(1+depth/195)*1.7;
-    camera.position.z = animated ? MathUtils.damp(camera.position.z,z,2.6,Math.min(delta,.1)) : z;
-    camera.lookAt(0,camera.position.y-.64,-5.2);
+    const y = 2.2 - Math.log10(1 + depth / 100) * 1.68;
+    const z = 12.8 - Math.log10(1 + depth / 195) * 1.55;
+    look.current.set(view.x, y + view.y - .55, -4.5);
+    cameraOffset(0,.9,z,view,orbit.current).add(look.current);
+    camera.position.lerp(orbit.current,ease);
+    aim.current.lerp(look.current,ease);
+    camera.lookAt(aim.current);
+    if (animated && (aim.current.distanceTo(look.current) > .01 || camera.position.distanceTo(orbit.current) > .015)) invalidate();
     if (ground.current) ground.current.position.y = MathUtils.lerp(ground.current.position.y,habitat.bed,ease);
     if (dust.current) {
       dust.current.rotation.z = animated ? clock.elapsedTime * .016 : 0;
@@ -118,7 +143,19 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
           side={DoubleSide} transparent depthWrite={false} blending={AdditiveBlending} toneMapped={false}/>
       </mesh>)}
     </group>}
-    <group ref={ground} position={[0,-4.4,-4]}><mesh geometry={seabed}><meshStandardMaterial vertexColors roughness={habitat.roughness} side={DoubleSide} /></mesh></group>
+    <group ref={ground} position={[0,-4.4,-4]} onClick={(event)=>{event.stopPropagation();model.onInspect("seabed");}}>
+      <mesh geometry={seabed}><meshStandardMaterial key={bump ? "mapped" : "unmapped"} vertexColors roughness={habitat.roughness} bumpMap={bump} bumpScale={.12} side={DoubleSide} /></mesh>
+      {[-5.5,-3.3,-1.3,2.2,4.8,8].map((x,index)=> <mesh key={x} position={[x,-1.75,-2.8-index%3*2.5]} scale={[1.2+index%2, .46+index%3*.27,1.1]} rotation={[.2,index*.73,.1]}>
+        <icosahedronGeometry args={[1,1]} /><meshStandardMaterial roughness={.9} color={index%2 ? "#4e5854" : "#586d73"} />
+      </mesh>)}
+      {model.hotspot === "seabed" && <mesh position={[0,-.46,-3]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.7,.75,48]} /><meshBasicMaterial color="#b9e1de" side={DoubleSide} /></mesh>}
+    </group>
+    <group onClick={(event)=>{event.stopPropagation();model.onInspect("organism");}}>
+    {layer.id === "midnight" && <group position={[-1.5,.17,-5.1]} rotation={[.12,0,-.14]}>
+      <mesh scale={[.64,.36,.64]}><sphereGeometry args={[1,31,19,0,Math.PI*2,0,Math.PI*.60]} /><meshPhysicalMaterial color="#7ba4bc" emissive="#258a9a" emissiveIntensity={.48} transparent opacity={.63} roughness={.3} side={DoubleSide} depthWrite={false} /></mesh>
+      <mesh position={[0,-.105,0]} rotation={[Math.PI/2,0,0]}><torusGeometry args={[.60,.018,8,42]} /><meshBasicMaterial color="#9fe2db" transparent opacity={.78} /></mesh>
+      {filaments.map((curve,index)=><mesh key={index}><tubeGeometry args={[curve,25,.009,4,false]} /><meshBasicMaterial color="#7cc5bd" transparent opacity={.69} /></mesh>)}
+    </group>}
     {layer.id === "hadal" ? <group position={[0,-2.55,-6]}>
       {[-1,1].map((side) => <group key={side} position={[side*1.6,side*.18,0]} rotation={[0,side*.4,.66]}>
         <mesh scale={[.67,.23,.24]}><torusGeometry args={[.56,.17,10,24,4.15]} /><meshStandardMaterial color="#ae8871" roughness={.86} /></mesh>
@@ -148,5 +185,6 @@ export function Ocean({ depth, active, profile }: { depth: number; active: boole
         </group>
       ))}
     </group>}
+    </group>
   </>;
 }

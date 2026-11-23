@@ -1,7 +1,8 @@
+import { scienceArticles } from "./science-articles";
 import type { SourceKey } from "./publication";
 
 export type DiagramKind = "depth" | "migration" | "strata" | "ice" | "light" | "plates" | "age" | "sea";
-type Article = {
+export type Article = {
   slug: string;
   title: string;
   topic: string;
@@ -357,6 +358,7 @@ Open the Atlas sea-level layer and compare the global reading with the Boston ti
 `),
     ],
   },
+  ...scienceArticles,
 ];
 
 export function readingMinutes(article: Article) {

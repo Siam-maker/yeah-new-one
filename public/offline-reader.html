@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+  <title>Offline reading | Under the Surface</title>
+  <style>
+    html{color-scheme:light dark;font:18px/1.6 system-ui,sans-serif} body{max-width:44rem;margin:auto;padding:2rem 1.25rem} h1{line-height:1.2}
+    .edition{margin-top:2.2rem} a{color:inherit;text-underline-offset:3px} li{padding:.55rem 0;overflow-wrap:anywhere} button{font:inherit;margin-inline-start:.6rem}
+  </style>
+</head>
+<body>
+  <header><p>Under the Surface</p><nav><a href="/">Return to the publication</a> · <a href="/bn" lang="bn">বাংলা প্রচ্ছদ</a></nav></header>
+  <main><h1>Offline reading shelf</h1><p id="shelf-status" role="status">Loading saved articles…</p><ul id="saved-articles"></ul>
+    <p class="edition" lang="bn">অফলাইনে পড়তে অনলাইনে নিবন্ধ খুলে অফলাইনের জন্য সংরক্ষণ করুন। বাংলা ও ইংরেজি নিবন্ধ এখানে দেখা যাবে।</p></main>
+  <script>
+    const shelfStatus = document.getElementById("shelf-status");
+    const list = document.getElementById("saved-articles");
+    async function listSaved() {
+      try {
+        const cache = await caches.open("uts-offline-articles-v1");
+        const saved = await cache.keys();
+        const items = await Promise.all(saved.map(async (request) => {
+          const path = new URL(request.url).pathname;
+          if (!/^\/api\/reading\/(en|bn)\/[a-z0-9-]+$/.test(path)) return null;
+          const response = await cache.match(request);
+          if (!response) return null;
+          const article = new DOMParser().parseFromString(await response.text(),"text/html");
+          const title = article.querySelector("h1")?.textContent || "Saved article";
+          const row = document.createElement("li");
+          const link = document.createElement("a");
+          link.lang = article.documentElement.lang === "bn" ? "bn" : "en";
+          link.href = path;
+          link.textContent = title;
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.textContent = "Remove";
+          remove.setAttribute("aria-label", "Remove " + title);
+          remove.onclick = async () => { await cache.delete(request); await listSaved(); };
+          row.append(link,remove);
+          return row;
+        }));
+        list.replaceChildren(...items.filter(Boolean));
+        shelfStatus.textContent = list.children.length ? `${list.children.length} articles saved on this device.` : "Save an article while online to read it here without a connection.";
+      } catch { shelfStatus.textContent = "Offline storage is unavailable in this browser."; }
+    }
+    listSaved();
+  </script>
+</body>
+</html>

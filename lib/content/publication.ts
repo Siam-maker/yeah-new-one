@@ -46,6 +46,8 @@ export const sources = {
   stars: { name: "NASA", title: "Stars", url: "https://science.nasa.gov/universe/stars/" },
   holes: { name: "NASA", title: "Black holes", url: "https://science.nasa.gov/universe/black-holes/" },
   exoplanets: { name: "NASA", title: "Exoplanets", url: "https://science.nasa.gov/exoplanets/" },
+  magneticField: { name:"USGS", title:"What is the geomagnetic field?", url:"https://www.usgs.gov/faqs/what-geomagnetic-field" },
+  darkMatter: { name:"NASA", title:"Dark matter", url:"https://science.nasa.gov/universe/dark-matter/" },
   darkEnergy: { name: "NASA", title: "Dark energy", url: "https://science.nasa.gov/universe/dark-energy/" },
 } as const;
 

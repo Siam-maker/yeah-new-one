@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { AdditiveBlending, BackSide, Color, MathUtils, SRGBColorSpace, TextureLoader, Vector3, type Texture } from "three";
+import { AdditiveBlending, BackSide, Color, SRGBColorSpace, TextureLoader, Vector3, type Texture } from "three";
 import { displayOrbit, planets } from "@/lib/content/cosmos";
 import { planetSurface } from "./planet-surface";
+import { cameraOffset, transitionAmount } from "./scene-camera";
 import type { SceneSpec } from "./scene-types";
 
 const stars = new Float32Array(1100 * 3);
@@ -42,6 +43,8 @@ export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:
   const target = planets.find((item)=>item.id===model.selected) ?? planets[2];
 
   const aim = useRef(new Vector3());
+  const orbitCamera = useRef(new Vector3());
+  const goal = useRef(new Vector3());
   const desired = useMemo(() => {
     const index = planets.indexOf(target);
     const phase = model.years / target.years * Math.PI * 2 + index * 1.1;
@@ -51,16 +54,16 @@ export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:
 
   useFrame(({ camera, invalidate },delta)=>{
     const near = model.view === "planet";
-    const zoom = model.zoom;
-    const goal = near ? desired : origin;
-    const x = near ? goal.x + .92/zoom : target.au > 5 ? .6 : 0;
-    const y = near ? .65/zoom : 7/zoom;
-    const z = near ? goal.z + (target.id === "saturn" ? 1.85 : 1.55)/zoom : 10.1/zoom;
-    const amount = active ? 1-Math.exp(-7*Math.min(delta,.07)) : 1;
-    camera.position.set(MathUtils.lerp(camera.position.x,x,amount),MathUtils.lerp(camera.position.y,y,amount),MathUtils.lerp(camera.position.z,z,amount));
-    aim.current.lerp(goal,amount);
+    goal.current.copy(near ? desired : origin);
+    goal.current.x += model.camera.x * (near ? .31 : 1.8);
+    goal.current.y += model.camera.y * (near ? .31 : 1.8);
+    const direction = cameraOffset(near ? .8 : .6,near ? .44 : 7,near ? target.id === "saturn" ? 1.48 : 1.05 : 10.1,{...model.camera,zoom:model.zoom},orbitCamera.current);
+    direction.add(goal.current);
+    const amount = transitionAmount(active,delta,6);
+    camera.position.lerp(direction,amount);
+    aim.current.lerp(goal.current,amount);
     camera.lookAt(aim.current);
-    if(active && (Math.abs(camera.position.x-x)+Math.abs(camera.position.y-y)+Math.abs(camera.position.z-z) > .008 || aim.current.distanceTo(goal) > .004)) invalidate();
+    if(active && (camera.position.distanceTo(direction) > .008 || aim.current.distanceTo(goal.current) > .004)) invalidate();
   });
 
   const orbits = useMemo(()=>planets.map((planet)=>new Float32Array(Array.from({length:129},(_,index)=>{
@@ -98,7 +101,7 @@ export function Planetarium({ model, active }: { model: Extract<SceneSpec,{kind:
           {model.view === "orbits" && <lineLoop><bufferGeometry><bufferAttribute attach="attributes-position" args={[orbits[index],3]} /></bufferGeometry>
             <lineBasicMaterial color={selected ? "#afa7ff" : "#526187"} transparent opacity={selected ? .96 : .45} /></lineLoop>}
           <group position={[Math.cos(phase)*orbit,0,Math.sin(phase)*orbit]} onClick={(event)=>{event.stopPropagation();model.onSelect(planet.id);}}>
-            <mesh><sphereGeometry args={[radius,32,20]} /><meshStandardMaterial map={surface} color={surface ? "#ffffff" : planet.color} roughness={.85} /></mesh>
+            <mesh rotation-y={model.years*2 + index*.4}><sphereGeometry args={[radius,model.view === "planet" && selected ? 64 : 32,model.view === "planet" && selected ? 38 : 20]} /><meshStandardMaterial key={surface ? "mapped" : "unmapped"} map={surface} bumpMap={planet.id === "mercury" || planet.id === "mars" ? surface : undefined} bumpScale={.026} color={surface ? "#ffffff" : planet.color} roughness={.85} /></mesh>
             {["earth","venus","uranus","neptune"].includes(planet.id) && <mesh><sphereGeometry args={[radius*1.075,24,14]} />
               <meshBasicMaterial color={planet.color} side={BackSide} transparent opacity={.34} blending={AdditiveBlending} depthWrite={false} />
             </mesh>}

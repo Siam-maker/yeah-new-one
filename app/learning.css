@@ -1,5 +1,6 @@
 /* Learning uses the same paper, mineral rules and documentary plates as the publication. */
 .edition-header-row {gap:clamp(11px,1.35vw,22px);}
+.publication-footer .footer-directory a {overflow-wrap:anywhere;}
 .edition-header-actions {display:flex;align-items:center;gap:4px;min-width:0;}
 .edition-navigation,.nav-channel {gap:clamp(12px,1.4vw,23px);}
 .nav-channel + .nav-channel {padding-inline-start:clamp(10px,1.4vw,23px);}
@@ -17,7 +18,7 @@
   .edition-header .brand {font-size:1.38rem;gap:5px;}
   .edition-header .brand .brand-mark {width:22px;}
   .edition-header .header-search span,.edition-menu-toggle span,.edition-header .language-switch svg {display:none;}
-  .edition-header .language-switch select {max-width:78px;}
+  .edition-header .language-switch select {max-width:90px;}
   .edition-header-actions {gap:2px;}
 }
 .edition-hero .hero-brief {max-width:47ch;}
@@ -108,8 +109,8 @@ ul.result-list mark {background:#e6b99e;color:#211a15;padding-inline:2px;}
 [lang="bn"] {--local-script:"Noto Sans Bengali Variable", "Noto Sans Bengali", "Bangla Sangam MN", sans-serif;}
 [lang="hi"] {--local-script:"Noto Sans Devanagari Variable", "Noto Sans Devanagari", "Devanagari Sangam MN", sans-serif;}
 [lang="ar"] {--local-script:"Noto Sans Arabic Variable", "Noto Sans Arabic","Arial",sans-serif;}
-[lang="zh-Hans"] {--local-script:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;}
-[lang="ja"] {--local-script:"Noto Sans CJK JP","Hiragino Sans","Yu Gothic",sans-serif;}
+[lang="zh-Hans"] {--local-script:"Noto Sans SC Variable","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;}
+[lang="ja"] {--local-script:"Noto Sans JP Variable","Noto Sans CJK JP","Hiragino Sans","Yu Gothic",sans-serif;}
 .localized-page {font-family:var(--local-script,var(--font-sans));}
 .localized-page :is(h1,h2) {font-family:var(--local-script,var(--font-display));}
 .localized-page:lang(bn) h1,.localized-page:lang(hi) h1,.localized-page:lang(ar) h1,.localized-page:lang(zh) h1,.localized-page:lang(ja) h1 {
@@ -166,3 +167,55 @@ html[dir="rtl"] .edition-header-actions {justify-self:end;}
 [lang="bn"] :is(.edition-navigation a,.edition-menu-inner p,[role="dialog"] h2),
 [lang="hi"] :is(.edition-navigation a,.edition-menu-inner p,[role="dialog"] h2),
 [lang="ar"] :is(.edition-navigation a,.edition-menu-inner p,[role="dialog"] h2) {font-family:var(--local-script,var(--font-sans));}
+
+/* Interactive exhibit navigation and camera controls. */
+.world-viewer { margin-block:clamp(2rem,5vw,5rem); }
+.world-exhibit-head { display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap; }
+.world-exhibit-head [aria-current="page"] { border-color:var(--accent);color:var(--accent); }
+.world-share { display:grid;gap:.45rem; }
+.world-share input { min-width:0;width:min(90vw,23rem); }
+.camera-controls { padding-block:.55rem; }
+.camera-controls > p { margin:.65rem 0; }
+.camera-sliders { display:grid;gap:.65rem 1.1rem;grid-template-columns:repeat(2,minmax(0,1fr)); }
+.camera-sliders label { display:grid;gap:.3rem;min-width:0; }
+.camera-sliders input { width:100%;min-width:0; }
+.camera-sliders span { display:flex;flex-wrap:wrap;gap:.3rem;justify-content:space-between; }
+.camera-controls button { margin-block-start:.65rem; }
+.exhibit-hotspots { display:grid;gap:.7rem; }
+.climate-world-fallback { width:100%;height:100%; }
+.climate-world-fallback img { object-fit:cover; }
+@media (max-width:380px) { .camera-sliders { grid-template-columns:minmax(0,1fr); } }
+
+.progress-dashboard { display:grid;gap:1.15rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); }
+.progress-dashboard .pane { display:grid;gap:.6rem;align-content:start; }
+.progress-dashboard .pane h3 { font-size:1.25rem;font-weight:700; }
+.bengali-home .locale-plate img { object-position:72% center; }
+.citation-tools { margin-block-start:.75rem; }
+.citation-tools .pill-row { margin-block-start:.55rem; }
+
+/* Script families apply to navigation and reading surfaces as well as landing pages. */
+html:is(:lang(bn),:lang(hi),:lang(ar),:lang(zh),:lang(ja)) body { font-family:var(--local-script); }
+html:is(:lang(bn),:lang(hi),:lang(ar),:lang(zh),:lang(ja)) :is(h1,h2,h3,.standfirst,.mono):not([lang="en"]) { font-family:var(--local-script); }
+html:lang(bn) :is(.display-title,.article-hero h1,.learning-masthead h1) { font-size:clamp(2.25rem,5vw,5.5rem);line-height:1.2; }
+html:lang(bn) :is(.article-body,.course-body) p { line-height:1.85; }
+.reading-collections { margin-block:1rem; }
+.reading-collections :is(form,label,.collection-members) { margin-block:.6rem; }
+.collection-members li { display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;padding-block:.3rem; }
+
+.offline-tools { margin-block-start:.75rem; }
+.offline-tools a { text-decoration:underline; }
+@media print { .reading-surface :is(.offline-tools,.citation-tools) { display:none!important; } }
+
+.annotation-image { position:relative; width:min(100%,500px); }
+.annotation-image img { display:block;width:100%;height:auto; }
+.figure-hotspot { position:absolute;transform:translate(-50%,-50%);min-width:36px;min-height:36px;border-radius:50%;background:#172324;border:2px solid #c1e0e1;color:#f6f2e7;font-weight:750;cursor:pointer; }
+.figure-hotspot[aria-pressed="true"] { background:#e3b48f;color:#15211f;border-color:#15211f;outline:2px solid #eadabd; }
+.annotated-figure .annotation-index,.annotated-figure .annotation-readout { margin-block:.75rem; }
+@media print { .annotated-figure :is(.figure-hotspot,.annotation-index) { display:none; } }
+
+@media (min-width:851px) {
+  .lab-layout > .ocean-exhibit,.climate-exhibit > .scene-frame,.interior-exhibit > .scene-frame {
+    position:sticky;top:clamp(82px,8vh,112px);align-self:start;
+  }
+  .article-model .lab-layout > .ocean-exhibit { position:relative;top:auto; }
+}

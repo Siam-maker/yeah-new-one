@@ -9,14 +9,15 @@ import type { SceneSpec } from "./scene-types";
 
 const SceneView = dynamic(() => import("./scene-view"), { ssr:false });
 
-export function LiveScene({ scene, fallback, explicit = false, onModeChange }: {
-  scene: SceneSpec; fallback: ReactNode; explicit?: boolean; onModeChange?: (is3D: boolean) => void;
+export function LiveScene({ scene, fallback, explicit = false, onModeChange, locale="en" }: {
+  scene: SceneSpec; fallback: ReactNode; explicit?: boolean; locale?:"en"|"bn"; onModeChange?: (is3D: boolean) => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const visible = useInView(container);
   const near = useInView(container, { margin:"120px", once:true });
   const reduced = useReducedMotionPreference();
   const [profile, setProfile] = useState<RenderProfile | null>(null);
+  const [unsupported,setUnsupported] = useState(false);
   const [ready, setReady] = useState(false);
   const [faulted, setFaulted] = useState(false);
   const [tabVisible, setTabVisible] = useState(true);
@@ -27,6 +28,7 @@ export function LiveScene({ scene, fallback, explicit = false, onModeChange }: {
     function inspect() {
       const next = explicit || (!reduced && desktop.matches) ? renderProfile() : null;
       setProfile(next);
+      setUnsupported(explicit && !next);
       if (!next) setReady(false);
     }
     inspect();
@@ -52,6 +54,7 @@ export function LiveScene({ scene, fallback, explicit = false, onModeChange }: {
     {show3D && <div className="scene-canvas" data-ready={ready || undefined}>
       <SceneView scene={scene} profile={profile} active={visible && tabVisible && !reduced} onReady={onReady} onFailure={onFailure} />
     </div>}
-    {faulted && <p className="scene-runtime-note" role="status">3D rendering ended. The illustration and controls are still available. <button type="button" onClick={()=>setFaulted(false)}>Retry 3D</button></p>}
+    {unsupported && <p className="scene-runtime-note" role="status">{locale==="bn" ? "এই যন্ত্রে ত্রিমাত্রিক দৃশ্য পাওয়া যায়নি। নিচের নিয়ন্ত্রণগুলো ব্যবহার করুন।" : "3D is unavailable on this device. Use the controls with the illustration."}</p>}
+    {faulted && <p className="scene-runtime-note" role="status">{locale==="bn" ? "ত্রিমাত্রিক দৃশ্য থেমেছে। চিত্র ও নিয়ন্ত্রণ ব্যবহার করা যাবে।" : "3D rendering ended. The illustration and controls are still available."} <button type="button" onClick={()=>setFaulted(false)}>{locale==="bn" ? "আবার চেষ্টা করুন" : "Retry 3D"}</button></p>}
   </div>;
 }

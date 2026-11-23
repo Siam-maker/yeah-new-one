@@ -3,7 +3,7 @@ import type { Level, TrackId } from "./learning-index";
 
 type Section = { id: string; title: string; text: string; task: string; sources: SourceKey[] };
 type Resource = { title: string; href: string; level: Level; task: string };
-export type Question = { prompt: string; answers: string[]; correct: number; explanation: string };
+export type Question = { prompt: string; answers: string[]; correct: number; explanation: string; language?:"en" };
 type Course = { question: string; sections: Section[]; resources: Resource[]; quiz: Question[] };
 
 export const courses: Record<TrackId, Course> = {

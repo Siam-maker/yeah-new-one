@@ -1,0 +1,41 @@
+import { contentAlternates } from "@/lib/i18n/coverage";
+import { ExhibitImage } from "@/components/editorial/exhibit-image";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import type { Metadata } from "next";
+import { Masthead, ReferenceList, SectionHeading, TextLink } from "@/components/editorial/ui";
+import { ScienceDiagram } from "@/components/editorial/diagram";
+import { DiscoveryIndex } from "@/components/editorial/discovery-index";
+import { labs } from "@/lib/content/publication";
+
+export const metadata: Metadata = { title: "The Lab", description: "Interactive science experiments in oceanography, geology, climate, astronomy and demography.", alternates:contentAlternates("/lab","en") };
+
+const worlds = [
+  { name:"Below the light", discipline:"Oceanography", image:"/images/ocean-column.webp", href:"/lab/ocean-depth", description:"Descend from the sunlit surface to the trenches." },
+  { name:"The geological Earth", discipline:"Geology", image:"/images/rift.webp", href:"/lab/geological-cross-section", description:"Read an exposed rock sequence from the bottom up." },
+  { name:"The cosmic observatory", discipline:"Astronomy", image:"/images/observatory.webp", href:"/lab/observatory", description:"Advance the orbital clock and measure the travel time of light." },
+];
+
+export default function LabPage() {
+  return <div className="shell">
+    <Masthead title="The Lab" category="Interactive science" description="Change a variable, watch what happens, and compare the model with what scientists observe." />
+    <div className="layout-flow">
+      <section><SectionHeading title="Three worlds" />
+        <div className="world-collection">{worlds.map((world) => <Link href={world.href} className="world-link" key={world.href}>
+          <ExhibitImage src={world.image} alt="" fill sizes="(max-width: 620px) 100vw, 35vw" /><div><p className="mono">{world.discipline}</p><h3>{world.name}</h3><p>{world.description}</p></div><ArrowUpRight size={23} aria-hidden="true" />
+        </Link>)}</div></section>
+      <DiscoveryIndex heading="Choose an experiment" pageSize={12} showMaterial={false}
+        entries={labs.map((lab)=>({ title:lab.title,description:lab.description,href:`/lab/${lab.slug}`,kind:lab.discipline,topics:[lab.discipline] }))}
+        filters={[...new Set(labs.map((lab)=>lab.discipline))].map((label)=>({ value:label,label }))} />
+      <section><SectionHeading title="Climate investigations" />
+        <div className="landing-lab-links"><TextLink href="/lab/ice-archive">Follow an ice-core sample</TextLink><TextLink href="/lab/climate-pathways">Compare emissions pathways</TextLink></div>
+      </section>
+      <div className="two-panel"><ScienceDiagram kind="plates" /><section className="pane">
+        <h2 className="subhead">Reading a model</h2>
+        <p className="editorial-text">Our models isolate a relationship so it is easier to see. The Earth’s actual rates, materials, and shapes vary. Compare a schematic with mapped evidence for a particular location.</p>
+        <div className="mt-4"><TextLink href="/atlas#earth-interior">Open the Earth cutaway</TextLink></div>
+        <div className="mt-5"><ReferenceList keys={["plates", "time", "pressure"]} /></div>
+      </section></div>
+    </div>
+  </div>;
+}

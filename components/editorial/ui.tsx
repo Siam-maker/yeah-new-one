@@ -7,9 +7,9 @@ import { labs, sources, topics, type SourceKey } from "@/lib/content/publication
 
 type Crumb = { label: string; href?: string };
 
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
-  return <nav aria-label="Breadcrumbs" className="breadcrumbs">
-    <Link href="/">Home</Link>
+export function Breadcrumbs({ items, locale="en" }: { items: Crumb[]; locale?:"en"|"bn" }) {
+  return <nav aria-label={locale === "bn" ? "পাতার পথ" : "Breadcrumbs"} className="breadcrumbs">
+    <Link href={locale === "bn" ? "/bn" : "/"}>{locale === "bn" ? "প্রচ্ছদ" : "Home"}</Link>
     {items.map(({ label, href }) => <span className="inline-flex items-center gap-2" key={label}>
       <ChevronRight size={14} aria-hidden="true" />
       {href ? <Link href={href}>{label}</Link> : <span aria-current="page">{label}</span>}
@@ -17,11 +17,11 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
   </nav>;
 }
 
-export function Masthead({ title, description, category, crumbs }: {
-  title: string; description: string; category?: string; crumbs?: Crumb[];
+export function Masthead({ title, description, category, crumbs, locale }: {
+  title: string; description: string; category?: string; crumbs?: Crumb[]; locale?:"en"|"bn";
 }) {
   return <header className="page-masthead">
-    {crumbs && <Breadcrumbs items={crumbs} />}
+    {crumbs && <Breadcrumbs items={crumbs} locale={locale} />}
     {category && <p className="mono section-label mt-5">{category}</p>}
     <h1 className="display-title">{title}</h1>
     <p className="standfirst">{description}</p>
@@ -43,14 +43,14 @@ export function TextLink({ href, children }: { href: string; children: ReactNode
 
 export function ReferenceList({ keys }: { keys: readonly SourceKey[] }) {
   return <ul className="reference-list">
-    {keys.map((key) => { const source = sources[key]; return <li key={key}>
+    {keys.map((key) => { const source = sources[key]; return <li key={key} lang="en">
       <a href={source.url}>{source.title}</a><span>{source.name}</span>
     </li>; })}
   </ul>;
 }
 
-export function Tile({ title, image, href, meta, description }: { title: string; image: string; href: string; meta: string; description: string }) {
-  return <Link className="editorial-tile" href={href}>
+export function Tile({ title, image, href, meta, description, lang }: { title: string; image: string; href: string; meta: string; description: string; lang?:string }) {
+  return <Link className="editorial-tile" href={href} lang={lang} hrefLang={lang}>
     <div className="tile-image"><ExhibitImage src={image} alt="" fill sizes="(max-width: 430px) 90vw,(max-width: 760px) 45vw, 31vw" /></div>
     <div className="tile-copy"><p className="mono tile-meta">{meta}</p><h3>{title}</h3><p className="editorial-text">{description}</p></div>
   </Link>;

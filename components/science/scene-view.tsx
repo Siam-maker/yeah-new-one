@@ -5,6 +5,7 @@ import { Component, useEffect, useRef, useState, type ReactNode } from "react";
 import { Color, type WebGLRenderer } from "three";
 import { Planetarium } from "./planetarium";
 import { Interior, Strata, Tectonic } from "./geology-stage";
+import { ClimateStage } from "./climate-stage";
 import { Ocean } from "./ocean-stage";
 import { Globe } from "./globe-stage";
 import type { RenderProfile } from "./render-profile";
@@ -20,10 +21,11 @@ class VisualBoundary extends Component<{ children: ReactNode; onFailure: () => v
 function Stage({ scene, profile, active }: { scene: SceneSpec; profile: RenderProfile; active: boolean }) {
   switch (scene.kind) {
     case "interior": return <Interior model={scene} active={active} />;
-    case "ocean": return <Ocean depth={scene.depth} active={active} profile={profile} />;
+    case "ocean": return <Ocean model={scene} active={active} profile={profile} />;
     case "strata": return <Strata layer={scene.layer} active={active} />;
     case "plates": return <Tectonic boundary={scene.boundary} progress={scene.progress} active={active} />;
     case "cosmos": return <Planetarium model={scene} active={active} />;
+    case "climate": return <ClimateStage model={scene} active={active} />;
     case "globe": return <Globe scene={scene} active={active} profile={profile} />;
   }
 }
@@ -58,7 +60,7 @@ export default function SceneView({ scene, profile, active, onReady, onFailure }
   return <VisualBoundary onFailure={onFailure}>
     <Canvas frameloop="demand" dpr={Math.min(profile.dpr, window.devicePixelRatio || 1)} camera={{ position: [0, ocean ? 1.2 : .05, ocean ? 8.6 : 7.4], near: .1, far: 90, fov: ocean ? 52 : 43 }}
       gl={{ antialias: false, powerPreference: profile.name === "high" ? "high-performance" : "low-power", alpha: true }} onCreated={({ gl, scene: root }) => {
-        if (!ocean && scene.kind !== "cosmos") {
+        if (!ocean && scene.kind !== "cosmos" && scene.kind !== "climate") {
           root.background = new Color(scene.kind === "globe" || scene.kind === "interior" ? "#121e25" : "#221d1b");
         }
         setRenderer(gl);
